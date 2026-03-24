@@ -5,8 +5,23 @@ import {PaperProvider} from "react-native-paper";
 import {KeyboardProvider} from "react-native-keyboard-controller";
 import Navigation from "@/lib/components/Navigation";
 import {LoadingIndicator} from "@/lib/components/ui/LoadingIndicator";
+import {useRouter} from "expo-router";
+import {useEffect} from "react";
+import {getStringData} from "@/lib/utils/AsyncStorage";
 
 export default function RootLayout() {
+  const { push } = useRouter()
+
+  useEffect(() => {
+    ;(async () => {
+      const accessToken = await getStringData('accessToken');
+
+      if (accessToken) {
+        push('/(admin)/(tabs)/dashboard')
+      }
+    })()
+  }, []);
+
   return (
     <PaperProvider>
         <StatusBar style="dark"></StatusBar>

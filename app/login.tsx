@@ -10,6 +10,7 @@ import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 import {validateEmail} from "@/lib/utils/validators";
 import {getFirebaseAdminErrorMessage} from "@/lib/utils/firebaseAdminErrors";
 import {signInFn} from "@/lib/services/api/auth";
+import {storeStringData} from "@/lib/utils/AsyncStorage";
 
 export default function Index() {
   // const { signIn } = useAuth()
@@ -54,6 +55,16 @@ export default function Index() {
     return !message;
   };
 
+  const handleLoginSuccess = async (data) => {
+    if (data?.accessToken) {
+      await storeStringData("accessToken", data?.accessToken);
+
+      if (data?.role === 'ADMIN') {
+        router.push('/(admin)/(tabs)/dashboard')
+      }
+    }
+  }
+
   const onLogin = async () => {
     const isValid = await isValidEmail(email) && await isValidatePassword(password)
 
@@ -64,11 +75,9 @@ export default function Index() {
         email, password
       })
 
-
-      console.log(response, 'response signInFn')
-
-
-      if (response?.accessToken) router.push('/(admin)/(tabs)')
+      if (response?.accessToken) {
+        await handleLoginSuccess(response)
+      }
     } catch (e) {
       // const errorMessage = getFirebaseAdminErrorMessage(e?.code)
       // setErrorMessage(errorMessage)
