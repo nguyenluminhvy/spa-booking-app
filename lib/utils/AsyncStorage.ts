@@ -22,3 +22,9 @@ export const getStringData = async (key: string) => {
     return null
   }
 }
+
+export const removeStringData = async (key: string) => {
+  try {
+    await AsyncStorage.removeItem(key)
+  } catch (e) {}
+}

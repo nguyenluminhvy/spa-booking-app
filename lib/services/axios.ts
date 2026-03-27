@@ -1,14 +1,15 @@
 import axios from "axios";
+import {getStringData} from "@/lib/utils/AsyncStorage";
 
 export const api = axios.create({
   baseURL: "http://localhost:3000",
 });
 
-api.interceptors.request.use((config) => {
-  const token = "YOUR_TOKEN";
+api.interceptors.request.use(async (config) => {
+  const accessToken = await getStringData('accessToken');
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
 
   return config;

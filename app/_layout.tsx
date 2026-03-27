@@ -17,7 +17,7 @@ export default function RootLayout() {
       const accessToken = await getStringData('accessToken');
 
       if (accessToken) {
-        push('/(admin)/(tabs)/dashboard')
+        push('/(admin)/(tabs)/services')
       }
     })()
   }, []);

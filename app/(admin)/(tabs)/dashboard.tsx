@@ -1,14 +1,20 @@
 import { StyleSheet } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import {Button} from "react-native-paper";
+import {removeStringData} from "@/lib/utils/AsyncStorage";
+import {useRouter} from "expo-router";
 
-export default function TabOneScreen() {
+export default function DashboardScreen() {
+  const { navigate } = useRouter()
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+
+      <Button onPress={async () => {
+        await removeStringData('accessToken');
+        navigate('/login');
+      }}>Log out</Button>
     </View>
   );
 }

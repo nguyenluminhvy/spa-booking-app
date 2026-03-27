@@ -1,64 +1,19 @@
-import {Stack} from "expo-router";
+import { Stack } from 'expo-router';
 
-export default function Navigation() {
-  return(
-    <Stack
-      screenOptions={{
-        headerBackTitle: "Back",
-        headerShadowVisible: false,
-        gestureEnabled: false,
-      }}
-    >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="login"
-        options={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="register"
-        options={{
-          headerTitle: '',
-          contentStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="verify-account"
-        options={{
-          headerTitle: '',
-          contentStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="forgot-password"
-        options={{
-          headerTitle: '',
-          contentStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(homeTabs)"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen name="task/[taskId]" />
+export default function AdminNavigation() {
+  return (
+    <Stack screenOptions={{
+      headerBackTitle: "Back",
+      headerShadowVisible: false,
+      gestureEnabled: false,
+    }}>
+      {/* Tabs */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+      {/* Screens ngoài tab */}
+      <Stack.Screen name="appointment-detail" />
+      <Stack.Screen name="assign-staff" />
+      <Stack.Screen name="create-service" />
     </Stack>
-  )
+  );
 }
