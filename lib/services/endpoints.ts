@@ -23,6 +23,8 @@ export default () => {
       `${baseUrl}/appointments/${id}/confirm`,
     cancelAppointment: (id: string) =>
       `${baseUrl}/appointments/${id}/cancel`,
+    completeAppointment: (id: string) =>
+      `${baseUrl}/appointments/${id}/complete`,
     // getServiceDetails: (id: string) =>
     //   `${baseUrl}/services/${id}`,
     // updateService: (id: string) =>

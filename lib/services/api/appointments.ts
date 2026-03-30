@@ -51,6 +51,16 @@ export const _cancelAppointment = async (appointmentId: any) => {
   }
 }
 
+export const _completeAppointment = async (appointmentId: any) => {
+  try {
+    const response = await request(Endpoint().completeAppointment(appointmentId), Method.PATCH, null, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+}
+
 export const updateService = async (serviceId: any, formData: any) => {
   try {
     const response = await request(Endpoint().updateService(serviceId), Method.PATCH, formData, null)

@@ -53,8 +53,9 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
   const { id, appointmentTime, staff, status, price, service, user } = data;
 
   const isPending = status === 'PENDING';
+  const isConfirmed = status === 'CONFIRMED';
 
-  const { confirmAppointment, cancelAppointment } = useSpa()
+  const { confirmAppointment, cancelAppointment, completeAppointment } = useSpa()
   const { isAdminRole } = useAuth()
 
   const onConfirm = async () => {
@@ -63,6 +64,10 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
 
   const onCancel = async () => {
     await cancelAppointment(id)
+  }
+
+  const onComplete = async () => {
+    await completeAppointment(id)
   }
 
   return (
@@ -124,6 +129,16 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
               }
               <Button compact mode="text" style={{}} textColor={'rgba(234, 57, 67, 1)'} onPress={onCancel}>
                 Cancel
+              </Button>
+            </View>
+          )
+        }
+
+        {
+          isConfirmed && isAdminRole && (
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>
+              <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onComplete}>
+                Complete
               </Button>
             </View>
           )

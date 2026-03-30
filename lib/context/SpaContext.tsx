@@ -5,7 +5,12 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import {_cancelAppointment, _confirmAppointment, getAppointments} from "@/lib/services/api/appointments";
+import {
+  _cancelAppointment,
+  _completeAppointment,
+  _confirmAppointment,
+  getAppointments
+} from "@/lib/services/api/appointments";
 
 type SpaContextType = {
   services: [] | null;
@@ -18,6 +23,7 @@ type SpaContextType = {
   fetchAppointments: () => Promise<void>;
   confirmAppointment: (id: any) => Promise<void>;
   cancelAppointment: (id: any) => Promise<void>;
+  completeAppointment: (id: any) => Promise<void>;
   // sendEmailResetPassword: (email: string) => Promise<void>;
 };
 
@@ -26,7 +32,8 @@ const defaultContext: SpaContextType = {
   appointments: [],
   fetchAppointments: async () => {},
   confirmAppointment: async (id: any) => {},
-  cancelAppointment: async (id: any) => {}
+  cancelAppointment: async (id: any) => {},
+  completeAppointment: async (id: any) => {},
 };
 
 const SpaContext = createContext<SpaContextType>(defaultContext);
@@ -74,11 +81,20 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     return response
   }
 
+  const completeAppointment = async (id: any) => {
+    const response = await _completeAppointment(id)
+
+    await fetchAppointments()
+
+    return response
+  }
+
   const value: SpaContextType = {
     appointments,
     fetchAppointments,
     confirmAppointment,
     cancelAppointment,
+    completeAppointment,
     // setLoading,
     // signIn,
     // signUp,
