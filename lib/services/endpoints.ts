@@ -15,6 +15,14 @@ export default () => {
     updateService: (id: string) =>
       `${baseUrl}/services/${id}`,
 
+    //appointment
+    getAppointments: `${baseUrl}/appointments`,
+    createAppointment: `${baseUrl}/appointments/create`,
+    // getServiceDetails: (id: string) =>
+    //   `${baseUrl}/services/${id}`,
+    // updateService: (id: string) =>
+    //   `${baseUrl}/services/${id}`,
+
     // walletDeleteAddress: (id: string) =>
     //   `${apiUrl}/wallet/withdraw/save-address/${id}`,
 

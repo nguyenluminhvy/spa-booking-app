@@ -8,6 +8,7 @@ import {LoadingIndicator} from "@/lib/components/ui/LoadingIndicator";
 import {useRouter} from "expo-router";
 import {useEffect} from "react";
 import {getStringData} from "@/lib/utils/AsyncStorage";
+import {SpaProvider} from "@/lib/context/SpaContext";
 
 export default function RootLayout() {
   const { push } = useRouter()
@@ -15,20 +16,28 @@ export default function RootLayout() {
   useEffect(() => {
     ;(async () => {
       const accessToken = await getStringData('accessToken');
+      const userRole = await getStringData('user-role');
 
       if (accessToken) {
-        push('/(admin)/(tabs)/services')
+        if (userRole === 'ADMIN') {
+          push('/(admin)/(tabs)/services')
+        }
+        if (userRole === 'USER') {
+          push('/(user)/(tabs)/home')
+        }
       }
     })()
   }, []);
 
   return (
     <PaperProvider>
+      <SpaProvider>
         <StatusBar style="dark"></StatusBar>
-          <KeyboardProvider>
-            <Navigation />
-            <LoadingIndicator />
-          </KeyboardProvider>
+        <KeyboardProvider>
+          <Navigation />
+          <LoadingIndicator />
+        </KeyboardProvider>
+      </SpaProvider>
     </PaperProvider>
   );
 }

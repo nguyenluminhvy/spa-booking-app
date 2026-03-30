@@ -56,11 +56,16 @@ export default function Index() {
   };
 
   const handleLoginSuccess = async (data) => {
+    console.log(data, 'data <<')
     if (data?.accessToken) {
       await storeStringData("accessToken", data?.accessToken);
+      await storeStringData("user-role", data?.role);
 
       if (data?.role === 'ADMIN') {
         router.push('/(admin)/(tabs)/dashboard')
+      }
+      if (data?.role === 'USER') {
+        router.push('/(user)/(tabs)/home')
       }
     }
   }

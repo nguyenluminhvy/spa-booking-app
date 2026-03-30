@@ -62,6 +62,10 @@ export default function Navigation() {
         name="(admin)"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="(user)"
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="task/[taskId]" />
     </Stack>
   )
