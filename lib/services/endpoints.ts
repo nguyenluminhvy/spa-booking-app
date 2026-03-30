@@ -6,6 +6,7 @@ export default () => {
 
     //auth
     signIn: `${baseUrl}/auth/login`,
+    profile: `${baseUrl}/auth/profile`,
 
     //service
     getServices: `${baseUrl}/services`,
@@ -18,6 +19,10 @@ export default () => {
     //appointment
     getAppointments: `${baseUrl}/appointments`,
     createAppointment: `${baseUrl}/appointments/create`,
+    confirmAppointment: (id: string) =>
+      `${baseUrl}/appointments/${id}/confirm`,
+    cancelAppointment: (id: string) =>
+      `${baseUrl}/appointments/${id}/cancel`,
     // getServiceDetails: (id: string) =>
     //   `${baseUrl}/services/${id}`,
     // updateService: (id: string) =>

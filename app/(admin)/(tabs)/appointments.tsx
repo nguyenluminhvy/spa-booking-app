@@ -1,14 +1,54 @@
-import { StyleSheet } from 'react-native';
+import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { View } from 'react-native';
+import {useCallback, useEffect, useState} from "react";
+import {useSpa} from "@/lib/context/SpaContext";
+import {FlashList} from "@shopify/flash-list";
+import AppointmentCard from "@/lib/components/ui/AppointmentCard";
 
 export default function AppointmentsScreen() {
+  const { appointments, fetchAppointments } = useSpa()
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchAppointments()
+  }, [])
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      fetchAppointments()
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
+  const goToSelectTime = (item) => {
+    // router.push({
+    //   pathname: '/select-time',
+    //   params: {
+    //     serviceId: item.id,
+    //   }
+    // })
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
+      <FlashList
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 16, paddingBottom: 80}}
+        keyExtractor={(item) => item.id.toString()}
+        data={appointments}
+        renderItem={({ item }) => <AppointmentCard data={item}/>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      />
     </View>
   );
 }
@@ -16,16 +56,5 @@ export default function AppointmentsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });

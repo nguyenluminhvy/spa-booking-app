@@ -5,7 +5,7 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import {getAppointments} from "@/lib/services/api/appointments";
+import {_cancelAppointment, _confirmAppointment, getAppointments} from "@/lib/services/api/appointments";
 
 type SpaContextType = {
   services: [] | null;
@@ -16,13 +16,17 @@ type SpaContextType = {
   // signUp: (email: string, password: string) => Promise<void>;
   // signOut: () => Promise<void>;
   fetchAppointments: () => Promise<void>;
+  confirmAppointment: (id: any) => Promise<void>;
+  cancelAppointment: (id: any) => Promise<void>;
   // sendEmailResetPassword: (email: string) => Promise<void>;
 };
 
 const defaultContext: SpaContextType = {
   services: [],
   appointments: [],
-  fetchAppointments: async () => {}
+  fetchAppointments: async () => {},
+  confirmAppointment: async (id: any) => {},
+  cancelAppointment: async (id: any) => {}
 };
 
 const SpaContext = createContext<SpaContextType>(defaultContext);
@@ -54,9 +58,27 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  const confirmAppointment = async (id: any) => {
+    const response = await _confirmAppointment(id)
+
+    await fetchAppointments()
+
+    return response
+  }
+
+  const cancelAppointment = async (id: any) => {
+    const response = await _cancelAppointment(id)
+
+    await fetchAppointments()
+
+    return response
+  }
+
   const value: SpaContextType = {
     appointments,
     fetchAppointments,
+    confirmAppointment,
+    cancelAppointment,
     // setLoading,
     // signIn,
     // signUp,

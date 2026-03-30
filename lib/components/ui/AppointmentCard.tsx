@@ -1,13 +1,16 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Text } from 'react-native-paper';
+import {Button, Text} from 'react-native-paper';
 import moment from 'moment';
+import {useSpa} from "@/lib/context/SpaContext";
+import {useAuth} from "@/lib/context/AuthContext";
 
 type Appointment = {
   id: string;
   staff?: string;
   appointmentTime?: string;
+  user?: any;
   service?: any;
   status?: string;
   price?: number;
@@ -47,7 +50,20 @@ const InfoItem = ({
 );
 
 const AppointmentCard = ({ data, disabled, onPress }: Props) => {
-  const { id, appointmentTime, staff, status, price, service } = data;
+  const { id, appointmentTime, staff, status, price, service, user } = data;
+
+  const isPending = status === 'PENDING';
+
+  const { confirmAppointment, cancelAppointment } = useSpa()
+  const { isAdminRole } = useAuth()
+
+  const onConfirm = async () => {
+    await confirmAppointment(id)
+  }
+
+  const onCancel = async () => {
+    await cancelAppointment(id)
+  }
 
   return (
     <TouchableOpacity
@@ -60,6 +76,24 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
         <View style={styles.row}>
           <InfoItem icon="check-circle" label="Booking ID" value={`#${id}`} />
           <InfoItem icon="calendar-check-outline" label="Booked On" value={moment(appointmentTime).format('DD-MM-YYYY | HH:mm')} />
+        </View>
+
+        <View style={styles.row}>
+
+          <InfoItem
+            icon="spa"
+            label="Service"
+            value={service?.name || '--'}
+          />
+          {
+            isAdminRole && (
+              <InfoItem
+                icon="account"
+                label="User"
+                value={user?.name || '--'}
+              />
+            )
+          }
         </View>
 
         <View style={styles.row}>
@@ -77,6 +111,24 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
           label="Total Amount"
           value={service?.price ? `${service?.price.toLocaleString()}₫` : '--'}
         />
+
+        {
+          isPending && (
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>
+              {
+                isAdminRole && (
+                  <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onConfirm}>
+                    Confirm
+                  </Button>
+                )
+              }
+              <Button compact mode="text" style={{}} textColor={'rgba(234, 57, 67, 1)'} onPress={onCancel}>
+                Cancel
+              </Button>
+            </View>
+          )
+        }
+
       </View>
     </TouchableOpacity>
   );

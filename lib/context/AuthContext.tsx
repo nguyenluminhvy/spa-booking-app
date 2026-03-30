@@ -3,157 +3,75 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
+  ReactNode, useCallback,
 } from 'react';
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  User, sendEmailVerification,
-  initializeAuth,
-  getReactNativePersistence
-} from 'firebase/auth';
-import {sendPasswordResetEmail, signOut as firebaseSignOut} from "@firebase/auth";
-import {createUserProfile} from "@/lib/services/userService";
-import app from "@/lib/config/firebaseConfig";
-import * as Notifications from "expo-notifications";
+import {getStringData} from "@/lib/utils/AsyncStorage";
+import {_getProfile} from "@/lib/services/api/auth";
 
-
-const auth = getAuth(app);
 
 type AuthContextType = {
-  user: User | null;
-  loading: boolean;
-  setLoading: any;
-  signIn: (email: string, password: string) => Promise<boolean | any>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  reSendEmailVerification: () => Promise<void>;
-  sendEmailResetPassword: (email: string) => Promise<void>;
+  // user: User | null;
+  // loading: boolean;
+  // setLoading: any;
+  // signIn: (email: string, password: string) => Promise<boolean | any>;
+  // signUp: (email: string, password: string) => Promise<void>;
+  // signOut: () => Promise<void>;
+  // reSendEmailVerification: () => Promise<void>;
+  // sendEmailResetPassword: (email: string) => Promise<void>;
 };
 
 const defaultContext: AuthContextType = {
   user: null,
-  loading: false,
-  signIn: async () => false,
-  signUp: async () => {
+  fetchProfile: async () => {
   },
-  signOut: async () => {
-  },
-  reSendEmailVerification: async () => {
-  },
-  sendEmailResetPassword: async () => {
-  },
-  setLoading: async () => {
-  }
+  isAdminRole: false,
+  // loading: false,
+  // signIn: async () => false,
+  // signUp: async () => {
+  // },
+  // signOut: async () => {
+  // },
+  // reSendEmailVerification: async () => {
+  // },
+  // sendEmailResetPassword: async () => {
+  // },
+  // setLoading: async () => {
+  // }
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+  const fetchProfile = useCallback(async () => {
 
-      if (firebaseUser) {
-        setUser(firebaseUser);
-      }
-      setLoading(false);
+    const response = await _getProfile()
 
-      console.log('firebaseUser: ', firebaseUser)
+    if (response?.id) {
+      setUser(response);
+    }
 
-    });
-
-    return unsubscribe;
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  useEffect(() => {
+    ;(async () => {
+      await fetchProfile()
+    })()
+  }, []);
 
-      if (userCredential.user) {
-        if (userCredential.user?.emailVerified) {
-          setUser(userCredential.user);
-          return true;
-        } else {
-          setUser(userCredential.user);
-          return {
-            code: -1,
-            message: 'email is not verify'
-          }
-        }
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const signUp = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      const user = result.user;
-
-      if (user.uid) {
-        await createUserProfile(user.uid, user.email ?? '', user.displayName ?? '');
-        await sendEmailVerification(user)
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const reSendEmailVerification = async () => {
-    try {
-      setLoading(true);
-      user && await sendEmailVerification(user)
-    } catch (e) {
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const sendEmailResetPassword = async (email: string) => {
-    try {
-      setLoading(true);
-      auth && await sendPasswordResetEmail(auth, email)
-    } catch (e) {
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const signOut = async () => {
-    try {
-      setLoading(true);
-      await Notifications.cancelAllScheduledNotificationsAsync()
-      await firebaseSignOut(auth);
-      setUser(null);
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const isAdminRole = user?.role === 'ADMIN'
 
   const value: AuthContextType = {
     user,
+    setUser,
+    fetchProfile,
     loading,
     setLoading,
-    signIn,
-    signUp,
-    reSendEmailVerification,
-    sendEmailResetPassword,
-    signOut
+    isAdminRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -9,6 +9,7 @@ import {useRouter} from "expo-router";
 import {useEffect} from "react";
 import {getStringData} from "@/lib/utils/AsyncStorage";
 import {SpaProvider} from "@/lib/context/SpaContext";
+import {AuthProvider} from "@/lib/context/AuthContext";
 
 export default function RootLayout() {
   const { push } = useRouter()
@@ -31,13 +32,15 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
-      <SpaProvider>
-        <StatusBar style="dark"></StatusBar>
-        <KeyboardProvider>
-          <Navigation />
-          <LoadingIndicator />
-        </KeyboardProvider>
-      </SpaProvider>
+      <AuthProvider>
+        <SpaProvider>
+          <StatusBar style="dark"></StatusBar>
+          <KeyboardProvider>
+            <Navigation />
+            <LoadingIndicator />
+          </KeyboardProvider>
+        </SpaProvider>
+      </AuthProvider>
     </PaperProvider>
   );
 }

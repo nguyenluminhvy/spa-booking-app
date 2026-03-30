@@ -1,5 +1,4 @@
 import {StyleSheet, TouchableOpacity, View} from "react-native";
-// import {useAuth} from "@/lib/context/AuthContext";
 import React, {useState} from "react";
 import {router} from "expo-router";
 import {isIos} from "@/lib/utils/helper";
@@ -11,9 +10,10 @@ import {validateEmail} from "@/lib/utils/validators";
 import {getFirebaseAdminErrorMessage} from "@/lib/utils/firebaseAdminErrors";
 import {signInFn} from "@/lib/services/api/auth";
 import {storeStringData} from "@/lib/utils/AsyncStorage";
+import {useAuth} from "@/lib/context/AuthContext";
 
 export default function Index() {
-  // const { signIn } = useAuth()
+  const { fetchProfile } = useAuth()
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -67,6 +67,8 @@ export default function Index() {
       if (data?.role === 'USER') {
         router.push('/(user)/(tabs)/home')
       }
+
+      await fetchProfile()
     }
   }
 

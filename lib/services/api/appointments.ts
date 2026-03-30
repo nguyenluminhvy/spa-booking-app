@@ -31,6 +31,26 @@ export const createAppointment = async (payload: any) => {
   }
 }
 
+export const _confirmAppointment = async (appointmentId: any) => {
+  try {
+    const response = await request(Endpoint().confirmAppointment(appointmentId), Method.PATCH, null, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+}
+
+export const _cancelAppointment = async (appointmentId: any) => {
+  try {
+    const response = await request(Endpoint().cancelAppointment(appointmentId), Method.PATCH, null, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+}
+
 export const updateService = async (serviceId: any, formData: any) => {
   try {
     const response = await request(Endpoint().updateService(serviceId), Method.PATCH, formData, null)
