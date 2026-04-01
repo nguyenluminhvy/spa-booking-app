@@ -8,6 +8,21 @@ export default () => {
     signIn: `${baseUrl}/auth/login`,
     profile: `${baseUrl}/auth/profile`,
 
+    //user
+    users: `${baseUrl}/users`,
+    staffs: `${baseUrl}/users/staffs`,
+    createStaff: `${baseUrl}/users/staff/create`,
+    activateUser: (id: string) =>
+      `${baseUrl}/users/${id}/activate`,
+    deactivateUser: (id: string) =>
+      `${baseUrl}/users/${id}/deactivate`,
+    getStaffInfo: (id: string) =>
+      `${baseUrl}/users/staff/${id}`,
+    updateStaff: (id: string) =>
+      `${baseUrl}/users/staff/${id}`,
+    resetPasswordStaff: (id: string) =>
+      `${baseUrl}/users/staff/${id}/resetPassword`,
+
     //service
     getServices: `${baseUrl}/services`,
     createService: `${baseUrl}/services/create`,
@@ -25,6 +40,8 @@ export default () => {
       `${baseUrl}/appointments/${id}/cancel`,
     completeAppointment: (id: string) =>
       `${baseUrl}/appointments/${id}/complete`,
+    assignStaff: (id: string) =>
+      `${baseUrl}/appointments/${id}/assign`,
     // getServiceDetails: (id: string) =>
     //   `${baseUrl}/services/${id}`,
     // updateService: (id: string) =>

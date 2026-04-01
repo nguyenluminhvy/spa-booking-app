@@ -11,7 +11,8 @@ export default function AdminNavigation() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
       <Stack.Screen name="assign-staff" />
-      <Stack.Screen name="create-service" />
+      <Stack.Screen name="create-edit-service" />
+      <Stack.Screen name="create-edit-staff" />
     </Stack>
   );
 }

@@ -22,8 +22,7 @@ type AuthContextType = {
 
 const defaultContext: AuthContextType = {
   user: null,
-  fetchProfile: async () => {
-  },
+  fetchProfile: async () => {},
   isAdminRole: false,
   // loading: false,
   // signIn: async () => false,

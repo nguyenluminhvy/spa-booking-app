@@ -68,7 +68,7 @@ export default function TabLayout() {
           title: 'Services'
         }}
       />
-      <Tabs.Screen name="users" options={{ title: 'Users' }} />
+      <Tabs.Screen name="users" options={{ title: 'Users', headerTitle: 'Users Management' }} />
     </Tabs>
   );
 }

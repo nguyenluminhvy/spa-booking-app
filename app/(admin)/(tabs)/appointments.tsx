@@ -6,14 +6,17 @@ import {useCallback, useEffect, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
 import {FlashList} from "@shopify/flash-list";
 import AppointmentCard from "@/lib/components/ui/AppointmentCard";
+import {useAdmin} from "@/lib/context/AdminContext";
 
 export default function AppointmentsScreen() {
   const { appointments, fetchAppointments } = useSpa()
+  const { fetchStaffs } = useAdmin()
 
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchAppointments()
+    fetchStaffs()
   }, [])
 
   const onRefresh = useCallback(() => {

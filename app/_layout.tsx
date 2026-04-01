@@ -10,6 +10,7 @@ import {useEffect} from "react";
 import {getStringData} from "@/lib/utils/AsyncStorage";
 import {SpaProvider} from "@/lib/context/SpaContext";
 import {AuthProvider} from "@/lib/context/AuthContext";
+import {AdminProvider} from "@/lib/context/AdminContext";
 
 export default function RootLayout() {
   const { push } = useRouter()
@@ -21,7 +22,7 @@ export default function RootLayout() {
 
       if (accessToken) {
         if (userRole === 'ADMIN') {
-          push('/(admin)/(tabs)/services')
+          push('/(admin)/(tabs)/users')
         }
         if (userRole === 'USER') {
           push('/(user)/(tabs)/home')
@@ -33,13 +34,15 @@ export default function RootLayout() {
   return (
     <PaperProvider>
       <AuthProvider>
-        <SpaProvider>
-          <StatusBar style="dark"></StatusBar>
-          <KeyboardProvider>
-            <Navigation />
-            <LoadingIndicator />
-          </KeyboardProvider>
-        </SpaProvider>
+        <AdminProvider>
+          <SpaProvider>
+            <StatusBar style="dark"></StatusBar>
+            <KeyboardProvider>
+              <Navigation />
+              <LoadingIndicator />
+            </KeyboardProvider>
+          </SpaProvider>
+        </AdminProvider>
       </AuthProvider>
     </PaperProvider>
   );

@@ -1,0 +1,132 @@
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
+import {
+  _activateUser,
+  _createStaff,
+  _deactivateUser,
+  _getStaffInfo, _getStaffs,
+  _getUsers, _resetPasswordStaff,
+  _updateStaff
+} from "@/lib/services/api/users";
+
+type AdminContextType = {
+  users: [] | null;
+  staffs: [] | null;
+  appointments: [] | null;
+  fetchUsers: (params?: any) => Promise<void>;
+  fetchStaffs: () => Promise<void>;
+  deactivateUser: (id: any) => Promise<void>;
+  activateUser: (id: any) => Promise<void>;
+  getStaffInfo: (id: any) => Promise<void>;
+  createStaff: (data: any) => Promise<void>;
+  updateStaff: (id: any, data: any) => Promise<void>;
+  resetPasswordStaff: (id: any) => Promise<void>;
+};
+
+const defaultContext: AdminContextType = {
+  users: [],
+  staffs: [],
+  appointments: [],
+  fetchUsers: async (params?: any) => {},
+  fetchStaffs: async () => {},
+  deactivateUser: async (id: any) => {},
+  activateUser: async (id: any) => {},
+  getStaffInfo: async (id: any) => {},
+  createStaff: async (data: any) => {},
+  updateStaff: async (id: any, data: any) => {},
+  resetPasswordStaff: async (id: any) => {},
+};
+
+const AdminContext = createContext<AdminContextType>(defaultContext);
+
+export const AdminProvider = ({ children }: { children: ReactNode }) => {
+
+  const [users, setUsers] = useState([]);
+  const [staffs, setStaffs] = useState([]);
+
+  const fetchUsers = async (params?: any) => {
+    const response = await _getUsers(params);
+
+    if (response) {
+      setTimeout(() => {
+        setUsers(response);
+      }, 0)
+    }
+  }
+
+  const fetchStaffs = async () => {
+    const response = await _getStaffs();
+
+    if (response) {
+      setStaffs(response);
+    }
+  }
+
+  const activateUser = async (id: any) => {
+    const response = await _activateUser(id)
+
+    await fetchUsers()
+    await fetchStaffs()
+
+    return response
+  }
+
+  const deactivateUser = async (id: any) => {
+    const response = await _deactivateUser(id)
+
+    await fetchUsers()
+    await fetchStaffs()
+
+    return response
+  }
+
+  const createStaff = async (payload: any) => {
+    const response = await _createStaff(payload)
+
+    await fetchUsers()
+
+    return response
+  }
+
+  const updateStaff = async (id: any, payload: any) => {
+    const response = await _updateStaff(id, payload)
+
+    await fetchUsers()
+
+    return response
+  }
+
+  const resetPasswordStaff = async (id: any) => {
+    const response = await _resetPasswordStaff(id)
+
+    return response
+  }
+
+  const getStaffInfo = async (id: any) => {
+    const response = await _getStaffInfo(id)
+
+    return response
+  }
+
+  const value: AdminContextType = {
+    users,
+    staffs,
+    fetchUsers,
+    fetchStaffs,
+    activateUser,
+    deactivateUser,
+    createStaff,
+    updateStaff,
+    getStaffInfo,
+    resetPasswordStaff,
+  };
+
+  return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
+};
+
+export const useAdmin = () => useContext(AdminContext);

@@ -61,6 +61,16 @@ export const _completeAppointment = async (appointmentId: any) => {
   }
 }
 
+export const _assignStaff = async (appointmentId: any, body: any) => {
+  try {
+    const response = await request(Endpoint().assignStaff(appointmentId), Method.PATCH, body, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+}
+
 export const updateService = async (serviceId: any, formData: any) => {
   try {
     const response = await request(Endpoint().updateService(serviceId), Method.PATCH, formData, null)

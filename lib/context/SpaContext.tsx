@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from 'react';
 import {
+  _assignStaff,
   _cancelAppointment,
   _completeAppointment,
   _confirmAppointment,
@@ -15,16 +16,11 @@ import {
 type SpaContextType = {
   services: [] | null;
   appointments: [] | null;
-  // loading: boolean;
-  // setLoading: any;
-  // signIn: (email: string, password: string) => Promise<boolean | any>;
-  // signUp: (email: string, password: string) => Promise<void>;
-  // signOut: () => Promise<void>;
   fetchAppointments: () => Promise<void>;
   confirmAppointment: (id: any) => Promise<void>;
   cancelAppointment: (id: any) => Promise<void>;
   completeAppointment: (id: any) => Promise<void>;
-  // sendEmailResetPassword: (email: string) => Promise<void>;
+  assignStaff: (id: any, staffId: any) => Promise<void>;
 };
 
 const defaultContext: SpaContextType = {
@@ -34,6 +30,7 @@ const defaultContext: SpaContextType = {
   confirmAppointment: async (id: any) => {},
   cancelAppointment: async (id: any) => {},
   completeAppointment: async (id: any) => {},
+  assignStaff: async (id: any, staffId: any) => {},
 };
 
 const SpaContext = createContext<SpaContextType>(defaultContext);
@@ -41,21 +38,6 @@ const SpaContext = createContext<SpaContextType>(defaultContext);
 export const SpaProvider = ({ children }: { children: ReactNode }) => {
 
   const [appointments, setAppointments] = useState([]);
-
-  useEffect(() => {
-    // const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-    //
-    //   if (firebaseUser) {
-    //     setUser(firebaseUser);
-    //   }
-    //   setLoading(false);
-    //
-    //   console.log('firebaseUser: ', firebaseUser)
-    //
-    // });
-    //
-    // return unsubscribe;
-  }, []);
 
   const fetchAppointments = async () => {
     const response = await getAppointments()
@@ -89,18 +71,21 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     return response
   }
 
+  const assignStaff = async (id: any, staffId: any) => {
+    const response = await _assignStaff(id, {staffId})
+
+    await fetchAppointments()
+
+    return response
+  }
+
   const value: SpaContextType = {
     appointments,
     fetchAppointments,
     confirmAppointment,
     cancelAppointment,
     completeAppointment,
-    // setLoading,
-    // signIn,
-    // signUp,
-    // reSendEmailVerification,
-    // sendEmailResetPassword,
-    // signOut
+    assignStaff
   };
 
   return <SpaContext.Provider value={value}>{children}</SpaContext.Provider>;
