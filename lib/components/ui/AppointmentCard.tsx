@@ -59,7 +59,7 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
   const isStaffAssigned = !!staff.id;
 
   const { confirmAppointment, cancelAppointment, completeAppointment } = useSpa()
-  const { isAdminRole } = useAuth()
+  const { isAdminRole, isStaffRole } = useAuth()
   const { assignStaff } = useSpa()
   const { staffs } = useAdmin()
 
@@ -99,7 +99,7 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
               value={service?.name || '--'}
             />
             {
-              isAdminRole && (
+              (isAdminRole || isStaffRole) && (
                 <InfoItem
                   icon="account"
                   label="Customer"
@@ -143,12 +143,14 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
           }
 
           {
-            isConfirmed && isAdminRole && (
+            isConfirmed && (isAdminRole || isStaffRole) && (
               <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>
 
-                <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={()=> setShowModal(true)}>
-                  {isStaffAssigned ? 'Change Practitioner' : 'Assign Practitioner'}
-                </Button>
+                {
+                  isAdminRole &&  <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={()=> setShowModal(true)}>
+                    {isStaffAssigned ? 'Change Practitioner' : 'Assign Practitioner'}
+                  </Button>
+                }
 
                 <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onComplete}>
                   Complete

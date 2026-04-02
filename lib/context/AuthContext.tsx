@@ -10,32 +10,17 @@ import {_getProfile} from "@/lib/services/api/auth";
 
 
 type AuthContextType = {
-  // user: User | null;
-  // loading: boolean;
-  // setLoading: any;
-  // signIn: (email: string, password: string) => Promise<boolean | any>;
-  // signUp: (email: string, password: string) => Promise<void>;
-  // signOut: () => Promise<void>;
-  // reSendEmailVerification: () => Promise<void>;
-  // sendEmailResetPassword: (email: string) => Promise<void>;
+  user: null;
+  isAdminRole: boolean;
+  isStaffRole: boolean;
+  fetchProfile: () => Promise<void>;
 };
 
 const defaultContext: AuthContextType = {
   user: null,
   fetchProfile: async () => {},
   isAdminRole: false,
-  // loading: false,
-  // signIn: async () => false,
-  // signUp: async () => {
-  // },
-  // signOut: async () => {
-  // },
-  // reSendEmailVerification: async () => {
-  // },
-  // sendEmailResetPassword: async () => {
-  // },
-  // setLoading: async () => {
-  // }
+  isStaffRole: false,
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContext);
@@ -63,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   const isAdminRole = user?.role === 'ADMIN'
+  const isStaffRole = user?.role === 'STAFF'
 
   const value: AuthContextType = {
     user,
@@ -71,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading,
     setLoading,
     isAdminRole,
+    isStaffRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

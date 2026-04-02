@@ -1,9 +1,9 @@
 import {api, Method, request} from "@/lib/services/axios";
 import Endpoint from '@/lib/services/endpoints'
 
-export const getAppointments = async () => {
+export const getAppointments = async (query?: any) => {
   try {
-    const response = await request(Endpoint().getAppointments, Method.GET, null, null)
+    const response = await request(Endpoint().getAppointments, Method.GET, query, null)
 
     return response?.code === 0 ? response?.data : response
   } catch (e) {

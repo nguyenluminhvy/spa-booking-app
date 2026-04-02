@@ -27,6 +27,9 @@ export default function RootLayout() {
         if (userRole === 'USER') {
           push('/(user)/(tabs)/home')
         }
+        if (userRole === 'STAFF') {
+          push('/(staff)/(tabs)/appointments')
+        }
       }
     })()
   }, []);

@@ -67,6 +67,9 @@ export default function Index() {
       if (data?.role === 'USER') {
         router.push('/(user)/(tabs)/home')
       }
+      if (data?.role === 'STAFF') {
+        router.push('/(staff)/(tabs)/appointments')
+      }
 
       await fetchProfile()
     }
