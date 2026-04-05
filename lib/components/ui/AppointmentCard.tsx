@@ -16,12 +16,14 @@ type Appointment = {
   service?: any;
   status?: string;
   price?: number;
+  onCancel?: void;
 };
 
 type Props = {
   data: Appointment;
   disabled?: boolean;
   onPress?: (id: string) => void;
+  onCancel?: (id: string) => void;
 };
 
 const InfoItem = ({
@@ -51,7 +53,7 @@ const InfoItem = ({
   </View>
 );
 
-const AppointmentCard = ({ data, disabled, onPress }: Props) => {
+const AppointmentCard = ({ data, disabled, onPress, onCancel }: Props) => {
   const { id, appointmentTime, staff, status, price, service, user } = data;
 
   const isPending = status === 'PENDING';
@@ -69,8 +71,12 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
     await confirmAppointment(id)
   }
 
-  const onCancel = async () => {
-    await cancelAppointment(id)
+  const onPressCancel = async () => {
+    if (onCancel) {
+      onCancel?.(id)
+    } else {
+      await cancelAppointment(id)
+    }
   }
 
   const onComplete = async () => {
@@ -135,7 +141,7 @@ const AppointmentCard = ({ data, disabled, onPress }: Props) => {
                     </Button>
                   )
                 }
-                <Button compact mode="text" style={{}} textColor={'rgba(234, 57, 67, 1)'} onPress={onCancel}>
+                <Button compact mode="text" style={{}} textColor={'rgba(234, 57, 67, 1)'} onPress={onPressCancel}>
                   Cancel
                 </Button>
               </View>

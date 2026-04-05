@@ -7,19 +7,12 @@ import { Image } from 'expo-image'
 import {router} from "expo-router";
 import {useCallback, useEffect, useState} from "react";
 import {getServices} from "@/lib/services/api/services";
+import {useSpa} from "@/lib/context/SpaContext";
 
 export default function BookingScreen() {
-
-  const [services, setServices] = useState([])
+  const { fetchServices, services } = useSpa()
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchServices = async () => {
-    const data = await getServices();
-
-    if (data?.length > 0) {
-      setServices(data);
-    }
-  }
 
   useEffect(() => {
     ;(async () => {

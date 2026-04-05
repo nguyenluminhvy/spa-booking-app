@@ -80,3 +80,25 @@ export const updateService = async (serviceId: any, formData: any) => {
     return e
   }
 }
+
+export const getUpcomingAppointment = async (query?: any) => {
+  try {
+    const response = await request(Endpoint().getUpcomingAppointment, Method.GET, query, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+};
+
+
+export const getPastAppointment = async (query?: any) => {
+  try {
+    const response = await request(Endpoint().getPastAppointment, Method.GET, query, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+};
+
