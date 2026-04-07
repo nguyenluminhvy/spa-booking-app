@@ -45,13 +45,11 @@ export default () => {
     getUpcomingAppointment: `${baseUrl}/appointments/upcoming`,
     getPastAppointment: `${baseUrl}/appointments/past`,
 
-    // getServiceDetails: (id: string) =>
-    //   `${baseUrl}/services/${id}`,
-    // updateService: (id: string) =>
-    //   `${baseUrl}/services/${id}`,
-
-    // walletDeleteAddress: (id: string) =>
-    //   `${apiUrl}/wallet/withdraw/save-address/${id}`,
+    //dashboard
+    getOverview: `${baseUrl}/dashboard/overview`,
+    getRevenue: `${baseUrl}/dashboard/revenue`,
+    getBookings: `${baseUrl}/dashboard/bookings`,
+    getStatus: `${baseUrl}/dashboard/status`,
 
   }
 }

@@ -22,7 +22,7 @@ export default function RootLayout() {
 
       if (accessToken) {
         if (userRole === 'ADMIN') {
-          push('/(admin)/(tabs)/users')
+          push('/(admin)/(tabs)/dashboard');
         }
         if (userRole === 'USER') {
           push('/(user)/(tabs)/home')
