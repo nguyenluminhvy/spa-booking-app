@@ -254,16 +254,8 @@ export default function DashboardScreen() {
   }, [filterType]);
 
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-      }
-    >
+    <View style={styles.container}>
+
       <Stack.Screen
         options={{
           headerShadowVisible: false,
@@ -319,108 +311,121 @@ export default function DashboardScreen() {
         })}
       </View>
 
-      <View style={{ marginTop: 16 }}>
+      <ScrollView
+        style={{}}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
 
-        <KpiCard
-          title="Revenue"
-          value={overview.revenue}
-          colors={['#967ADC', '#AC92EC']}
-        />
 
-        <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ marginTop: 16 }}>
+
           <KpiCard
-            title="Bookings"
+            title="Revenue"
             value={overview.revenue}
-            colors={['#3BAFDA', '#4FC1E9']}
+            colors={['#967ADC', '#AC92EC']}
           />
 
-          <KpiCard
-            title="Users"
-            value={overview.newUsers}
-            colors={['#FCBB42', '#FFCE54']}
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <KpiCard
+              title="Bookings"
+              value={overview.revenue}
+              colors={['#3BAFDA', '#4FC1E9']}
+            />
+
+            <KpiCard
+              title="Users"
+              value={overview.newUsers}
+              colors={['#FCBB42', '#FFCE54']}
+            />
+          </View>
+
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <KpiCard
+              title="Done"
+              value={overview.completed}
+              trend="+10%"
+              colors={['#8CC152', '#A0D468']}
+            />
+
+            <KpiCard
+              title="Cancelled"
+              value={overview.cancelled}
+              trend="-2%"
+              colors={['#DA4453', '#ED5565']}
+            />
+          </View>
+        </View>
+
+
+
+
+        <View style={styles.cardChart}>
+          <Text style={styles.titleChart}>Revenue</Text>
+
+          <LineChart
+            data={{
+              labels: revenue.labels,
+              datasets: [
+                {
+                  data: revenue.data,
+                },
+              ]
+            }}
+            width={width - 32}
+            height={180}
+            chartConfig={chartConfig}
+            bezier
+            style={styles.chart}
           />
         </View>
 
-        <View style={{ flexDirection: 'row', gap: 12 }}>
-          <KpiCard
-            title="Done"
-            value={overview.completed}
-            trend="+10%"
-            colors={['#8CC152', '#A0D468']}
-          />
+        <View style={[styles.cardChart, {paddingRight: 32}]}>
+          <Text style={styles.titleChart}>Bookings</Text>
 
-          <KpiCard
-            title="Cancelled"
-            value={overview.cancelled}
-            trend="-2%"
-            colors={['#DA4453', '#ED5565']}
+          <BarChart
+            data={{
+              labels: bookings.labels,
+              datasets: [
+                {
+                  data: bookings.data,
+                },
+              ]
+            }}
+            width={width - 36}
+            height={180}
+            chartConfig={{
+              ...chartConfig,
+              color: () => '#93C5FD',
+            }}
+            style={styles.chart}
+            yAxisLabel={''}
+            yAxisSuffix={''}
           />
         </View>
-      </View>
 
+        <View style={styles.cardChart}>
+          <Text style={styles.titleChart}>Status</Text>
 
+          <PieChart
+            data={statusData}
+            width={width - 32}
+            height={180}
+            accessor="population"
+            backgroundColor="transparent"
+            chartConfig={chartConfig}
+            paddingLeft={'16'}
+            absolute
+          />
+        </View>
 
-
-      <View style={styles.cardChart}>
-        <Text style={styles.titleChart}>Revenue</Text>
-
-        <LineChart
-          data={{
-            labels: revenue.labels,
-            datasets: [
-              {
-                data: revenue.data,
-              },
-            ]
-          }}
-          width={width - 32}
-          height={180}
-          chartConfig={chartConfig}
-          bezier
-          style={styles.chart}
-        />
-      </View>
-
-      <View style={[styles.cardChart, {paddingRight: 32}]}>
-        <Text style={styles.titleChart}>Bookings</Text>
-
-        <BarChart
-          data={{
-            labels: bookings.labels,
-            datasets: [
-              {
-                data: bookings.data,
-              },
-            ]
-          }}
-          width={width - 36}
-          height={180}
-          chartConfig={{
-            ...chartConfig,
-            color: () => '#93C5FD',
-          }}
-          style={styles.chart}
-          yAxisLabel={''}
-          yAxisSuffix={''}
-        />
-      </View>
-
-      <View style={styles.cardChart}>
-        <Text style={styles.titleChart}>Status</Text>
-
-        <PieChart
-          data={statusData}
-          width={width - 32}
-          height={180}
-          accessor="population"
-          backgroundColor="transparent"
-          chartConfig={chartConfig}
-          paddingLeft={'16'}
-          absolute
-        />
-      </View>
-
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
