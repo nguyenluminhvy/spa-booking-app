@@ -17,6 +17,8 @@ type Appointment = {
   status?: string;
   price?: number;
   onCancel?: void;
+  onConfirmed?: void;
+  onCompleted?: void;
 };
 
 type Props = {
@@ -25,6 +27,8 @@ type Props = {
   onPress?: (id: string) => void;
   onCancel?: (id: string) => void;
   onSelectStaff?: (id: any, staffId: any) => void;
+  onConfirmed?: () => void;
+  onCompleted?: () => void;
 };
 
 const InfoItem = ({
@@ -54,7 +58,7 @@ const InfoItem = ({
   </View>
 );
 
-const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff }: Props) => {
+const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onConfirmed, onCompleted }: Props) => {
   const { id, appointmentTime, staff, status, price, service, user } = data;
 
   const isPending = status === 'PENDING';
@@ -70,6 +74,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff }: P
 
   const onConfirm = async () => {
     await confirmAppointment(id)
+    onConfirmed?.()
   }
 
   const onPressCancel = async () => {
@@ -82,6 +87,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff }: P
 
   const onComplete = async () => {
     await completeAppointment(id)
+    onCompleted?.()
   }
 
   return (

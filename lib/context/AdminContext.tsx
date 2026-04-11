@@ -13,6 +13,7 @@ import {
   _getUsers, _resetPasswordStaff,
   _updateStaff
 } from "@/lib/services/api/users";
+import {useAuth} from "@/lib/context/AuthContext";
 
 type AdminContextType = {
   users: [] | null;
@@ -45,16 +46,19 @@ const defaultContext: AdminContextType = {
 const AdminContext = createContext<AdminContextType>(defaultContext);
 
 export const AdminProvider = ({ children }: { children: ReactNode }) => {
+  const {setLoading} = useAuth()
 
   const [users, setUsers] = useState([]);
   const [staffs, setStaffs] = useState([]);
 
   const fetchUsers = async (params?: any) => {
+    setLoading(true)
     const response = await _getUsers(params);
 
     if (response) {
       setTimeout(() => {
         setUsers(response);
+        setLoading(false)
       }, 0)
     }
   }

@@ -1,6 +1,6 @@
 import {StyleSheet, View} from 'react-native';
 import {AnimatedFAB, Button, Text} from "react-native-paper";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
@@ -21,8 +21,7 @@ const BUTTONS = [
 
 export default function UsersScreen() {
   const { fetchUsers, users } = useAdmin()
-
-  console.log('users', users)
+  const [, startTransition] = useTransition();
 
   const [filterType, setFilterType] = useState('ALL');
   const [filterParams, setFilterParams] = useState({});
@@ -30,8 +29,8 @@ export default function UsersScreen() {
   const listRef = useRef<any>(null);
 
   useEffect(() => {
-    fetchUsers(filterParams)
-  }, [filterParams])
+    fetchUsers()
+  }, [])
 
   useEffect(() => {
     listRef.current?.scrollToOffset({
@@ -65,11 +64,21 @@ export default function UsersScreen() {
               onPress={() => {
                 setFilterType(button.type);
                 if (button.type === 'STAFF') {
-                  setFilterParams({
-                    role: 'STAFF'
-                  })
+                  startTransition(() => {
+                    setFilterParams({
+                      role: 'STAFF'
+                    })
+                    fetchUsers({
+                      role: 'STAFF'
+                    })
+                  });
+
                 } else {
-                  setFilterParams({})
+                  startTransition(() => {
+                    setFilterParams({})
+                    fetchUsers({})
+                  });
+
                 }
               }}
             >

@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { Text } from "react-native-paper";
-import { useRouter } from "expo-router";
+import {router, useRouter} from "expo-router";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -17,6 +17,7 @@ import AppointmentCard from "@/lib/components/ui/AppointmentCard";
 import { useAuth } from "@/lib/context/AuthContext";
 import { getServices } from "@/lib/services/api/services";
 import { getUpcomingAppointment } from "@/lib/services/api/appointments";
+import {IMAGES} from "@/lib/assets/images";
 
 type Service = {
   id: string;
@@ -25,8 +26,18 @@ type Service = {
   imageUrl: string;
 };
 
-const ServiceItem = ({ item }: { item: Service }) => (
-  <View style={styles.serviceItem}>
+const ServiceItem = ({ item }: { item: Service }) => {
+
+  const goToSelectTime = () => {
+    router.push({
+      pathname: '/select-time',
+      params: {
+        serviceId: item?.id,
+      }
+    })
+  }
+
+  return <View style={styles.serviceItem}>
     <Image
       source={item.imageUrl}
       contentFit="cover"
@@ -41,13 +52,13 @@ const ServiceItem = ({ item }: { item: Service }) => (
           {item.price?.toLocaleString()}₫
         </Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={goToSelectTime}>
           <Text style={styles.link}>Book now</Text>
         </TouchableOpacity>
       </View>
     </View>
   </View>
-);
+};
 
 export default function HomeScreen() {
   const { navigate } = useRouter();
@@ -87,6 +98,8 @@ export default function HomeScreen() {
       setRefreshing(false);
     }, 1000);
   }, []);
+
+
 
   return (
     <ScrollView
@@ -139,7 +152,36 @@ export default function HomeScreen() {
               <AppointmentCard key={item.id} data={item} />
             ))
           ) : (
-            <Text style={styles.emptyText}>No upcoming appointments</Text>
+            <View style={{
+              flex: 1,
+              paddingBottom: 40,
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <Image
+                style={{
+                  width: "100%",
+                  height: 50,
+                }}
+                source={IMAGES.nodata}
+                contentFit="contain"
+              />
+              <Text style={styles.emptyText}>No upcoming appointments</Text>
+
+              <TouchableOpacity
+                style={{
+                borderWidth: 0.5,
+                borderStyle: 'dashed',
+                borderColor: '#006EE9',
+                borderRadius: 8,
+                padding: 8,
+                paddingHorizontal: 12
+              }} onPress={() => router.navigate('/(user)/(tabs)/booking')}
+              >
+                <Text style={styles.link}>Book now</Text>
+              </TouchableOpacity>
+
+            </View>
           )}
         </View>
       </View>

@@ -16,6 +16,7 @@ type AuthContextType = {
   signUp: (data: any) => Promise<void>;
   updatePassword: (oldPassword: any, newPassword: any) => Promise<void>;
   updateProfile: (name: any, phone: any) => Promise<void>;
+  loading: boolean
   setLoading: any
 };
 
@@ -29,6 +30,7 @@ const defaultContext: AuthContextType = {
   updateProfile: async (name: any, phone: any) => {},
   setLoading: async () => {
   },
+  loading: false
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContext);

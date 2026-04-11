@@ -1,11 +1,13 @@
 import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 
 import { View } from 'react-native';
-import {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
 import {FlashList} from "@shopify/flash-list";
 import AppointmentCard from "@/lib/components/ui/AppointmentCard";
-import {Button} from "react-native-paper";
+import {Button, Text} from "react-native-paper";
+import {Image} from "expo-image";
+import {IMAGES} from "@/lib/assets/images";
 
 const BUTTONS = [
   {
@@ -114,6 +116,24 @@ export default function AppointmentsScreen() {
             onRefresh={onRefresh}
           />
         }
+        ListEmptyComponent={<View style={{
+          flex: 1,
+          paddingTop: 100,
+          alignItems: 'center',
+          gap: 8
+        }}>
+          <Image
+            style={{
+              width: "100%",
+              height: 50,
+            }}
+            source={IMAGES.nodata}
+            contentFit="contain"
+          />
+          <Text variant={'labelMedium'}>
+            No data
+          </Text>
+        </View>}
       />
     </View>
   );

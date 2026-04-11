@@ -2,10 +2,10 @@ import {View} from "react-native";
 import React from "react";
 // import {useAuth} from "@/lib/context/AuthContext";
 import {ActivityIndicator} from "react-native-paper";
+import {useAuth} from "@/lib/context/AuthContext";
 
 export function LoadingIndicator() {
-  // const {loading} = useAuth()
-  const loading = false;
+  const {loading} = useAuth()
 
   if (!loading) return null
 

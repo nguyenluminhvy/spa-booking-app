@@ -38,21 +38,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: '',
-          // headerRight: () => (
-          //   <Link href="/modal" asChild>
-          //     <Pressable style={{ marginRight: 15 }}>
-          //       {({ pressed }) => (
-          //         <SymbolView
-          //           name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-          //           size={25}
-          //           tintColor={Colors[colorScheme].text}
-          //           style={{ opacity: pressed ? 0.5 : 1 }}
-          //         />
-          //       )}
-          //     </Pressable>
-          //   </Link>
-          // ),
+          title: 'Home',
+          headerTitle: '',
         }}
       />
       <Tabs.Screen

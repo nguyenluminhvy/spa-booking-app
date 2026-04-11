@@ -102,7 +102,7 @@ export default function Index() {
               <Text variant="displayMedium" style={{
                 fontWeight: 'bold',
                 color: '#105CDB'
-              }}>Easy-Flower</Text>
+              }}>Spa-Y</Text>
               <Text variant="headlineSmall" style={{
                 fontWeight: 'semibold',
                 color: '#9A9A9A'

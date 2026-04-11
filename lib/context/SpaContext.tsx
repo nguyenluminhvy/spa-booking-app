@@ -13,6 +13,7 @@ import {
   getAppointments
 } from "@/lib/services/api/appointments";
 import {getServices} from "@/lib/services/api/services";
+import {useAuth} from "@/lib/context/AuthContext";
 
 type SpaContextType = {
   services: [] | null;
@@ -47,17 +48,20 @@ const defaultContext: SpaContextType = {
 const SpaContext = createContext<SpaContextType>(defaultContext);
 
 export const SpaProvider = ({ children }: { children: ReactNode }) => {
+  const {setLoading} = useAuth()
 
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
   const [filterParams, setFilterParams] = useState({});
 
   const fetchAppointments = async (query?: any) => {
+    setLoading(true)
     const response = await getAppointments(query)
 
     if (response) {
       setAppointments(response);
     }
+    setLoading(false)
   }
 
   const fetchServices = async (query: any) => {
@@ -70,8 +74,6 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
 
   const confirmAppointment = async (id: any) => {
     const response = await _confirmAppointment(id)
-
-    await fetchAppointments()
 
     return response
   }
@@ -86,8 +88,6 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
 
   const completeAppointment = async (id: any) => {
     const response = await _completeAppointment(id)
-
-    await fetchAppointments()
 
     return response
   }
