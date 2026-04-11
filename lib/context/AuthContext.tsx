@@ -5,8 +5,7 @@ import {
   useState,
   ReactNode, useCallback,
 } from 'react';
-import {getStringData} from "@/lib/utils/AsyncStorage";
-import {_getProfile} from "@/lib/services/api/auth";
+import {_getProfile, _signUp, _updatePassword, _updateProfile} from "@/lib/services/api/auth";
 
 
 type AuthContextType = {
@@ -14,6 +13,10 @@ type AuthContextType = {
   isAdminRole: boolean;
   isStaffRole: boolean;
   fetchProfile: () => Promise<void>;
+  signUp: (data: any) => Promise<void>;
+  updatePassword: (oldPassword: any, newPassword: any) => Promise<void>;
+  updateProfile: (name: any, phone: any) => Promise<void>;
+  setLoading: any
 };
 
 const defaultContext: AuthContextType = {
@@ -21,6 +24,11 @@ const defaultContext: AuthContextType = {
   fetchProfile: async () => {},
   isAdminRole: false,
   isStaffRole: false,
+  signUp: async (data: any) => {},
+  updatePassword: async (oldPassword: any, newPassword: any) => {},
+  updateProfile: async (name: any, phone: any) => {},
+  setLoading: async () => {
+  },
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContext);
@@ -37,7 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (response?.id) {
       setUser(response);
     }
-
   }, []);
 
   useEffect(() => {
@@ -46,6 +53,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })()
   }, []);
 
+  const signUp = async (payload: any) => {
+    setLoading(true);
+    try {
+      const newUser = await _signUp(payload);
+
+      return newUser
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePassword = async (oldPassword: any, newPassword: any) => {
+    setLoading(true);
+    try {
+      const payload = {
+        oldPassword,
+        newPassword
+      }
+
+      return await _updatePassword(payload);
+
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateProfile = async (name: any, phone: any) => {
+    setLoading(true);
+    try {
+      const payload = {
+        name,
+        phone
+      }
+
+      return await _updateProfile(payload);
+
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const isAdminRole = user?.role === 'ADMIN'
   const isStaffRole = user?.role === 'STAFF'
@@ -58,6 +111,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading,
     isAdminRole,
     isStaffRole,
+    signUp,
+    updatePassword,
+    updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

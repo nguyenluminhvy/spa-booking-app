@@ -37,15 +37,6 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
-        name="verify-account"
-        options={{
-          headerTitle: '',
-          contentStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
-      <Stack.Screen
         name="forgot-password"
         options={{
           headerTitle: '',
@@ -55,8 +46,22 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
-        name="(homeTabs)"
-        options={{ headerShown: false }}
+        name="edit-profile"
+        options={{
+          headerTitle: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="change-password"
+        options={{
+          headerTitle: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
       />
       <Stack.Screen
         name="(admin)"

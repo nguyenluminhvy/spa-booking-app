@@ -7,6 +7,9 @@ export default () => {
     //auth
     signIn: `${baseUrl}/auth/login`,
     profile: `${baseUrl}/auth/profile`,
+    signUp: `${baseUrl}/auth/register`,
+    changePassword: `${baseUrl}/auth/change-password`,
+    updateProfile: `${baseUrl}/auth/update-profile`,
 
     //user
     users: `${baseUrl}/users`,

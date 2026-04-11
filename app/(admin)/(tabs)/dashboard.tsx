@@ -334,12 +334,12 @@ export default function DashboardScreen() {
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <KpiCard
               title="Bookings"
-              value={overview.revenue}
+              value={overview.appointments}
               colors={['#3BAFDA', '#4FC1E9']}
             />
 
             <KpiCard
-              title="Users"
+              title="New Users"
               value={overview.newUsers}
               colors={['#FCBB42', '#FFCE54']}
             />

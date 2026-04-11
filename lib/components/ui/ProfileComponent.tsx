@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Avatar, Text } from "react-native-paper";
-import { useRouter } from "expo-router";
+import {router, useRouter} from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 
@@ -77,8 +77,12 @@ export default function ProfileComponent() {
       </View>
 
       <View style={styles.menuContainer}>
-        <MenuItem label="Edit Profile" icon="pencil" />
-        <MenuItem label="Change Password" icon="lock-closed" />
+        <MenuItem label="Edit Profile" icon="pencil" onPress={() => {
+          router.push("/edit-profile")
+        }}/>
+        <MenuItem label="Change Password" icon="lock-closed" onPress={() => {
+          router.push("/change-password")
+        }}/>
       </View>
 
       <View style={styles.footer}>
