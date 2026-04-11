@@ -1,6 +1,5 @@
 import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { View } from 'react-native';
 import {useCallback, useEffect, useRef, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";

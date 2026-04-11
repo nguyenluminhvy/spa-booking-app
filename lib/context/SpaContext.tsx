@@ -21,6 +21,7 @@ type SpaContextType = {
   fetchServices: (query?: any) => Promise<void>;
   filterByToday: () => Promise<void>;
   filterByDone: () => Promise<void>;
+  filterByStatus: (status: any) => Promise<void>;
   initAppointments: () => Promise<void>;
   confirmAppointment: (id: any) => Promise<void>;
   cancelAppointment: (id: any) => Promise<void>;
@@ -35,6 +36,7 @@ const defaultContext: SpaContextType = {
   fetchServices: async (query?: any) => {},
   filterByToday: async () => {},
   filterByDone: async () => {},
+  filterByStatus: async (status: any) => {},
   initAppointments: async () => {},
   confirmAppointment: async (id: any) => {},
   cancelAppointment: async (id: any) => {},
@@ -112,6 +114,13 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     }, 0)
   }
 
+  const filterByStatus = async (status: any) => {
+    const filterParams = { status: status }
+    setTimeout(() => {
+      fetchAppointments(filterParams)
+    }, 0)
+  }
+
   const initAppointments = async () => {
     fetchAppointments({})
   }
@@ -127,6 +136,7 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     assignStaff,
     filterByToday,
     filterByDone,
+    filterByStatus,
     initAppointments,
   };
 

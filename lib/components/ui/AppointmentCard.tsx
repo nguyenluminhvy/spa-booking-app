@@ -24,6 +24,7 @@ type Props = {
   disabled?: boolean;
   onPress?: (id: string) => void;
   onCancel?: (id: string) => void;
+  onSelectStaff?: (id: any, staffId: any) => void;
 };
 
 const InfoItem = ({
@@ -53,7 +54,7 @@ const InfoItem = ({
   </View>
 );
 
-const AppointmentCard = ({ data, disabled, onPress, onCancel }: Props) => {
+const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff }: Props) => {
   const { id, appointmentTime, staff, status, price, service, user } = data;
 
   const isPending = status === 'PENDING';
@@ -174,7 +175,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel }: Props) => {
         currentStaffId={staff?.id}
         onClose={() => setShowModal(false)}
         onSelect={(staffId) => {
-          assignStaff(id, staffId);
+          onSelectStaff?.(id, staffId)
           setShowModal(false);
         }}
       />
