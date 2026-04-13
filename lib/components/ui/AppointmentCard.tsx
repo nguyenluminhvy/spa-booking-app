@@ -7,6 +7,7 @@ import {useSpa} from "@/lib/context/SpaContext";
 import {useAuth} from "@/lib/context/AuthContext";
 import AssignStaffModal from "@/lib/components/ui/AssignStaffModal";
 import {useAdmin} from "@/lib/context/AdminContext";
+import {formatPrice} from "@/lib/utils/helper";
 
 type Appointment = {
   id: string;
@@ -135,7 +136,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
           <InfoItem
             icon="cash-check"
             label="Total Amount"
-            value={service?.price ? `${service?.price.toLocaleString()}₫` : '--'}
+            value={service?.price ? `${formatPrice(service?.price)}` : '--'}
           />
 
           {

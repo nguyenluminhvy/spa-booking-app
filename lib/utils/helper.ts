@@ -14,3 +14,6 @@ export function getEmailName(email: string): string {
 
   return email.split('@')[0];
 }
+
+export const formatPrice = (price: number) =>
+  Number(price).toLocaleString("vi-VN") + " VND";

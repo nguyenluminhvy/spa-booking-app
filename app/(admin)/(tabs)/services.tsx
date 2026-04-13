@@ -7,6 +7,7 @@ import { Image } from 'expo-image'
 import {router} from "expo-router";
 import {useCallback, useEffect, useState} from "react";
 import {getServices} from "@/lib/services/api/services";
+import {formatPrice} from "@/lib/utils/helper";
 
 export default function ServicesScreen() {
 
@@ -66,7 +67,7 @@ export default function ServicesScreen() {
           }}>
             <Text variant={'labelLarge'} style={{fontWeight: 'bold'}}>{item.name}</Text>
             <Text variant={"labelSmall"} style={{color: '#777777'}}>{item.description}</Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>Price: <Text style={{ fontWeight: 'bold'}}>{item.price}</Text></Text>
+            <Text variant={"labelSmall"} style={{color: '#777777'}}>Price: <Text style={{ fontWeight: 'bold'}}>{formatPrice(item.price)}</Text></Text>
             <Text variant={"labelSmall"} style={{color: '#777777'}}>Duration: <Text style={{ fontWeight: 'bold'}}>{item.duration}p</Text></Text>
           </View>
 

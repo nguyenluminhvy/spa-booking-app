@@ -39,7 +39,7 @@ const MenuItem = ({
 
 export default function ProfileComponent() {
   const { navigate } = useRouter();
-  const { user } = useAuth();
+  const { user, isStaffRole, isAdminRole } = useAuth();
 
   const initials = user?.name
     ?.split(" ")
@@ -77,9 +77,14 @@ export default function ProfileComponent() {
       </View>
 
       <View style={styles.menuContainer}>
-        <MenuItem label="Edit Profile" icon="pencil" onPress={() => {
-          router.push("/edit-profile")
-        }}/>
+        {
+          !isAdminRole || !isStaffRole && (
+            <MenuItem label="Edit Profile" icon="pencil" onPress={() => {
+              router.push("/edit-profile")
+            }}/>
+          )
+        }
+
         <MenuItem label="Change Password" icon="lock-closed" onPress={() => {
           router.push("/change-password")
         }}/>

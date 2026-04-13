@@ -2,16 +2,14 @@ import {RefreshControl, ScrollView, StyleSheet, TouchableOpacity, useWindowDimen
 
 import { Text, View } from '@/components/Themed';
 import {Button, SegmentedButtons} from "react-native-paper";
-import {removeStringData} from "@/lib/utils/AsyncStorage";
 import {Stack, useRouter} from "expo-router";
 import React, {useCallback, useEffect, useState} from "react";
 import {Ionicons} from "@expo/vector-icons";
 import {useAuth} from "@/lib/context/AuthContext";
 import {LinearGradient} from "expo-linear-gradient";
 import {BarChart, LineChart, PieChart,} from "react-native-chart-kit";
-import {getServices} from "@/lib/services/api/services";
-import {getUpcomingAppointment} from "@/lib/services/api/appointments";
 import {_getBookings, _getOverview, _getRevenue, _getStatus} from "@/lib/services/api/dashboard";
+import {formatPrice} from "@/lib/utils/helper";
 
 const BUTTONS = [
   {
@@ -29,67 +27,6 @@ const BUTTONS = [
   {
     label: "All",
     type: 'all',
-  },
-];
-
-// const revenueData = {
-//   labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-//   datasets: [
-//     {
-//       data: [120,200,150,300,250,400,350],
-//     },
-//   ],
-// };
-
-
-const revenueData = {
-  labels: ["1","3","5","7","9","13","15"],
-  datasets: [
-    {
-      data: [100,150,250,350,180,280,350],
-    },
-  ],
-};
-
-
-
-const bookingData = {
-  labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-  datasets: [
-    {
-      data: [5,8,6,10,7,20,30],
-    },
-  ],
-};
-
-const pieData = [
-  {
-    name: 'Pending',
-    population: 5,
-    color: '#FCBB42',
-    legendFontColor: '#333',
-    legendFontSize: 12,
-  },
-  {
-    name: 'Confirmed',
-    population: 10,
-    color: '#3BAFDA',
-    legendFontColor: '#333',
-    legendFontSize: 12,
-  },
-  {
-    name: 'Done',
-    population: 20,
-    color: '#8CC152',
-    legendFontColor: '#333',
-    legendFontSize: 12,
-  },
-  {
-    name: 'Cancelled',
-    population: 2,
-    color: '#DA4453',
-    legendFontColor: '#333',
-    legendFontSize: 12,
   },
 ];
 
@@ -161,7 +98,7 @@ const KpiCard = ({ icon, title, value, trend, isUp, colors }) => {
 
 export default function DashboardScreen() {
   const { navigate } = useRouter()
-  const { user } = useAuth();
+  const { user, setLoading } = useAuth();
 
   const {width} = useWindowDimensions()
 
@@ -219,7 +156,7 @@ export default function DashboardScreen() {
   const fetchData = useCallback(async (range: any) => {
     setFilterType(range)
     try {
-      // setLoading(true);
+      setLoading(true);
 
       const [overview, revenue, bookings, statusResponse] = await Promise.all([
         _getOverview({ range: range }),
@@ -237,7 +174,7 @@ export default function DashboardScreen() {
     } catch (error) {
       console.log("Fetch error:", error);
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   }, []);
 
@@ -327,7 +264,7 @@ export default function DashboardScreen() {
 
           <KpiCard
             title="Revenue"
-            value={overview.revenue}
+            value={formatPrice(overview.revenue)}
             colors={['#967ADC', '#AC92EC']}
           />
 
@@ -395,7 +332,8 @@ export default function DashboardScreen() {
                 {
                   data: bookings.data,
                 },
-              ]
+              ],
+
             }}
             width={width - 36}
             height={180}

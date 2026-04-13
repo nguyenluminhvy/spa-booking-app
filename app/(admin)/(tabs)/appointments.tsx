@@ -1,6 +1,5 @@
 import {RefreshControl, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { View, Text } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
@@ -39,7 +38,7 @@ export default function AppointmentsScreen() {
   const { appointments, fetchAppointments, filterByStatus } = useSpa()
   const { fetchStaffs } = useAdmin()
 
-  const [filterType, setFilterType] = useState('ALL');
+  const [filterType, setFilterType] = useState('');
 
   const [refreshing, setRefreshing] = useState(false);
   const listRef = useRef<any>(null);
