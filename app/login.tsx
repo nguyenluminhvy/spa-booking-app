@@ -13,7 +13,7 @@ import {storeStringData} from "@/lib/utils/AsyncStorage";
 import {useAuth} from "@/lib/context/AuthContext";
 
 export default function Index() {
-  const { fetchProfile } = useAuth()
+  const { fetchProfile, setLoading } = useAuth()
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -81,9 +81,11 @@ export default function Index() {
     if (!isValid) return
 
     try {
+      setLoading(true)
       const response = await signInFn({
         email, password
       })
+
 
       if (response?.accessToken) {
         await handleLoginSuccess(response)
@@ -91,6 +93,8 @@ export default function Index() {
     } catch (e) {
       // const errorMessage = getFirebaseAdminErrorMessage(e?.code)
       // setErrorMessage(errorMessage)
+    } finally {
+      setLoading(false)
     }
   }
 

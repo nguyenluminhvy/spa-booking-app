@@ -5,7 +5,14 @@ import {
   useState,
   ReactNode, useCallback,
 } from 'react';
-import {_getProfile, _signUp, _updatePassword, _updateProfile} from "@/lib/services/api/auth";
+import {
+  _confirmOTPResetPassword,
+  _getProfile, _resetPassword,
+  _sendOTPResetPassword,
+  _signUp,
+  _updatePassword,
+  _updateProfile
+} from "@/lib/services/api/auth";
 
 
 type AuthContextType = {
@@ -14,6 +21,9 @@ type AuthContextType = {
   isStaffRole: boolean;
   fetchProfile: () => Promise<void>;
   signUp: (data: any) => Promise<void>;
+  sendOTPResetPassword: (email: any) => Promise<void>;
+  confirmOTPResetPassword: (email: any, otp: any) => Promise<void>;
+  resetPassword: (resetToken: any, newPassword: any) => Promise<void>;
   updatePassword: (oldPassword: any, newPassword: any) => Promise<void>;
   updateProfile: (name: any, phone: any) => Promise<void>;
   loading: boolean
@@ -26,6 +36,9 @@ const defaultContext: AuthContextType = {
   isAdminRole: false,
   isStaffRole: false,
   signUp: async (data: any) => {},
+  sendOTPResetPassword: async (email: any) => {},
+  confirmOTPResetPassword: async (email: any, otp: any) => {},
+  resetPassword: async (resetToken: any, newPassword: any) => {},
   updatePassword: async (oldPassword: any, newPassword: any) => {},
   updateProfile: async (name: any, phone: any) => {},
   setLoading: async () => {
@@ -102,6 +115,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const sendOTPResetPassword = async (email: any) => {
+    setLoading(true);
+    try {
+      const payload = {
+        email
+      }
+
+      return await _sendOTPResetPassword(payload);
+
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmOTPResetPassword = async (email: any, otp: any) => {
+    setLoading(true);
+    try {
+      const payload = {
+        email,
+        otp
+      }
+
+      return await _confirmOTPResetPassword(payload);
+
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const resetPassword = async (resetToken: any, newPassword: any) => {
+    setLoading(true);
+    try {
+      const payload = {
+        resetToken,
+        newPassword
+      }
+
+      return await _resetPassword(payload);
+
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const isAdminRole = user?.role === 'ADMIN'
   const isStaffRole = user?.role === 'STAFF'
 
@@ -116,6 +180,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signUp,
     updatePassword,
     updateProfile,
+    sendOTPResetPassword,
+    confirmOTPResetPassword,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

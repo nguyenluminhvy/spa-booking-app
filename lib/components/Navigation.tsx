@@ -46,6 +46,24 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
+        name="confirm-otp"
+        options={{
+          headerTitle: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="reset-password"
+        options={{
+          headerTitle: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
         name="edit-profile"
         options={{
           headerTitle: '',

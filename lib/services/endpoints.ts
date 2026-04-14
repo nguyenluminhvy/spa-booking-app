@@ -10,6 +10,9 @@ export default () => {
     signUp: `${baseUrl}/auth/register`,
     changePassword: `${baseUrl}/auth/change-password`,
     updateProfile: `${baseUrl}/auth/update-profile`,
+    sentOTP: `${baseUrl}/auth/forgot-password`,
+    confirmOTP: `${baseUrl}/auth/confirm-otp`,
+    resetPassword: `${baseUrl}/auth/reset-password`,
 
     //user
     users: `${baseUrl}/users`,

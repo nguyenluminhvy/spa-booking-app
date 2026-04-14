@@ -131,7 +131,9 @@ export default function HomeScreen() {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Services</Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            router.navigate('/(user)/(tabs)/booking')
+          }}>
             <Text style={styles.link}>See All</Text>
           </TouchableOpacity>
         </View>

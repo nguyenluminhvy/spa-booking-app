@@ -50,3 +50,33 @@ export const _updateProfile = async (data: any) => {
     return e
   }
 }
+
+export const _sendOTPResetPassword = async (data: any) => {
+  try {
+    const response = await request(Endpoint().sentOTP, Method.POST, data, null)
+
+    return response
+  } catch (e) {
+    return e
+  }
+}
+
+export const _confirmOTPResetPassword = async (data: any) => {
+  try {
+    const response = await request(Endpoint().confirmOTP, Method.POST, data, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+}
+
+export const _resetPassword = async (data: any) => {
+  try {
+    const response = await request(Endpoint().resetPassword, Method.POST, data, null)
+
+    return response
+  } catch (e) {
+    return e
+  }
+}

@@ -78,7 +78,7 @@ export default function ProfileComponent() {
 
       <View style={styles.menuContainer}>
         {
-          !isAdminRole || !isStaffRole && (
+          (!isAdminRole || !isStaffRole) && (
             <MenuItem label="Edit Profile" icon="pencil" onPress={() => {
               router.push("/edit-profile")
             }}/>
