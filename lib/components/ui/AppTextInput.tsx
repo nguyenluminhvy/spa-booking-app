@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-// import { Icon, type InputProps as RNElementInputProps } from '@rneui/base'
 import { useTheme } from '@react-navigation/native'
 import {
   Animated,
@@ -17,12 +16,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-// import AppText from '@Components/AppText.tsx'
-// import { FontSizes, ResponsiveHeight } from '@Theme'
 import {isIos} from "@/lib/utils/helper";
-// import { SVG_AUTH } from '@Assets/Images/Svg/Auth'
-// import { SVG_WALLET } from '@Assets/Images/Svg/Wallet'
 import { Text, Icon, MD3Colors } from "react-native-paper";
+import {Ionicons} from "@expo/vector-icons";
 
 interface IInputProps extends RNTextInputProps {
   isMobileNumberInput?: boolean
@@ -159,33 +155,22 @@ export const AppTextInput = forwardRef<RNTextInput, IInputProps>(
             {...inputProp}
           />
           {RightComponent}
-          {/*{rightText && (*/}
-          {/*  <TouchableOpacity*/}
-          {/*    style={{ paddingHorizontal: 12 }}*/}
-          {/*    activeOpacity={onRightTextPress ? 0.2 : 1}*/}
-          {/*    onPress={onRightTextPress}*/}
-          {/*  >*/}
-          {/*    <AppText style={[styles.rightText, rightTextStyle]}>*/}
-          {/*      {rightText}*/}
-          {/*    </AppText>*/}
-          {/*  </TouchableOpacity>*/}
-          {/*)}*/}
 
-          {/*{secureTextEntry && (*/}
-          {/*  <View style={{ paddingHorizontal: 8 }}>*/}
-          {/*    <TouchableOpacity*/}
-          {/*      onPress={() => {*/}
-          {/*        setIsShowPassword(!isShowPassword)*/}
-          {/*      }}*/}
-          {/*    >*/}
-          {/*      {isShowPassword ? (*/}
-          {/*        <SVG_WALLET.EyeSplashBlackSVG />*/}
-          {/*      ) : (*/}
-          {/*        <SVG_WALLET.EyeBlackSVG />*/}
-          {/*      )}*/}
-          {/*    </TouchableOpacity>*/}
-          {/*  </View>*/}
-          {/*)}*/}
+          {secureTextEntry && (
+            <View style={{ paddingHorizontal: 8 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsShowPassword(!isShowPassword)
+                }}
+              >
+                {isShowPassword ? (
+                  <Ionicons name={'eye-off'} size={20} color={'grey'}/>
+                ) : (
+                  <Ionicons name={'eye'} size={20} color={'grey'}/>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
         </Animated.View>
 
         {errorMessage?.length > 0 && (

@@ -106,6 +106,7 @@ export default function Index() {
               </View>
 
               <AppTextInput
+                keyboardType={"numeric"}
                 maxLength={6}
                 autoCapitalize="none"
                 placeholder="Code"
