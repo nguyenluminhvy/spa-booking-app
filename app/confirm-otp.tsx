@@ -6,19 +6,33 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import {Button, Text} from "react-native-paper";
 import {useAuth} from "@/lib/context/AuthContext";
 import {AppTextInput} from "@/lib/components/ui/AppTextInput";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
 export default function Index() {
-  const { email, code } = useLocalSearchParams();
+  const { email  } = useLocalSearchParams();
   const { navigate } = useRouter();
   const { confirmOTPResetPassword, sendOTPResetPassword: reSendOTPResetPassword } = useAuth();
 
   const [otpCode, setOtpCode] = useState<string>('');
-  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [otpCodeErrorMessage, setOtpCodeErrorMessage] = useState('');
 
-  const isNotVerify = code === '-1'
-  const isForgotPassword = code === '-2'
+  const [countdown, setCountdown] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      setCanResend(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown(countdown - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
 
   const onConfirmOTP = async () => {
     const response = await confirmOTPResetPassword(email, otpCode)
@@ -30,7 +44,16 @@ export default function Index() {
           resetToken: response.resetToken,
         }
       })
+    } else if (response.message) {
+      setOtpCodeErrorMessage(response.message)
     }
+  }
+
+  const onResendOTP = async () => {
+    await reSendOTPResetPassword(email)
+
+    setCountdown(30);
+    setCanResend(false);
   }
 
   return (
@@ -56,107 +79,80 @@ export default function Index() {
             />
 
             <View>
+              <View>
+                <Text
+                  variant="labelSmall"
+                  style={{
+                    textAlign: "center",
+                    marginTop: 20,
+                    paddingHorizontal: 70
+                  }}
+                >
+                  {
+                    `We has send the code to ${email}`
+                  }
+                </Text>
 
-              {
-                isForgotPassword ? (
-                  <View>
-                    <Text
-                      variant="labelSmall"
-                      style={{
-                        textAlign: "center",
-                        marginTop: 20,
-                        paddingHorizontal: 70
-                      }}
-                    >
-                      {`We has send the code to ${email}`}
-                    </Text>
-                    <Text
-                      variant="labelSmall"
-                      style={{
-                        textAlign: "center",
-                        marginTop: 4,
-                        paddingHorizontal: 40
-                      }}
-                    >
-                      Please follow email instructions to reset your password
-                    </Text>
-                  </View>
-                ) : (
-                  <View>
-                    <Text
-                      variant="labelSmall"
-                      style={{
-                        textAlign: "center",
-                        marginTop: 20,
-                        paddingHorizontal: 70
-                      }}
-                    >
-                      {
-                        isNotVerify ? 'Your account is not verified' : `We has send the verification email to ${email}`
-                      }
-                    </Text>
-
-                    <Text
-                      variant="labelSmall"
-                      style={{
-                        textAlign: "center",
-                        marginTop: 4,
-                        paddingHorizontal: 70
-                      }}
-                    >
-                      Please check email and enter your code
-                    </Text>
-                  </View>
-                )
-              }
+                <Text
+                  variant="labelSmall"
+                  style={{
+                    textAlign: "center",
+                    marginTop: 4,
+                    paddingHorizontal: 20
+                  }}
+                >
+                  Please check email and enter your code
+                </Text>
+              </View>
 
               <AppTextInput
+                maxLength={6}
                 autoCapitalize="none"
                 placeholder="Code"
                 value={otpCode}
                 onChangeText={(value) => {
                   setOtpCode(value.trim())
+                  if (otpCodeErrorMessage) setOtpCodeErrorMessage('')
                 }}
-                isError={!!emailErrorMessage}
-                errorMessage={emailErrorMessage}
+                isError={!!otpCodeErrorMessage}
+                errorMessage={otpCodeErrorMessage}
               />
 
-              {
-                !isForgotPassword && (
-                  <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: 4,
-                    marginTop: 4,
-                    marginBottom: 20,
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 4,
+                marginTop: 4,
+                marginBottom: 20,
 
-                  }}>
-                    <Text
-                      variant="labelSmall"
-                      style={{
-                        textAlign: "center",
-                      }}
-                    >
-                      Didn't receive code?
-                    </Text>
-                    <TouchableOpacity onPress={() => reSendOTPResetPassword(email)}>
-                      <Text
-                        variant="labelMedium"
-                        style={{
-                          textAlign: "center",
-                          color: '#105CDB',
-                        }}
-                      >
-                        Resend
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              }
+              }}>
+                <Text
+                  variant="labelSmall"
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
+                  Didn't receive code?
+                </Text>
+
+                <TouchableOpacity disabled={!canResend} onPress={onResendOTP}>
+                  <Text
+                    variant="labelMedium"
+                    style={{
+                      textAlign: "center",
+                      color: '#105CDB',
+                      opacity: canResend ? 1 : 0.5
+                    }}
+                  >
+                    {canResend ? `Resend` : `Resend in ${countdown}s`}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <Button
+              disabled={otpCode.length !== 6}
               mode="contained"
               buttonColor="#105CDB"
               style={{
