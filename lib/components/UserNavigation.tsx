@@ -12,6 +12,7 @@ export default function UserNavigation() {
 
       <Stack.Screen name="select-time" options={{ title: 'Select Time' }}/>
       <Stack.Screen name="confirm-booking" options={{ title: 'Confirm Booking' }}/>
+      <Stack.Screen name="rating" options={{ title: 'Rating Service' }}/>
     </Stack>
   );
 }

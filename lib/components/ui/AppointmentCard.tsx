@@ -8,6 +8,7 @@ import {useAuth} from "@/lib/context/AuthContext";
 import AssignStaffModal from "@/lib/components/ui/AssignStaffModal";
 import {useAdmin} from "@/lib/context/AdminContext";
 import {formatPrice} from "@/lib/utils/helper";
+import {router} from "expo-router";
 
 type Appointment = {
   id: string;
@@ -17,9 +18,7 @@ type Appointment = {
   service?: any;
   status?: string;
   price?: number;
-  onCancel?: void;
-  onConfirmed?: void;
-  onCompleted?: void;
+  review?: any
 };
 
 type Props = {
@@ -30,9 +29,10 @@ type Props = {
   onSelectStaff?: (id: any, staffId: any) => void;
   onConfirmed?: () => void;
   onCompleted?: () => void;
+  onRated?: () => void;
 };
 
-const InfoItem = ({
+export const InfoItem = ({
                     icon,
                     label,
                     value,
@@ -59,14 +59,15 @@ const InfoItem = ({
   </View>
 );
 
-const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onConfirmed, onCompleted }: Props) => {
-  const { id, appointmentTime, staff, status, price, service, user } = data;
+const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onConfirmed, onCompleted, onRated }: Props) => {
+  const { id, appointmentTime, staff, status, price, service, user, review } = data;
 
   const isPending = status === 'PENDING';
   const isConfirmed = status === 'CONFIRMED';
+  const isDone = status === 'DONE';
   const isStaffAssigned = !!staff.id;
 
-  const { confirmAppointment, cancelAppointment, completeAppointment } = useSpa()
+  const { confirmAppointment, cancelAppointment, completeAppointment, ratingAppointment } = useSpa()
   const { isAdminRole, isStaffRole } = useAuth()
   const { assignStaff } = useSpa()
   const { staffs } = useAdmin()
@@ -89,6 +90,17 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
   const onComplete = async () => {
     await completeAppointment(id)
     onCompleted?.()
+  }
+
+  const goToRating = async () => {
+    const queryStringify = JSON.stringify(data)
+
+    router.push({
+      pathname: '/rating',
+      params: {
+        query: queryStringify
+      }
+    })
   }
 
   return (
@@ -168,6 +180,16 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
 
                 <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onComplete}>
                   Complete
+                </Button>
+              </View>
+            )
+          }
+
+          {
+            isDone && !review?.id && (!isAdminRole && !isStaffRole) && (
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>
+                <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={goToRating}>
+                  Rate now
                 </Button>
               </View>
             )

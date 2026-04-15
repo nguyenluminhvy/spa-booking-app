@@ -9,7 +9,7 @@ import {
 import { Text } from "react-native-paper";
 import {router, useRouter} from "expo-router";
 import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
+import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 
 import ImagePager from "@/lib/components/ui/ImagePager";
 import AppointmentCard from "@/lib/components/ui/AppointmentCard";
@@ -18,12 +18,14 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { getServices } from "@/lib/services/api/services";
 import { getUpcomingAppointment } from "@/lib/services/api/appointments";
 import {IMAGES} from "@/lib/assets/images";
+import {formatPrice} from "@/lib/utils/helper";
 
 type Service = {
   id: string;
   name: string;
   price: number;
   imageUrl: string;
+  rating: any;
 };
 
 const ServiceItem = ({ item }: { item: Service }) => {
@@ -45,11 +47,22 @@ const ServiceItem = ({ item }: { item: Service }) => {
     />
 
     <View style={styles.serviceContent}>
-      <Text variant="labelLarge">{item.name}</Text>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+        <Text variant={'labelLarge'} style={{fontWeight: 'bold'}}>{item.name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 1 }}>
+          <MaterialCommunityIcons
+            name={"star"}
+            size={17}
+            color={'#FFC107'}
+          />
+          <Text variant={'labelMedium'} style={{ color: '#FFC107'}}>{item.rating.average}</Text>
+          <Text variant={'labelMedium'} style={{ color: '#999'}}>({item.rating.total})</Text>
+        </View>
+      </View>
 
       <View style={styles.serviceFooter}>
         <Text variant="labelLarge">
-          {item.price?.toLocaleString()}₫
+          {formatPrice(item.price)}
         </Text>
 
         <TouchableOpacity onPress={goToSelectTime}>

@@ -14,6 +14,7 @@ import {
 } from "@/lib/services/api/appointments";
 import {getServices} from "@/lib/services/api/services";
 import {useAuth} from "@/lib/context/AuthContext";
+import {_createReview} from "@/lib/services/api/reviews";
 
 type SpaContextType = {
   services: [] | null;
@@ -27,6 +28,7 @@ type SpaContextType = {
   confirmAppointment: (id: any) => Promise<void>;
   cancelAppointment: (id: any) => Promise<void>;
   completeAppointment: (id: any) => Promise<void>;
+  ratingAppointment: (data: any) => Promise<void>;
   assignStaff: (id: any, staffId: any) => Promise<void>;
 };
 
@@ -42,6 +44,7 @@ const defaultContext: SpaContextType = {
   confirmAppointment: async (id: any) => {},
   cancelAppointment: async (id: any) => {},
   completeAppointment: async (id: any) => {},
+  ratingAppointment: async (data: any) => {},
   assignStaff: async (id: any, staffId: any) => {},
 };
 
@@ -92,6 +95,12 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     return response
   }
 
+  const ratingAppointment = async (payload: any) => {
+    const response = await _createReview(payload)
+
+    return response
+  }
+
   const assignStaff = async (id: any, staffId: any) => {
     const response = await _assignStaff(id, {staffId})
 
@@ -133,6 +142,7 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     confirmAppointment,
     cancelAppointment,
     completeAppointment,
+    ratingAppointment,
     assignStaff,
     filterByToday,
     filterByDone,

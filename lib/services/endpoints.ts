@@ -57,5 +57,8 @@ export default () => {
     getBookings: `${baseUrl}/dashboard/bookings`,
     getStatus: `${baseUrl}/dashboard/status`,
 
+    //reviews
+    createReview: `${baseUrl}/reviews`,
+
   }
 }

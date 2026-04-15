@@ -1,13 +1,10 @@
 import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { View } from 'react-native';
 import React, {useCallback, useEffect, useState} from "react";
-import {useSpa} from "@/lib/context/SpaContext";
 import {FlashList} from "@shopify/flash-list";
 import AppointmentCard from "@/lib/components/ui/AppointmentCard";
 import {Button, Text} from "react-native-paper";
-import {getServices} from "@/lib/services/api/services";
 import {_cancelAppointment, getPastAppointment, getUpcomingAppointment} from "@/lib/services/api/appointments";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";

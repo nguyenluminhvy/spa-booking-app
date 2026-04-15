@@ -5,9 +5,10 @@ import {FlashList} from "@shopify/flash-list";
 import {AnimatedFAB, Button, Text} from "react-native-paper";
 import { Image } from 'expo-image'
 import {router} from "expo-router";
-import {useCallback, useEffect, useState} from "react";
-import {getServices} from "@/lib/services/api/services";
+import React, {useCallback, useEffect, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {formatPrice} from "@/lib/utils/helper";
 
 export default function BookingScreen() {
   const { fetchServices, services } = useSpa()
@@ -49,6 +50,18 @@ export default function BookingScreen() {
             <Image
               contentFit={'cover'}
               source={item.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
+
+            <View style={{
+              position: 'absolute',
+              right: 12,
+              bottom: 12,
+              backgroundColor: '#eff6fd',
+              paddingVertical: 8,
+              paddingHorizontal: 8,
+              borderRadius: 8
+            }}>
+              <Text style={{ color: '#105CDB'}}>{formatPrice(item.price)}</Text>
+            </View>
           </View>
 
           <View style={{
@@ -57,10 +70,19 @@ export default function BookingScreen() {
             borderBottomLeftRadius: 16,
             borderBottomRightRadius: 16,
           }}>
-            <Text variant={'labelLarge'} style={{fontWeight: 'bold'}}>{item.name}</Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>{item.description}</Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>Price: <Text style={{ fontWeight: 'bold'}}>{item.price}</Text></Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>Duration: <Text style={{ fontWeight: 'bold'}}>{item.duration}p</Text></Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text variant={'labelMedium'} style={{color: '#999'}}>{item.name}  • </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+                <MaterialCommunityIcons
+                  name={"star"}
+                  size={17}
+                  color={'#FFC107'}
+                />
+                <Text variant={'labelMedium'} style={{ color: '#FFC107'}}>{item.rating.average}</Text>
+                <Text variant={'labelMedium'} style={{ color: '#999'}}>({item.rating.total})</Text>
+              </View>
+            </View>
+            <Text variant={"titleMedium"} style={{ fontWeight: 'bold', marginVertical: 4 }}>{item.description}</Text>
           </View>
 
         </TouchableOpacity>}
