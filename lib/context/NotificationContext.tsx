@@ -1,0 +1,149 @@
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useRef, useState,
+} from "react";
+import {Alert, Linking, Platform} from "react-native";
+
+import {useRouter} from "expo-router";
+import {_saveDeviceToken} from "@/lib/services/api/auth";
+
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+function handleRegistrationError(errorMessage: string) {
+  alert(errorMessage);
+  throw new Error(errorMessage);
+}
+
+export async function registerForPushNotificationsAsync() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  // if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      handleRegistrationError('Permission not granted to get push token for push notification!');
+      return;
+    }
+
+    const fcmToken = (await Notifications.getDevicePushTokenAsync()).data;
+
+    console.log(`FcmToken: ${fcmToken}`);
+
+    return fcmToken
+
+    // const projectId =
+    //   Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+    // if (!projectId) {
+    //   handleRegistrationError('Project ID not found');
+    // }
+    // try {
+    //   const pushTokenString = (
+    //     await Notifications.getExpoPushTokenAsync({
+    //       projectId,
+    //     })
+    //   ).data;
+    //   console.log(pushTokenString);
+    //   return pushTokenString;
+    // } catch (e: unknown) {
+    //   handleRegistrationError(`${e}`);
+    // }
+  // } else {
+  //   handleRegistrationError('Must use physical device for push notifications');
+  // }
+}
+
+
+interface NotificationContextType {
+  scheduleNotificationAsync: (
+    request: Notifications.NotificationRequestInput
+  ) => Promise<void>;
+  cancelNotificationAsync: () => Promise<void>;
+  sendPushNotification: () => Promise<void>;
+  saveDeviceToken: (token: any) => Promise<void>;
+  expoPushToken: string;
+}
+
+const NotificationsContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
+
+const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
+  const router = useRouter();
+
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then(token => {
+        if (token) {
+          saveDeviceToken(token).then()
+        }
+      })
+      .catch((error: any) => {});
+
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      notificationListener.remove();
+      responseListener.remove();
+    };
+  }, []);
+
+  const saveDeviceToken = async (token: string) => {
+    await _saveDeviceToken({token})
+  };
+
+  const value = {saveDeviceToken};
+
+  return (
+    <NotificationsContext.Provider value={value}>
+      {children}
+    </NotificationsContext.Provider>
+  );
+};
+
+const useNotifications = () => {
+  const context = useContext(NotificationsContext);
+
+  if (!context) {
+    throw new Error(
+      "useNotifications must be called from within a NotificationProvider!"
+    );
+  }
+
+  return context;
+};
+
+export { useNotifications, NotificationsProvider };

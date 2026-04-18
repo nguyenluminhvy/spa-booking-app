@@ -80,3 +80,13 @@ export const _resetPassword = async (data: any) => {
     return e
   }
 }
+
+export const _saveDeviceToken = async (data: any) => {
+  try {
+    const response = await request(Endpoint().saveDeviceToken, Method.POST, data, null)
+
+    return response
+  } catch (e) {
+    return e
+  }
+}

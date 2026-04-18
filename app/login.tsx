@@ -11,9 +11,11 @@ import {getFirebaseAdminErrorMessage} from "@/lib/utils/firebaseAdminErrors";
 import {signInFn} from "@/lib/services/api/auth";
 import {storeStringData} from "@/lib/utils/AsyncStorage";
 import {useAuth} from "@/lib/context/AuthContext";
+import {registerForPushNotificationsAsync, useNotifications} from "@/lib/context/NotificationContext";
 
 export default function Index() {
   const { fetchProfile, setLoading } = useAuth()
+  const { saveDeviceToken } = useNotifications()
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -72,6 +74,14 @@ export default function Index() {
       }
 
       await fetchProfile()
+
+      registerForPushNotificationsAsync()
+        .then(token => {
+          if (token) {
+            saveDeviceToken(token).then()
+          }
+        })
+        .catch((error: any) => {});
     }
   }
 

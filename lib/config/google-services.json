@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "131980048202",
+    "project_id": "spa-booking-10df8",
+    "storage_bucket": "spa-booking-10df8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131980048202:android:5d7d041299d176f724f3b3",
+        "android_client_info": {
+          "package_name": "com.nguyenluminhvy.spabookingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcD8XGOlmUtqJ_7_q3220qzec6TwBVAI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

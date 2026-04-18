@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nguyenluminhvy.spabookingapp"
+      "bundleIdentifier": "com.nguyenluminhvy.spabookingapp",
+      "googleServicesFile": "./lib/config/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +25,9 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.nguyenluminhvy.spabookingapp"
+      "package": "com.nguyenluminhvy.spabookingapp",
+      "googleServicesFile": "./lib/config/google-services.json",
+      "gradleArguments": ["-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"]
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +35,20 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-notifications",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraGradleArguments": [
+              "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+            ],
+            "packagingOptions": {
+              "pickFirsts": ["**/lib_assets_images_banner*"]
+            }
+          }
+        }
+      ],
       "expo-router",
       [
         "expo-image-picker",
@@ -39,11 +56,6 @@
           "photosPermission": "The app accesses your photos to let you make cover",
           "colors": {
             "cropToolbarColor": "#000000"
-          },
-          "dark": {
-            "colors": {
-              "cropToolbarColor": "#000000"
-            }
           }
         }
       ]

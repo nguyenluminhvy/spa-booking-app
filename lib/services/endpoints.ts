@@ -1,6 +1,7 @@
 
 export default () => {
-  const baseUrl = "http://localhost:3000"
+  // const baseUrl = "http://localhost:3000"
+  const baseUrl = "https://risk-fetch-ice.ngrok-free.dev"
   return {
     baseUrl,
 
@@ -13,6 +14,7 @@ export default () => {
     sentOTP: `${baseUrl}/auth/forgot-password`,
     confirmOTP: `${baseUrl}/auth/confirm-otp`,
     resetPassword: `${baseUrl}/auth/reset-password`,
+    saveDeviceToken: `${baseUrl}/auth/user/device-token`,
 
     //user
     users: `${baseUrl}/users`,
