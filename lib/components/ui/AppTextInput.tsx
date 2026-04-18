@@ -148,8 +148,7 @@ export const AppTextInput = forwardRef<RNTextInput, IInputProps>(
             })}
             autoCapitalize={'none'}
             autoCorrect={false}
-            keyboardType={keyboardType}
-            textContentType="none"
+            keyboardType={secureTextEntry ? 'default' : keyboardType}            textContentType="none"
             autoComplete={'off'}
             dataDetectorTypes={'none'}
             {...inputProp}
