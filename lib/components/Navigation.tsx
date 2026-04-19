@@ -82,6 +82,15 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
+        name="notifications"
+        options={{
+          headerTitle: 'Notifications',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
         name="(admin)"
         options={{ headerShown: false }}
       />

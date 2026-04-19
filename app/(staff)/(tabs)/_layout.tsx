@@ -16,6 +16,7 @@ export default function TabLayout() {
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: Colors[colorScheme].tint,
         headerShadowVisible: false,
+        headerTitleAlign: 'center',
         sceneStyle: {
           backgroundColor: 'white'
         },

@@ -62,5 +62,11 @@ export default () => {
     //reviews
     createReview: `${baseUrl}/reviews`,
 
+    //notifications
+    getNotifications: `${baseUrl}/notifications`,
+    getUnreadNotificationsCount: `${baseUrl}/notifications/unread`,
+    markAllNotificationsAsRead: `${baseUrl}/notifications/markAllAsRead`,
+    markNotificationsAsRead: (id: string) =>
+      `${baseUrl}/notifications/markAsRead/${id}`,
   }
 }

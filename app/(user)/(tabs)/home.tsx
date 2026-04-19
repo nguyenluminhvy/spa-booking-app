@@ -19,6 +19,7 @@ import { getServices } from "@/lib/services/api/services";
 import { getUpcomingAppointment } from "@/lib/services/api/appointments";
 import {IMAGES} from "@/lib/assets/images";
 import {formatPrice} from "@/lib/utils/helper";
+import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 
 type Service = {
   id: string;
@@ -133,9 +134,7 @@ export default function HomeScreen() {
           <Text style={styles.subText}>Have a nice day.</Text>
         </View>
 
-        <TouchableOpacity style={styles.notifyBtn}>
-          <Ionicons name="notifications-outline" size={22} />
-        </TouchableOpacity>
+        <NotificationButton size={'medium'} refreshing={refreshing}/>
       </View>
 
       <ImagePager />
@@ -207,6 +206,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 8
   },
 
   header: {

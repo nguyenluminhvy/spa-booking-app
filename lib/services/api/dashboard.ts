@@ -6,7 +6,7 @@ export const _getOverview = async (params: any) => {
   try {
     const response = await request(Endpoint().getOverview, Method.GET, params, null)
 
-    return response?.code === 0 ? response?.data : response
+    return response
   } catch (e) {
     return e
   }
@@ -36,7 +36,7 @@ export const _getStatus = async (params: any) => {
   try {
     const response = await request(Endpoint().getStatus, Method.GET, params, null)
 
-    return response?.code === 0 ? response?.data : response
+    return response
   } catch (e) {
     return e
   }

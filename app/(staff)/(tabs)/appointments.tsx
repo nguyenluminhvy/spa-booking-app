@@ -8,6 +8,8 @@ import AppointmentCard from "@/lib/components/ui/AppointmentCard";
 import {Button, Text} from "react-native-paper";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
+import {Stack} from "expo-router";
+import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 
 const BUTTONS = [
   {
@@ -63,6 +65,15 @@ export default function AppointmentsScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShadowVisible: false,
+          headerRight: () => (
+            <NotificationButton refreshing={refreshing}/>
+          ),
+        }}
+      />
+
       <View
         style={{
           flexDirection: "row",

@@ -4,12 +4,14 @@ import { Text, View } from '@/components/Themed';
 import {Button, SegmentedButtons} from "react-native-paper";
 import {Stack, useRouter} from "expo-router";
 import React, {useCallback, useEffect, useState} from "react";
-import {Ionicons} from "@expo/vector-icons";
 import {useAuth} from "@/lib/context/AuthContext";
 import {LinearGradient} from "expo-linear-gradient";
 import {BarChart, LineChart, PieChart,} from "react-native-chart-kit";
 import {_getBookings, _getOverview, _getRevenue, _getStatus} from "@/lib/services/api/dashboard";
 import {formatPrice} from "@/lib/utils/helper";
+import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {Image} from "expo-image";
+import {IMAGES} from "@/lib/assets/images";
 
 const BUTTONS = [
   {
@@ -52,7 +54,11 @@ const STATUS_META = {
 const mapStatusToPieData = (resData) => {
   const { labels, data } = resData;
 
-  return labels.map((status, index) => ({
+  if (!labels?.length) {
+    return
+  }
+
+  return labels?.map((status, index) => ({
     name: STATUS_META[status]?.label || status,
     population: data[index],
     color: STATUS_META[status]?.color || '#ccc',
@@ -96,6 +102,29 @@ const KpiCard = ({ icon, title, value, trend, isUp, colors }) => {
   );
 };
 
+const EmptyChart = () => {
+  return (
+    <View style={{
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: 20,
+      gap: 8
+    }}>
+      <Image
+        style={{
+          width: "100%",
+          height: 50,
+        }}
+        source={IMAGES.nodata}
+        contentFit="contain"
+      />
+      <Text variant={'labelMedium'}>
+        No data
+      </Text>
+    </View>
+  );
+};
+
 export default function DashboardScreen() {
   const { navigate } = useRouter()
   const { user, setLoading } = useAuth();
@@ -111,12 +140,12 @@ export default function DashboardScreen() {
   });
 
   const [revenue, setRevenue] = useState({
-    labels: ["1","3","5","7","9","13","15"],
-    data: [100,150,250,350,180,280,350],
+    labels: [],
+    data: [],
   });
   const [bookings, setBookings] = useState({
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    data: [5,8,6,10,7,20,30],
+    labels: [],
+    data: [],
   });
   const [statusData, setStatusData] = useState([
     {
@@ -158,19 +187,30 @@ export default function DashboardScreen() {
     try {
       setLoading(true);
 
-      const [overview, revenue, bookings, statusResponse] = await Promise.all([
+      const [overviewResponse, revenue, bookings, statusResponse] = await Promise.all([
         _getOverview({ range: range }),
         _getRevenue({ range: range }),
         _getBookings({ range: range }),
         _getStatus({ range: range }),
       ]);
 
-      const pieData = mapStatusToPieData(statusResponse)
+      if (overviewResponse?.code === 0) {
+        setOverview(overviewResponse?.data || {});
+      }
 
-      setOverview(overview || {});
-      setRevenue(revenue || {});
-      setBookings(bookings || {});
-      setStatusData(pieData || []);
+      if (revenue?.data) {
+        setRevenue(revenue || {});
+      }
+
+      if (bookings?.data) {
+        setBookings(bookings || {});
+      }
+
+      if (statusResponse?.code === 0) {
+        const pieData = mapStatusToPieData(statusResponse?.data)
+        setStatusData(pieData || []);
+      }
+
     } catch (error) {
       console.log("Fetch error:", error);
     } finally {
@@ -210,9 +250,9 @@ export default function DashboardScreen() {
             </View>
           ),
           headerRight: () => (
-            <TouchableOpacity style={styles.notifyBtn}>
-              <Ionicons name="notifications-outline" size={22} />
-            </TouchableOpacity>
+            <View style={{ marginRight: 16 }}>
+              <NotificationButton size={'medium'}/>
+            </View>
           ),
         }}
       />
@@ -227,7 +267,7 @@ export default function DashboardScreen() {
           marginTop: 16
         }}
       >
-        {BUTTONS.map((button, index) => {
+        {BUTTONS?.map((button, index) => {
           const isActive = button.type === filterType;
 
           return (
@@ -304,47 +344,60 @@ export default function DashboardScreen() {
 
         <View style={styles.cardChart}>
           <Text style={styles.titleChart}>Revenue</Text>
-
-          <LineChart
-            data={{
-              labels: revenue.labels,
-              datasets: [
-                {
-                  data: revenue.data,
-                },
-              ]
-            }}
-            width={width - 32}
-            height={180}
-            chartConfig={chartConfig}
-            bezier
-            style={styles.chart}
-          />
+          {
+            revenue.labels?.length > 0 && revenue.data?.length > 0 ? (
+              <LineChart
+                data={{
+                  labels: revenue.labels,
+                  datasets: [
+                    {
+                      data: revenue.data,
+                    },
+                  ]
+                }}
+                width={width - 32}
+                height={180}
+                chartConfig={chartConfig}
+                bezier
+                style={styles.chart}
+              />
+            ) : (
+              <EmptyChart />
+            )
+          }
         </View>
 
-        <View style={[styles.cardChart, {paddingRight: 32}]}>
+        <View style={[styles.cardChart, {paddingRight: 0}]}>
           <Text style={styles.titleChart}>Bookings</Text>
+          {
+            bookings.labels?.length > 0 && bookings.data?.length > 0 ? (
+              <View style={{paddingRight: 32}}>
+                <BarChart
+                  data={{
+                    labels: bookings.labels,
+                    datasets: [
+                      {
+                        data: bookings.data,
+                      },
+                    ],
 
-          <BarChart
-            data={{
-              labels: bookings.labels,
-              datasets: [
-                {
-                  data: bookings.data,
-                },
-              ],
+                  }}
+                  width={width - 36}
+                  height={180}
+                  chartConfig={{
+                    ...chartConfig,
+                    color: () => '#93C5FD',
+                  }}
+                  style={styles.chart}
+                  yAxisLabel={''}
+                  yAxisSuffix={''}
+                />
+              </View>
+            ) : (
+              <EmptyChart />
+            )
+          }
 
-            }}
-            width={width - 36}
-            height={180}
-            chartConfig={{
-              ...chartConfig,
-              color: () => '#93C5FD',
-            }}
-            style={styles.chart}
-            yAxisLabel={''}
-            yAxisSuffix={''}
-          />
         </View>
 
         <View style={styles.cardChart}>
@@ -389,15 +442,6 @@ const styles = StyleSheet.create({
   subText: {
     color: "#2E3A59",
   },
-
-  notifyBtn: {
-    borderWidth: 0.5,
-    borderColor: "#9e9e9e",
-    borderRadius: 50,
-    padding: 12,
-    marginRight: 16,
-  },
-
 
   separator: {
     marginVertical: 30,

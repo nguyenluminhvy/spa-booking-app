@@ -73,9 +73,6 @@ export default function SelectTimeScreen() {
       millisecond: 0,
     });
 
-  console.log(moment(dateTime).format('YYYY-MM-DD HH:mm'));
-  console.log(dateTime.toISOString(), 'toIOSTring')
-
   const [service, setService] = useState({
     name: '',
     price: '',
