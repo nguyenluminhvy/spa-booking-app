@@ -21,28 +21,27 @@ const Badge = ({ count, isMedium }: { count: number; isMedium: boolean }) => {
   );
 };
 
-export function NotificationButton({ size = 'small', refreshing = false }: { size?: 'small' | 'medium', refreshing?: boolean }) {
-  const { unreadCount, fetchUnreadCount } = useNotifications();
+export function MessageListButton({ size = 'small', refreshing = false }: { size?: 'small' | 'medium', refreshing?: boolean }) {
   const isMedium = size === 'medium';
 
   useEffect(() => {
-    if (refreshing) {
-      setTimeout(() => {
-        fetchUnreadCount()
-      }, 1000);
-    }
+    // if (refreshing) {
+    //   setTimeout(() => {
+    //     fetchUnreadCount()
+    //   }, 1000);
+    // }
   }, [refreshing]);
 
   return (
     <View style={!isMedium && { marginRight: 16 }}>
       <TouchableOpacity
         style={isMedium ? styles.notifyBtn : { padding: 4 }}
-        onPress={() => router.push("/notifications")}
+        onPress={() => router.push("/chat")}
       >
-        <Ionicons name="notifications-outline" size={22} />
+        <Ionicons name="chatbubbles-outline" size={22} />
       </TouchableOpacity>
 
-      <Badge count={unreadCount} isMedium={isMedium} />
+      {/*<Badge count={unreadCount} isMedium={isMedium} />*/}
     </View>
   );
 }

@@ -1,7 +1,5 @@
 import React from 'react';
-import { SymbolView } from 'expo-symbols';
 import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/Colors';
@@ -27,7 +25,7 @@ export default function TabLayout() {
           let iconName: any;
 
           if (route.name === 'home') iconName = 'home';
-          else if (route.name === 'booking') iconName = 'cut-outline';
+          else if (route.name === 'chat') iconName = 'chatbubbles-outline';
           else if (route.name === 'appointments') iconName = 'calendar-outline';
           else if (route.name === 'profile') iconName = 'person';
 
@@ -35,6 +33,12 @@ export default function TabLayout() {
         },
       })}
     >
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: 'Messages'
+        }}
+      />
       <Tabs.Screen
         name="appointments"
         options={{

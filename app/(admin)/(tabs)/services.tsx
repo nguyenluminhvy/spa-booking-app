@@ -4,10 +4,12 @@ import { View } from '@/components/Themed';
 import {FlashList} from "@shopify/flash-list";
 import {AnimatedFAB, Button, Text} from "react-native-paper";
 import { Image } from 'expo-image'
-import {router} from "expo-router";
-import {useCallback, useEffect, useState} from "react";
+import {router, Stack} from "expo-router";
+import React, {useCallback, useEffect, useState} from "react";
 import {getServices} from "@/lib/services/api/services";
 import {formatPrice} from "@/lib/utils/helper";
+import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {Ionicons} from "@expo/vector-icons";
 
 export default function ServicesScreen() {
 
@@ -47,6 +49,25 @@ export default function ServicesScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <View style={{ marginLeft: 16 }}>
+              <TouchableOpacity
+                style={{ padding: 4 }}
+                onPress={() => router.push("/chat")}
+              >
+                <Ionicons name="chatbubbles-outline" size={22} />
+              </TouchableOpacity>
+            </View>
+          ),
+          headerRight: () => (
+            <NotificationButton />
+          ),
+        }}
+      />
+
       <FlashList
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 16, paddingBottom: 80}}

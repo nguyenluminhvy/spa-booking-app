@@ -68,5 +68,11 @@ export default () => {
     markAllNotificationsAsRead: `${baseUrl}/notifications/markAllAsRead`,
     markNotificationsAsRead: (id: string) =>
       `${baseUrl}/notifications/markAsRead/${id}`,
+
+    //chat
+    getOrCreateChatConversation: `${baseUrl}/chat/get-or-create`,
+    updateLastMessage: `${baseUrl}/chat/update-last-message`,
+    claimConversation: `${baseUrl}/chat/claim-conversation`,
+
   }
 }

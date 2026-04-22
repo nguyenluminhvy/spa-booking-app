@@ -10,6 +10,9 @@ import {Button} from "react-native-paper";
 import {_assignStaff} from "@/lib/services/api/appointments";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
+import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {router, Stack} from "expo-router";
+import {Ionicons} from "@expo/vector-icons";
 
 const BUTTONS = [
   {
@@ -74,6 +77,25 @@ export default function AppointmentsScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <View style={{ marginLeft: 16 }}>
+              <TouchableOpacity
+                style={{ padding: 4 }}
+                onPress={() => router.push("/chat")}
+              >
+                <Ionicons name="chatbubbles-outline" size={22} />
+              </TouchableOpacity>
+            </View>
+          ),
+          headerRight: () => (
+            <NotificationButton />
+          ),
+        }}
+      />
+
       <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
            <View

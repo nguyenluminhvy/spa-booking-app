@@ -1,62 +1,68 @@
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {AnimatedFAB, Button, Text} from "react-native-paper";
+import {Alert, StyleSheet, View} from 'react-native';
+import {Button, Text} from "react-native-paper";
 import React, {useEffect, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
-import {AccountItem} from "@/lib/components/ui/AccountItem";
-import {useAdmin} from "@/lib/context/AdminContext";
 import {router, Stack} from "expo-router";
+import {useAuth} from "@/lib/context/AuthContext";
+import {useChatList} from "@/lib/hooks/useChatList";
+import ChatItem from "@/lib/components/ui/ChatItem";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
-import {Ionicons} from "@expo/vector-icons";
 
 const BUTTONS = [
   {
-    label: "All",
-    type: 'ALL',
+    label: "Waiting",
+    type: 'WAITING',
   },
   {
-    label: "Staff",
-    type: 'STAFF',
+    label: "Active",
+    type: 'ACTIVE',
   },
 ];
 
-export default function UsersScreen() {
-  const { fetchUsers, users } = useAdmin()
-  const [, startTransition] = useTransition();
+export default function ChatListScreen() {
+  const { user } = useAuth();
 
-  const [filterType, setFilterType] = useState('ALL');
-  const [filterParams, setFilterParams] = useState({});
+  if (!user) {
+    return null;
+  }
+
+  const { waiting, active, claimConversation, loading: isLoading } = useChatList({
+    userId: user.id,
+    role: user.role,
+  });
+
+  const [filterType, setFilterType] = useState('WAITING');
+
+  const conversations = filterType === 'WAITING' ? waiting : active;
 
   const listRef = useRef<any>(null);
-
-  useEffect(() => {
-    fetchUsers()
-  }, [])
 
   useEffect(() => {
     listRef.current?.scrollToOffset({
       offset: 0,
       animated: false,
     });
-  }, [users]);
+  }, [conversations]);
 
+  const onClaimConversation = async (id: any) => {
+    Alert.alert(`Claim this conversation`, "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", style: "default", onPress: async () => {
+          const response = await claimConversation(id)
+          if (response?.code === 0) {
+            setFilterType('ACTIVE')
+          }
+        }},
+    ]);
+  }
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
           headerShadowVisible: false,
-          headerLeft: () => (
-            <View style={{ marginLeft: 16 }}>
-              <TouchableOpacity
-                style={{ padding: 4 }}
-                onPress={() => router.push("/chat")}
-              >
-                <Ionicons name="chatbubbles-outline" size={22} />
-              </TouchableOpacity>
-            </View>
-          ),
           headerRight: () => (
             <NotificationButton />
           ),
@@ -77,30 +83,11 @@ export default function UsersScreen() {
           return (
             <Button
               key={index}
-              // icon="camera"
               mode="elevated"
               buttonColor={isActive ? "#006EE9" : "#F4F9FF"}
               textColor={isActive ? "white" : "black"}
-              // labelStyle={{ fontWeight: isActive ? "bold" : "light" }}
               onPress={() => {
                 setFilterType(button.type);
-                if (button.type === 'STAFF') {
-                  startTransition(() => {
-                    setFilterParams({
-                      role: 'STAFF'
-                    })
-                    fetchUsers({
-                      role: 'STAFF'
-                    })
-                  });
-
-                } else {
-                  startTransition(() => {
-                    setFilterParams({})
-                    fetchUsers({})
-                  });
-
-                }
               }}
             >
               {button.label}
@@ -132,23 +119,23 @@ export default function UsersScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
         keyExtractor={(item) => item.id.toString()}
-        data={users}
-        renderItem={({ item }) => <AccountItem {...item} />}
-      />
-
-      <AnimatedFAB
-        icon={'plus'}
-        label={'Add Staff'}
-        extended
-        onPress={() => router.push({
-          pathname: '/create-edit-staff',
-          params: {
-            staffId: 'new'
-          }
-        })}
-        visible
-        style={[styles.fabStyle]}
-        color={'white'}
+        data={conversations}
+        renderItem={({ item }) => <ChatItem
+          convo={item}
+          staffId={user.id}
+          onPress={() => {
+            router.push({
+              pathname: "/chat/[conversationId]",
+              params: {
+                conversationId: item.id,
+                chatTitle: item?.userName
+              },
+            });
+          }}
+          onClaim={async () => {
+            await onClaimConversation(item.id)
+          }}
+        />}
       />
     </View>
   );

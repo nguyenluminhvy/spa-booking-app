@@ -30,7 +30,7 @@ export const _markAllNotificationAsRead = async () => {
   }
 }
 
-export const _markNotificationAsRead = async (id) => {
+export const _markNotificationAsRead = async (id: any) => {
   try {
     const response = await request(Endpoint().markNotificationsAsRead(id), Method.POST, null, null)
 
