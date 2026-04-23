@@ -7,7 +7,8 @@ export default function Navigation() {
         headerBackTitle: "Back",
         headerShadowVisible: false,
         gestureEnabled: false,
-        headerTitleAlign: 'center'
+        headerTitleAlign: 'center',
+        animation: 'slide_from_right'
       }}
     >
       <Stack.Screen

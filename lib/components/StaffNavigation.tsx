@@ -6,6 +6,8 @@ export default function StaffNavigation() {
       headerBackTitle: "Back",
       headerShadowVisible: false,
       gestureEnabled: false,
+      headerTitleAlign: 'center',
+      animation: 'slide_from_right'
     }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>

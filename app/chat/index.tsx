@@ -11,12 +11,12 @@ import ChatItem from "@/lib/components/ui/ChatItem";
 
 const BUTTONS = [
   {
-    label: "Waiting",
-    type: 'WAITING',
-  },
-  {
     label: "Active",
     type: 'ACTIVE',
+  },
+  {
+    label: "Waiting",
+    type: 'WAITING',
   },
 ];
 
@@ -32,9 +32,9 @@ export default function ChatListScreen() {
     role: user.role,
   });
 
-  const [filterType, setFilterType] = useState('WAITING');
+  const [filterType, setFilterType] = useState('ACTIVE');
 
-  const conversations = filterType === 'WAITING' ? waiting : active;
+  const conversations = filterType === 'ACTIVE' ? active : waiting;
 
   return (
     <View style={styles.container}>
