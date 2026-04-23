@@ -36,7 +36,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Messages'
+          title: 'Messages',
+          tabBarBadge: '',
         }}
       />
       <Tabs.Screen

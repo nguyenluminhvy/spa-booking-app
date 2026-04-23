@@ -30,11 +30,15 @@ const AssignStaffModal = ({ visible, currentStaffId, staffs, onClose, onSelect }
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => {
               const isSelected = currentStaffId === item.id
+              const isDisabled= !item?.isAvailable && !isSelected
 
 
               return (
                 <TouchableOpacity
-                  style={styles.item}
+                  disabled={isDisabled}
+                  style={[styles.item, {
+                    opacity: isDisabled ? 0.5 : 1
+                  }]}
                   onPress={() => onSelect(item.id)}
                 >
                   <View>
@@ -42,12 +46,13 @@ const AssignStaffModal = ({ visible, currentStaffId, staffs, onClose, onSelect }
                     <Text style={styles.email}>{item.email}</Text>
                   </View>
 
-
                   {
-                    isSelected && <Ionicons name={'checkmark-circle'} size={20} color={'#006EE9'} />
+                    isSelected ? <Ionicons name={'checkmark-circle'} size={20} color={'#006EE9'} /> : (
+                      <Text style={{ color: 'red'}}>
+                        {isDisabled ? 'Busy' : ''}
+                      </Text>
+                    )
                   }
-
-
                 </TouchableOpacity>
               )
             }}

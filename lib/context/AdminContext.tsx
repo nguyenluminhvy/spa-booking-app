@@ -14,10 +14,12 @@ import {
   _updateStaff
 } from "@/lib/services/api/users";
 import {useAuth} from "@/lib/context/AuthContext";
+import {_getAvailableStaffByAppointment} from "@/lib/services/api/appointments";
 
 type AdminContextType = {
   users: [] | null;
   staffs: [] | null;
+  availableStaffByAppointment: [] | null;
   appointments: [] | null;
   fetchUsers: (params?: any) => Promise<void>;
   fetchStaffs: () => Promise<void>;
@@ -27,11 +29,13 @@ type AdminContextType = {
   createStaff: (data: any) => Promise<void>;
   updateStaff: (id: any, data: any) => Promise<void>;
   resetPasswordStaff: (id: any) => Promise<void>;
+  fetchAvailableStaffByAppointment: (id: any) => Promise<void>;
 };
 
 const defaultContext: AdminContextType = {
   users: [],
   staffs: [],
+  availableStaffByAppointment: [],
   appointments: [],
   fetchUsers: async (params?: any) => {},
   fetchStaffs: async () => {},
@@ -41,6 +45,7 @@ const defaultContext: AdminContextType = {
   createStaff: async (data: any) => {},
   updateStaff: async (id: any, data: any) => {},
   resetPasswordStaff: async (id: any) => {},
+  fetchAvailableStaffByAppointment: async (id: any) => {},
 };
 
 const AdminContext = createContext<AdminContextType>(defaultContext);
@@ -50,6 +55,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const [users, setUsers] = useState([]);
   const [staffs, setStaffs] = useState([]);
+  const [availableStaffByAppointment, setAvailableStaffByAppointment] = useState([]);
 
   const fetchUsers = async (params?: any) => {
     setLoading(true)
@@ -68,6 +74,14 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
     if (response) {
       setStaffs(response);
+    }
+  }
+
+  const fetchAvailableStaffByAppointment = async (appointmentId: any) => {
+    const response = await _getAvailableStaffByAppointment(appointmentId);
+
+    if (response) {
+      setAvailableStaffByAppointment(response);
     }
   }
 
@@ -120,6 +134,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const value: AdminContextType = {
     users,
     staffs,
+    availableStaffByAppointment,
     fetchUsers,
     fetchStaffs,
     activateUser,
@@ -128,6 +143,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     updateStaff,
     getStaffInfo,
     resetPasswordStaff,
+    fetchAvailableStaffByAppointment,
   };
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;

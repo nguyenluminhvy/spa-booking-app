@@ -1,4 +1,4 @@
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {Alert, StyleSheet, TouchableOpacity} from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { View } from '@/components/Themed';
@@ -128,12 +128,17 @@ export default function SelectTimeScreen() {
         appointmentTime
       };
 
-      const result = await createAppointment(data);
+      const response = await createAppointment(data);
 
-      await fetchAppointments()
-
-      navigate('/(user)/(tabs)/appointments')
-
+      if (response?.code === 0) {
+        await fetchAppointments()
+        navigate('/(user)/(tabs)/appointments')
+      } else if (response?.code === -1) {
+        return Alert.alert(`Notice`, "You already have an appointment during this time slot. Please choose a different time.", [
+          { text: "OK", style: "default", onPress: async () => {
+            } },
+        ]);
+      }
     } catch (e) {
 
     }

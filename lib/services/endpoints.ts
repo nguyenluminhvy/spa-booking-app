@@ -52,6 +52,8 @@ export default () => {
       `${baseUrl}/appointments/${id}/assign`,
     getUpcomingAppointment: `${baseUrl}/appointments/upcoming`,
     getPastAppointment: `${baseUrl}/appointments/past`,
+    availableStaffByAppointment: (id: string) =>
+      `${baseUrl}/appointments/${id}/availableStaff`,
 
     //dashboard
     getOverview: `${baseUrl}/dashboard/overview`,

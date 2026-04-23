@@ -41,7 +41,7 @@ export function MessageListButton({ size = 'small', refreshing = false }: { size
         <Ionicons name="chatbubbles-outline" size={22} />
       </TouchableOpacity>
 
-      {/*<Badge count={unreadCount} isMedium={isMedium} />*/}
+      <View style={styles.chatBubbleBadge}/>
     </View>
   );
 }
@@ -84,5 +84,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 10,
     fontWeight: '600',
+  },
+  chatBubbleBadge: {
+    backgroundColor: '#FF3B30',
+    width: 16,
+    height: 16,
+    borderRadius: 50,
+    position: 'absolute',
+    top: -4,
+    right: 0,
+    borderWidth: 2,
+    borderColor: 'white'
   },
 });
