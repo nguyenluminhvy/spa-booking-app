@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { Text } from "react-native-paper";
-import {router, useRouter} from "expo-router";
+import {router, Stack, useRouter} from "expo-router";
 import { Image } from "expo-image";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 
@@ -22,6 +22,7 @@ import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {_getOrCreateChatConversation} from "@/lib/services/api/chat";
 import {useNotifications} from "@/lib/context/NotificationContext";
+import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 type Service = {
   id: string;
@@ -132,6 +133,31 @@ export default function HomeScreen() {
 
   return (
     <View style={{flex: 1}}>
+
+      <Stack.Screen
+        options={{
+          headerShadowVisible: false,
+          headerTitle: '',
+          headerStyle: {
+            height: 120
+          },
+          headerLeft: () => (
+            <View style={{ marginLeft: 16 }}>
+              <View>
+                <Text style={styles.greeting}>
+                  {`${user?.name || ""} 👋`}
+                </Text>
+              </View>
+            </View>
+          ),
+          headerRight: () => (
+            <View style={{ marginRight: 16}}>
+              <NotificationButton size={'medium'} refreshing={refreshing}/>
+            </View>
+          ),
+        }}
+      />
+
       <ScrollView
         contentContainerStyle={{ paddingBottom: 80}}
         style={styles.container}
@@ -143,17 +169,6 @@ export default function HomeScreen() {
           />
         }
       >
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>
-              {`Hello ${user?.name || ""} 👋`}
-            </Text>
-            <Text style={styles.subText}>Have a nice day.</Text>
-          </View>
-
-          <NotificationButton size={'medium'} refreshing={refreshing}/>
-        </View>
-
         <ImagePager />
 
         <View style={styles.section}>

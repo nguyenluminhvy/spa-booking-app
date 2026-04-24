@@ -11,6 +11,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {formatPrice} from "@/lib/utils/helper";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {ServiceItem} from "@/lib/components/ui/ServiceItem";
 
 export default function BookingScreen() {
   const { fetchServices, services } = useSpa()
@@ -61,47 +62,7 @@ export default function BookingScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: 80}}
         keyExtractor={(item) => item.id.toString()}
         data={services}
-        renderItem={({ item }) => <TouchableOpacity style={styles.itemContainer} onPress={() => goToSelectTime(item)}>
-          <View>
-            <Image
-              contentFit={'cover'}
-              source={item.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
-
-            <View style={{
-              position: 'absolute',
-              right: 12,
-              bottom: 12,
-              backgroundColor: '#eff6fd',
-              paddingVertical: 8,
-              paddingHorizontal: 8,
-              borderRadius: 8
-            }}>
-              <Text style={{ color: '#105CDB'}}>{formatPrice(item.price)}</Text>
-            </View>
-          </View>
-
-          <View style={{
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            borderBottomLeftRadius: 16,
-            borderBottomRightRadius: 16,
-          }}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text variant={'labelMedium'} style={{color: '#999'}}>{item.name}  • </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                <MaterialCommunityIcons
-                  name={"star"}
-                  size={17}
-                  color={'#FFC107'}
-                />
-                <Text variant={'labelMedium'} style={{ color: '#FFC107'}}>{item.rating.average}</Text>
-                <Text variant={'labelMedium'} style={{ color: '#999'}}>({item.rating.total})</Text>
-              </View>
-            </View>
-            <Text variant={"titleMedium"} style={{ fontWeight: 'bold', marginVertical: 4 }}>{item.description}</Text>
-          </View>
-
-        </TouchableOpacity>}
+        renderItem={({ item }) => <ServiceItem item={item} onPress={() => goToSelectTime(item)} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

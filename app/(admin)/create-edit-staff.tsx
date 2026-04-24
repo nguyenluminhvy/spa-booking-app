@@ -11,7 +11,6 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Ionicons} from "@expo/vector-icons";
 import {Image} from "expo-image";
 import * as ImagePicker from 'expo-image-picker';
-import {createService, getServiceDetail, updateService} from "@/lib/services/api/services";
 import {useAdmin} from "@/lib/context/AdminContext";
 
 const pickImage = async () => {
@@ -310,24 +309,26 @@ export default function CreateUpdateStaffScreen() {
             </>
           }
 
-
-
-          <Button
-            mode="outlined"
-            textColor="#105CDB"
-            style={{
-              width: "100%",
-              borderRadius: 8,
-              marginTop: 8,
-              borderColor: '#105CDB'
-            }}
-            contentStyle={{
-              height: 52,
-            }}
-            onPress={onResetPasswordStaff}
-          >
-            {"Reset Password"}
-          </Button>
+          {
+            isEditMode && (
+              <Button
+                mode="outlined"
+                textColor="#105CDB"
+                style={{
+                  width: "100%",
+                  borderRadius: 8,
+                  marginTop: 8,
+                  borderColor: '#105CDB'
+                }}
+                contentStyle={{
+                  height: 52,
+                }}
+                onPress={onResetPasswordStaff}
+              >
+                {"Reset Password"}
+              </Button>
+            )
+          }
 
           <Button
             mode="contained"

@@ -99,6 +99,8 @@ export default function Index() {
 
       if (response?.accessToken) {
         await handleLoginSuccess(response)
+      } else if (response?.message) {
+        setErrorMessage(response?.message)
       }
     } catch (e) {
       // const errorMessage = getFirebaseAdminErrorMessage(e?.code)

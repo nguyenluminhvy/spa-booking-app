@@ -9,8 +9,8 @@ import React, {useCallback, useEffect, useState} from "react";
 import {getServices} from "@/lib/services/api/services";
 import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
-import {Ionicons} from "@expo/vector-icons";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
+import {ServiceItem} from "@/lib/components/ui/ServiceItem";
 
 export default function ServicesScreen() {
 
@@ -69,26 +69,7 @@ export default function ServicesScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: 80}}
         keyExtractor={(item) => item.id.toString()}
         data={services}
-        renderItem={({ item }) => <TouchableOpacity style={styles.itemContainer} onPress={() => goToUpdate(item.id)}>
-          <View>
-            <Image
-              contentFit={'cover'}
-              source={item.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
-          </View>
-
-          <View style={{
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            borderBottomLeftRadius: 16,
-            borderBottomRightRadius: 16,
-          }}>
-            <Text variant={'labelLarge'} style={{fontWeight: 'bold'}}>{item.name}</Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>{item.description}</Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>Price: <Text style={{ fontWeight: 'bold'}}>{formatPrice(item.price)}</Text></Text>
-            <Text variant={"labelSmall"} style={{color: '#777777'}}>Duration: <Text style={{ fontWeight: 'bold'}}>{item.duration}p</Text></Text>
-          </View>
-
-        </TouchableOpacity>}
+        renderItem={({ item }) => <ServiceItem item={item} onPress={() => goToUpdate(item.id)} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
