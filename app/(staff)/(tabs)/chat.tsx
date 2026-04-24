@@ -4,11 +4,12 @@ import React, {useEffect, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
-import {router, Stack} from "expo-router";
+import {router, Stack, useFocusEffect, useIsFocused} from "expo-router";
 import {useAuth} from "@/lib/context/AuthContext";
 import {useChatList} from "@/lib/hooks/useChatList";
 import ChatItem from "@/lib/components/ui/ChatItem";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {useNotifications} from "@/lib/context/NotificationContext";
 
 const BUTTONS = [
   {
@@ -23,6 +24,7 @@ const BUTTONS = [
 
 export default function ChatListScreen() {
   const { user } = useAuth();
+  const isFocused = useIsFocused();
 
   if (!user) {
     return null;
@@ -32,6 +34,8 @@ export default function ChatListScreen() {
     userId: user.id,
     role: user.role,
   });
+
+  const { clearUnread } = useNotifications()
 
   const [filterType, setFilterType] = useState('ACTIVE');
 
@@ -45,6 +49,12 @@ export default function ChatListScreen() {
       animated: false,
     });
   }, [conversations]);
+
+  useEffect(() => {
+    if (isFocused) {
+      clearUnread().then();
+    }
+  }, [isFocused]);
 
   const onClaimConversation = async (id: any) => {
     Alert.alert(`Claim this conversation`, "Are you sure?", [

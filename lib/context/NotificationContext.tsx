@@ -19,6 +19,9 @@ import {
   _markAllNotificationAsRead,
   _markNotificationAsRead
 } from "@/lib/services/api/notifications";
+import {collection, onSnapshot} from "firebase/firestore";
+import {db} from "@/lib/config/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -87,10 +90,12 @@ export async function registerForPushNotificationsAsync() {
 interface NotificationContextType {
   notifications: [] | null;
   unreadCount: number;
+  hasUnreadMessage: boolean;
   fetchNotifications: () => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   markAsRead: (id: any) => Promise<void>;
   markAllAsRead: () => Promise<void>;
+  clearUnread: () => Promise<void>;
   saveDeviceToken: (token: any) => Promise<void>;
 }
 
@@ -104,6 +109,9 @@ const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const lastSeenRef = useRef(0);
+  const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
 
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
     undefined
@@ -137,6 +145,40 @@ const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
       fetchUnreadCount()
     }
   }, [user]);
+
+  useEffect(() => {
+    AsyncStorage.getItem('LAST_CHAT_SEEN').then((lastSeen) => {
+      lastSeenRef.current = lastSeen ? Number(lastSeen) : 0;
+    });
+
+    const unsub = onSnapshot(
+      collection(db, 'conversations'),
+      (snapshot) => {
+        let hasNew = false;
+        snapshot.docs.forEach((doc) => {
+          const data: any = doc.data();
+          const updated = data.updatedAt?.seconds * 1000 || 0;
+          if (
+            updated > lastSeenRef.current &&
+            data.lastSenderId !== user?.id
+          ) {
+            hasNew = true;
+          }
+        });
+
+        setHasUnreadMessage(hasNew);
+      },
+    );
+    return () => unsub();
+  }, [user?.id]);
+
+  const clearUnread = async () => {
+    const now = Date.now();
+    await AsyncStorage.setItem('LAST_CHAT_SEEN', String(now));
+    lastSeenRef.current = now;
+
+    setHasUnreadMessage(false);
+  };
 
   const fetchNotifications = async (query?: any) => {
     setLoading(true)
@@ -179,6 +221,8 @@ const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
     fetchUnreadCount,
     markAllAsRead,
     markAsRead,
+    hasUnreadMessage,
+    clearUnread,
   };
 
   return (

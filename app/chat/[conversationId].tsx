@@ -10,15 +10,18 @@ import {Button, TextInput as TextInputPaper} from "react-native-paper";
 import { MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAuth} from "@/lib/context/AuthContext";
 import {useChat} from "@/lib/hooks/useChat";
-import {Stack, useLocalSearchParams} from "expo-router";
+import {Stack, useIsFocused, useLocalSearchParams} from "expo-router";
+import {useNotifications} from "@/lib/context/NotificationContext";
 
 export default function ChatScreen() {
   const { conversationId, chatTitle } = useLocalSearchParams();
+  const isFocused = useIsFocused();
 
   const { user } = useAuth()
 
   if (!user) return null;
 
+  const { clearUnread } = useNotifications()
   const {messages, sendMessage, sending: isMessageSending, loading: isConvoLoading } = useChat(conversationId, user?.id, user?.role)
 
   const isProgressing = isMessageSending || isConvoLoading
@@ -35,6 +38,12 @@ export default function ChatScreen() {
       listRef?.current?.scrollToEnd()
     }, 500)
   }, [listRef, messages]);
+
+  useEffect(() => {
+    if (isFocused) {
+      clearUnread().then();
+    }
+  }, [isFocused]);
 
   const onInputLayoutChanged = useCallback((e: LayoutChangeEvent) => {
     setInputHeight(e.nativeEvent.layout.height);

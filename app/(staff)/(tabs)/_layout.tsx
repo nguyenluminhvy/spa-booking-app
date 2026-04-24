@@ -5,9 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import {useNotifications} from "@/lib/context/NotificationContext";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { hasUnreadMessage } = useNotifications();
 
   return (
     <Tabs
@@ -37,7 +39,7 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: 'Messages',
-          tabBarBadge: '',
+          tabBarBadge: hasUnreadMessage ? '' : undefined,
         }}
       />
       <Tabs.Screen

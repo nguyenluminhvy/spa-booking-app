@@ -21,6 +21,7 @@ import {IMAGES} from "@/lib/assets/images";
 import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {_getOrCreateChatConversation} from "@/lib/services/api/chat";
+import {useNotifications} from "@/lib/context/NotificationContext";
 
 type Service = {
   id: string;
@@ -78,6 +79,7 @@ const ServiceItem = ({ item }: { item: Service }) => {
 export default function HomeScreen() {
   const { navigate } = useRouter();
   const { user } = useAuth();
+  const { hasUnreadMessage } = useNotifications();
 
   const [services, setServices] = useState<Service[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -218,7 +220,10 @@ export default function HomeScreen() {
 
       <TouchableOpacity activeOpacity={0.7} style={styles.chatBubbleButton} onPress={onOpenChat}>
         <Ionicons name="chatbubble-ellipses-outline" size={28} color={"white"} />
-        <View style={styles.chatBubbleBadge}/>
+        {
+          hasUnreadMessage &&  <View style={styles.chatBubbleBadge}/>
+        }
+
       </TouchableOpacity>
     </View>
   );
