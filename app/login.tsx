@@ -99,8 +99,6 @@ export default function Index() {
 
       if (response?.accessToken) {
         await handleLoginSuccess(response)
-      } else if (response?.message) {
-        setErrorMessage(response?.message)
       }
     } catch (e) {
       // const errorMessage = getFirebaseAdminErrorMessage(e?.code)
@@ -113,7 +111,7 @@ export default function Index() {
   return (
     <SafeAreaView style={{ flex: 1,  }}>
       <KeyboardAwareScrollView bottomOffset={100}>
-        <View
+        <Viewo
           style={{
             flex: 1,
             paddingHorizontal: 16,
@@ -246,7 +244,7 @@ export default function Index() {
             </View>
 
           </View>
-        </View>
+        </Viewo>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );

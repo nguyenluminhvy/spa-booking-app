@@ -111,7 +111,7 @@ const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const lastSeenRef = useRef(0);
-  const [hasUnreadMessage, setHasUnreadMessage] = useState(true);
+  const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
 
   useEffect(() => {
     registerForPushNotificationsAsync()

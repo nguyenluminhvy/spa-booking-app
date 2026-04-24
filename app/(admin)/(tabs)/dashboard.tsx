@@ -180,7 +180,7 @@ export default function DashboardScreen() {
   ]);
 
 
-  const [filterType, setFilterType] = useState('all');
+  const [filterType, setFilterType] = useState('day');
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback(async (range: any) => {
@@ -220,7 +220,7 @@ export default function DashboardScreen() {
   }, []);
 
   useEffect(() => {
-    fetchData('all')
+    fetchData('day')
   }, [])
 
   const onRefresh = useCallback(() => {

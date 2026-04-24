@@ -9,6 +9,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {getServices} from "@/lib/services/api/services";
 import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {Ionicons} from "@expo/vector-icons";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import {ServiceItem} from "@/lib/components/ui/ServiceItem";
 

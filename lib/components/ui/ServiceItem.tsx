@@ -1,64 +1,55 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import {Text} from "react-native-paper";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { Text } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import {formatPrice} from "@/lib/utils/helper";
 import { Image } from 'expo-image'
+import {formatPrice} from "@/lib/utils/helper";
+import { View } from '@/components/Themed';
 
-export function ServiceItem({ item, onPress }) {
+
+export function ServiceItem({ item, onPress }: any) {
 
   return (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={onPress}
-    >
+    <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View>
         <Image
-          contentFit="cover"
-          source={item.imageUrl}
-          style={styles.image}
-        />
+          contentFit={'cover'}
+          source={item.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
 
-        <View style={[styles.badge, styles.badgeLeft]}>
-          <Text style={styles.badgeText}>{item.duration}p</Text>
+        <View style={{
+          position: 'absolute',
+          right: 12,
+          bottom: 12,
+          backgroundColor: '#eff6fd',
+          paddingVertical: 8,
+          paddingHorizontal: 8,
+          borderRadius: 8
+        }}>
+          <Text style={{ color: '#105CDB'}}>{formatPrice(item.price)}</Text>
         </View>
-
-        <View style={[styles.badge, styles.badgeRight]}>
-          <Text style={styles.badgeText}>
-            {formatPrice(item.price)}
-          </Text>
-
-        </View>
-
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.row}>
-          <Text variant="labelMedium" style={styles.name}>
-            {item.name} •
-          </Text>
-
-          <View style={styles.ratingRow}>
+      <View style={{
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
+      }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text variant={'labelMedium'} style={{color: '#999'}}>{item.name}  • </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
             <MaterialCommunityIcons
-              name="star"
+              name={"star"}
               size={17}
-              color="#FFC107"
+              color={'#FFC107'}
             />
-
-            <Text variant="labelMedium" style={styles.rating}>
-              {item.rating.average}
-            </Text>
-
-            <Text variant="labelMedium" style={styles.ratingCount}>
-              ({item.rating.total})
-            </Text>
+            <Text variant={'labelMedium'} style={{ color: '#FFC107'}}>{item.rating.average}</Text>
+            <Text variant={'labelMedium'} style={{ color: '#999'}}>({item.rating.total})</Text>
           </View>
         </View>
-
-        <Text variant="titleMedium" style={styles.description}>
-          {item.description}
-        </Text>
+        <Text variant={"titleMedium"} style={{ fontWeight: 'bold', marginVertical: 4 }}>{item.description}</Text>
       </View>
+
     </TouchableOpacity>
   );
 }
@@ -81,70 +72,5 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
-  },
-
-  listContainer: {
-    padding: 16,
-    paddingBottom: 80,
-  },
-
-  image: {
-    height: 200,
-    width: '100%',
-    borderRadius: 16,
-  },
-
-  badge: {
-    position: 'absolute',
-    bottom: 12,
-    backgroundColor: '#eff6fd',
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-  },
-
-  badgeLeft: {
-    left: 12,
-  },
-
-  badgeRight: {
-    right: 12,
-  },
-
-  badgeText: {
-    color: '#105CDB',
-  },
-
-  content: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  name: {
-    color: '#999',
-  },
-
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-
-  rating: {
-    color: '#FFC107',
-  },
-
-  ratingCount: {
-    color: '#999',
-  },
-
-  description: {
-    fontWeight: 'bold',
-    marginVertical: 4,
   },
 });
