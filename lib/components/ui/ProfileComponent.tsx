@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {Alert, StyleSheet, TouchableOpacity, View} from "react-native";
 import { Button, Avatar, Text } from "react-native-paper";
 import {router, useRouter} from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,8 +49,13 @@ export default function ProfileComponent() {
     ?.toUpperCase();
 
   const handleLogout = async () => {
-    await removeStringData("accessToken");
-    navigate("/login");
+    Alert.alert(`You gonna logout`, "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", style: "default", onPress: async () => {
+          await removeStringData("accessToken");
+          navigate("/login");
+        }},
+    ]);
   };
 
   return (

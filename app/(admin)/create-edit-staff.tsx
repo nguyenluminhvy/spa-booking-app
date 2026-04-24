@@ -310,24 +310,26 @@ export default function CreateUpdateStaffScreen() {
             </>
           }
 
-
-
-          <Button
-            mode="outlined"
-            textColor="#105CDB"
-            style={{
-              width: "100%",
-              borderRadius: 8,
-              marginTop: 8,
-              borderColor: '#105CDB'
-            }}
-            contentStyle={{
-              height: 52,
-            }}
-            onPress={onResetPasswordStaff}
-          >
-            {"Reset Password"}
-          </Button>
+          {
+            isEditMode && (
+              <Button
+                mode="outlined"
+                textColor="#105CDB"
+                style={{
+                  width: "100%",
+                  borderRadius: 8,
+                  marginTop: 8,
+                  borderColor: '#105CDB'
+                }}
+                contentStyle={{
+                  height: 52,
+                }}
+                onPress={onResetPasswordStaff}
+              >
+                {"Reset Password"}
+              </Button>
+            )
+          }
 
           <Button
             mode="contained"
