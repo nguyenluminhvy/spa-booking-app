@@ -4,10 +4,11 @@ import {useEffect, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
-import {router} from "expo-router";
+import {router, useIsFocused} from "expo-router";
 import {useAuth} from "@/lib/context/AuthContext";
 import {useChatList} from "@/lib/hooks/useChatList";
 import ChatItem from "@/lib/components/ui/ChatItem";
+import {useNotifications} from "@/lib/context/NotificationContext";
 
 const BUTTONS = [
   {
@@ -22,6 +23,8 @@ const BUTTONS = [
 
 export default function ChatListScreen() {
   const { user } = useAuth();
+  const { clearUnread } = useNotifications()
+  const isFocused = useIsFocused();
 
   if (!user) {
     return null;
@@ -35,6 +38,13 @@ export default function ChatListScreen() {
   const [filterType, setFilterType] = useState('ACTIVE');
 
   const conversations = filterType === 'ACTIVE' ? active : waiting;
+
+  useEffect(() => {
+    if (isFocused) {
+      clearUnread().then();
+    }
+  }, [isFocused]);
+
 
   return (
     <View style={styles.container}>

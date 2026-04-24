@@ -13,6 +13,7 @@ import {IMAGES} from "@/lib/assets/images";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {router, Stack} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
+import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 const BUTTONS = [
   {
@@ -82,12 +83,7 @@ export default function AppointmentsScreen() {
           headerShadowVisible: false,
           headerLeft: () => (
             <View style={{ marginLeft: 16 }}>
-              <TouchableOpacity
-                style={{ padding: 4 }}
-                onPress={() => router.push("/chat")}
-              >
-                <Ionicons name="chatbubbles-outline" size={22} />
-              </TouchableOpacity>
+              <MessageListButton />
             </View>
           ),
           headerRight: () => (

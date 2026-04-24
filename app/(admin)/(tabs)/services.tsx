@@ -10,6 +10,7 @@ import {getServices} from "@/lib/services/api/services";
 import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {Ionicons} from "@expo/vector-icons";
+import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 export default function ServicesScreen() {
 
@@ -54,12 +55,7 @@ export default function ServicesScreen() {
           headerShadowVisible: false,
           headerLeft: () => (
             <View style={{ marginLeft: 16 }}>
-              <TouchableOpacity
-                style={{ padding: 4 }}
-                onPress={() => router.push("/chat")}
-              >
-                <Ionicons name="chatbubbles-outline" size={22} />
-              </TouchableOpacity>
+              <MessageListButton />
             </View>
           ),
           headerRight: () => (

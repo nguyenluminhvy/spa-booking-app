@@ -10,6 +10,7 @@ import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
 import {Stack} from "expo-router";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 const BUTTONS = [
   {
@@ -68,6 +69,11 @@ export default function AppointmentsScreen() {
       <Stack.Screen
         options={{
           headerShadowVisible: false,
+          headerLeft: () => (
+            <View style={{ marginLeft: 16 }}>
+              <MessageListButton />
+            </View>
+          ),
           headerRight: () => (
             <NotificationButton refreshing={refreshing}/>
           ),

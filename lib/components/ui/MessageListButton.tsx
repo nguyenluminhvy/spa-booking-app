@@ -24,6 +24,8 @@ const Badge = ({ count, isMedium }: { count: number; isMedium: boolean }) => {
 export function MessageListButton({ size = 'small', refreshing = false }: { size?: 'small' | 'medium', refreshing?: boolean }) {
   const isMedium = size === 'medium';
 
+  const { hasUnreadMessage } = useNotifications();
+
   useEffect(() => {
     // if (refreshing) {
     //   setTimeout(() => {
@@ -41,7 +43,9 @@ export function MessageListButton({ size = 'small', refreshing = false }: { size
         <Ionicons name="chatbubbles-outline" size={22} />
       </TouchableOpacity>
 
-      <View style={styles.chatBubbleBadge}/>
+      {
+        hasUnreadMessage && <View style={styles.chatBubbleBadge}/>
+      }
     </View>
   );
 }

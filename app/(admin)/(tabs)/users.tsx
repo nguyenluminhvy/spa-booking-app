@@ -9,6 +9,7 @@ import {useAdmin} from "@/lib/context/AdminContext";
 import {router, Stack} from "expo-router";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {Ionicons} from "@expo/vector-icons";
+import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 const BUTTONS = [
   {
@@ -49,12 +50,7 @@ export default function UsersScreen() {
           headerShadowVisible: false,
           headerLeft: () => (
             <View style={{ marginLeft: 16 }}>
-              <TouchableOpacity
-                style={{ padding: 4 }}
-                onPress={() => router.push("/chat")}
-              >
-                <Ionicons name="chatbubbles-outline" size={22} />
-              </TouchableOpacity>
+              <MessageListButton />
             </View>
           ),
           headerRight: () => (
