@@ -1,44 +1,44 @@
-import React, {useEffect} from "react";
+import React from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useNotifications } from "@/lib/context/NotificationContext";
+import {useAuth} from "@/lib/context/AuthContext";
+import {_getOrCreateChatConversation} from "@/lib/services/api/chat";
 
-const formatCount = (count: number) => (count > 99 ? '99+' : count.toString());
+export function MessageListButton({ size = 'small',  }: { size?: 'small' | 'medium' }) {
+  const {user} = useAuth()
+  const isUserRole = user?.role === 'USER'
 
-const Badge = ({ count, isMedium }: { count: number; isMedium: boolean }) => {
-  if (count <= 0) return null;
-
-  const display = formatCount(count);
-
-  return (
-    <View style={[
-      isMedium ? styles.badge : styles.badgeSmall,
-      display.length > 1 && styles.badgeLarge
-    ]}>
-      <Text style={styles.badgeText}>{display}</Text>
-    </View>
-  );
-};
-
-export function MessageListButton({ size = 'small', refreshing = false }: { size?: 'small' | 'medium', refreshing?: boolean }) {
   const isMedium = size === 'medium';
 
   const { hasUnreadMessage } = useNotifications();
 
-  useEffect(() => {
-    // if (refreshing) {
-    //   setTimeout(() => {
-    //     fetchUnreadCount()
-    //   }, 1000);
-    // }
-  }, [refreshing]);
+  const onOpenChat = async () => {
+    const response = await _getOrCreateChatConversation()
+    const convoId = response?.id
+
+    if (convoId) {
+      router.push({
+        pathname: "/chat/[conversationId]",
+        params: {
+          conversationId: convoId,
+        },
+      });
+    }
+  }
 
   return (
     <View style={!isMedium && { marginRight: 16 }}>
       <TouchableOpacity
         style={isMedium ? styles.notifyBtn : { padding: 4 }}
-        onPress={() => router.push("/chat")}
+        onPress={() => {
+          if (isUserRole) {
+            onOpenChat()
+          } else {
+            router.push("/chat")
+          }
+        }}
       >
         <Ionicons name="chatbubbles-outline" size={22} />
       </TouchableOpacity>
