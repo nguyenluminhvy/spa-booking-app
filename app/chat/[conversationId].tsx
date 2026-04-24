@@ -12,6 +12,7 @@ import {useAuth} from "@/lib/context/AuthContext";
 import {useChat} from "@/lib/hooks/useChat";
 import {Stack, useIsFocused, useLocalSearchParams} from "expo-router";
 import {useNotifications} from "@/lib/context/NotificationContext";
+import {isIos} from "@/lib/utils/helper";
 
 export default function ChatScreen() {
   const { conversationId, chatTitle } = useLocalSearchParams();
@@ -25,7 +26,6 @@ export default function ChatScreen() {
   const {messages, sendMessage, sending: isMessageSending, loading: isConvoLoading } = useChat(conversationId, user?.id, user?.role)
 
   const isProgressing = isMessageSending || isConvoLoading
-  console.log(messages, 'mess')
 
   const textInputRef = useRef<any>(null);
   const textRef = useRef("");
@@ -128,6 +128,10 @@ export default function ChatScreen() {
                 }}
                 style={[
                   styles.input,
+                  !isIos &&
+                  {
+                    height: inputHeight,
+                  }
                 ]}
                 mode={"outlined"}
                 outlineColor={"transparent"}
@@ -138,8 +142,13 @@ export default function ChatScreen() {
                 onChangeText={onInput}
                 onContentSizeChange={(e) => {
                   const nextHeight = e.nativeEvent.contentSize.height
-                  setInputHeight(nextHeight);
+                  if (nextHeight > MAX_HEIGHT) {
+                    setInputHeight(MAX_HEIGHT);
+                  } else {
+                    setInputHeight(nextHeight);
+                  }
                 }}
+                numberOfLines={3}
               />
             </View>
 
@@ -161,7 +170,7 @@ export default function ChatScreen() {
 
   );
 }
-const MIN_HEIGHT = 40;
+const MIN_HEIGHT = 50;
 const MAX_HEIGHT = 80;
 
 export const TEXT_INPUT_HEIGHT = 50;
@@ -177,7 +186,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
     paddingLeft: 8,
-    maxHeight: MAX_HEIGHT,
+    // maxHeight: MAX_HEIGHT,
     borderRadius: 50,
     padding: 0,
     fontSize: 16,

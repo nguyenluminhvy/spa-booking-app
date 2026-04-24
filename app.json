@@ -27,7 +27,9 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.nguyenluminhvy.spabookingapp",
       "googleServicesFile": "./lib/config/google-services.json",
-      "gradleArguments": ["-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"]
+      "gradleArguments": [
+        "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -44,7 +46,9 @@
               "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
             ],
             "packagingOptions": {
-              "pickFirsts": ["**/lib_assets_images_banner*"]
+              "pickFirsts": [
+                "**/lib_assets_images_banner*"
+              ]
             }
           }
         }

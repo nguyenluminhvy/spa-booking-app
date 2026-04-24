@@ -113,10 +113,6 @@ const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
   const lastSeenRef = useRef(0);
   const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
 
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-    undefined
-  );
-
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then(token => {
@@ -127,11 +123,20 @@ const NotificationsProvider: FC<PropsWithChildren> = ({ children }) => {
       .catch((error: any) => {});
 
     const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
+      console.log('from foreground, background', notification);
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+      const conversationId = response?.notification?.request?.content?.data?.conversationId
+
+      if (conversationId) {
+        router.push({
+          pathname: "/chat/[conversationId]",
+          params: {
+            conversationId: conversationId,
+          },
+        });
+      }
     });
 
     return () => {
