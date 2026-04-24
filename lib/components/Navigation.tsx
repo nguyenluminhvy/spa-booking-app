@@ -7,6 +7,8 @@ export default function Navigation() {
         headerBackTitle: "Back",
         headerShadowVisible: false,
         gestureEnabled: false,
+        headerTitleAlign: 'center',
+        animation: 'slide_from_right'
       }}
     >
       <Stack.Screen
@@ -91,6 +93,24 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
+        name="chat/index"
+        options={{
+          headerTitle: 'Message',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="chat/[conversationId]"
+        options={{
+          headerTitle: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
         name="(admin)"
         options={{ headerShown: false }}
       />
@@ -102,7 +122,6 @@ export default function Navigation() {
         name="(staff)"
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="task/[taskId]" />
     </Stack>
   )
 }

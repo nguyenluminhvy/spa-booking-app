@@ -44,7 +44,7 @@ import {NotificationsProvider} from "@/lib/context/NotificationContext";
 
 
 export default function RootLayout() {
-  const { push } = useRouter()
+  const { push, replace } = useRouter()
 
   useEffect(() => {
     ;(async () => {

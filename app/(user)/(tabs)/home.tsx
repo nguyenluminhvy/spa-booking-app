@@ -20,6 +20,8 @@ import { getUpcomingAppointment } from "@/lib/services/api/appointments";
 import {IMAGES} from "@/lib/assets/images";
 import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
+import {_getOrCreateChatConversation} from "@/lib/services/api/chat";
+import {useNotifications} from "@/lib/context/NotificationContext";
 
 type Service = {
   id: string;
@@ -77,6 +79,7 @@ const ServiceItem = ({ item }: { item: Service }) => {
 export default function HomeScreen() {
   const { navigate } = useRouter();
   const { user } = useAuth();
+  const { hasUnreadMessage } = useNotifications();
 
   const [services, setServices] = useState<Service[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -113,100 +116,123 @@ export default function HomeScreen() {
     }, 1000);
   }, []);
 
+  const onOpenChat = async () => {
+    const response = await _getOrCreateChatConversation()
+    const convoId = response?.id
 
+    if (convoId) {
+      router.push({
+        pathname: "/chat/[conversationId]",
+        params: {
+          conversationId: convoId,
+        },
+      });
+    }
+  }
 
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-      }
-    >
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>
-            {`Hello ${user?.name || ""} 👋`}
-          </Text>
-          <Text style={styles.subText}>Have a nice day.</Text>
+    <View style={{flex: 1}}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 80}}
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>
+              {`Hello ${user?.name || ""} 👋`}
+            </Text>
+            <Text style={styles.subText}>Have a nice day.</Text>
+          </View>
+
+          <NotificationButton size={'medium'} refreshing={refreshing}/>
         </View>
 
-        <NotificationButton size={'medium'} refreshing={refreshing}/>
-      </View>
+        <ImagePager />
 
-      <ImagePager />
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Services</Text>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Services</Text>
-
-          <TouchableOpacity onPress={() => {
-            router.navigate('/(user)/(tabs)/booking')
-          }}>
-            <Text style={styles.link}>See All</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.list}>
-          {services.map((item) => (
-            <ServiceItem key={item.id} item={item} />
-          ))}
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Upcoming</Text>
-
-        <View style={styles.list}>
-          {appointments.length > 0 ? (
-            appointments.map((item) => (
-              <AppointmentCard key={item.id} data={item} />
-            ))
-          ) : (
-            <View style={{
-              flex: 1,
-              paddingBottom: 40,
-              alignItems: 'center',
-              gap: 8
+            <TouchableOpacity onPress={() => {
+              router.navigate('/(user)/(tabs)/booking')
             }}>
-              <Image
-                style={{
-                  width: "100%",
-                  height: 50,
-                }}
-                source={IMAGES.nodata}
-                contentFit="contain"
-              />
-              <Text style={styles.emptyText}>No upcoming appointments</Text>
+              <Text style={styles.link}>See All</Text>
+            </TouchableOpacity>
+          </View>
 
-              <TouchableOpacity
-                style={{
-                borderWidth: 0.5,
-                borderStyle: 'dashed',
-                borderColor: '#006EE9',
-                borderRadius: 8,
-                padding: 8,
-                paddingHorizontal: 12
-              }} onPress={() => router.navigate('/(user)/(tabs)/booking')}
-              >
-                <Text style={styles.link}>Book now</Text>
-              </TouchableOpacity>
-
-            </View>
-          )}
+          <View style={styles.list}>
+            {services.map((item) => (
+              <ServiceItem key={item.id} item={item} />
+            ))}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Upcoming</Text>
+
+          <View style={styles.list}>
+            {appointments.length > 0 ? (
+              appointments.map((item) => (
+                <AppointmentCard key={item.id} data={item} />
+              ))
+            ) : (
+              <View style={{
+                flex: 1,
+                paddingBottom: 40,
+                alignItems: 'center',
+                gap: 8
+              }}>
+                <Image
+                  style={{
+                    width: "100%",
+                    height: 50,
+                  }}
+                  source={IMAGES.nodata}
+                  contentFit="contain"
+                />
+                <Text style={styles.emptyText}>No upcoming appointments</Text>
+
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 0.5,
+                    borderStyle: 'dashed',
+                    borderColor: '#006EE9',
+                    borderRadius: 8,
+                    padding: 8,
+                    paddingHorizontal: 12
+                  }} onPress={() => router.navigate('/(user)/(tabs)/booking')}
+                >
+                  <Text style={styles.link}>Book now</Text>
+                </TouchableOpacity>
+
+              </View>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+
+      <TouchableOpacity activeOpacity={0.7} style={styles.chatBubbleButton} onPress={onOpenChat}>
+        <Ionicons name="chatbubble-ellipses-outline" size={28} color={"white"} />
+        {
+          hasUnreadMessage &&  <View style={styles.chatBubbleBadge}/>
+        }
+
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 8
+    paddingTop: 8,
   },
 
   header: {
@@ -296,5 +322,28 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: "center",
     color: "#999",
+  },
+
+  chatBubbleButton: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: "#006EE9",
+    borderRadius: 50,
+    width: 52,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  chatBubbleBadge: {
+    backgroundColor: '#FF3B30',
+    width: 16,
+    height: 16,
+    borderRadius: 50,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    borderWidth: 2,
+    borderColor: 'white'
   },
 });

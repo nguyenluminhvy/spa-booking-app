@@ -12,6 +12,7 @@ import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
+import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 const BUTTONS = [
   {
@@ -250,8 +251,10 @@ export default function DashboardScreen() {
             </View>
           ),
           headerRight: () => (
-            <View style={{ marginRight: 16 }}>
-              <NotificationButton size={'medium'}/>
+            <View style={{ marginRight: 16, flexDirection: 'row', gap: 8 }}>
+              <MessageListButton size={'medium'}/>
+
+              <NotificationButton size={'medium'} refreshing={refreshing}/>
             </View>
           ),
         }}

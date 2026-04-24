@@ -25,7 +25,7 @@ export const createAppointment = async (payload: any) => {
   try {
     const response = await request(Endpoint().createAppointment, Method.POST, payload, null)
 
-    return response?.code === 0 ? response?.data : response
+    return response
   } catch (e) {
     return e
   }
@@ -102,3 +102,13 @@ export const getPastAppointment = async (query?: any) => {
   }
 };
 
+
+export const _getAvailableStaffByAppointment = async (id: any) => {
+  try {
+    const response = await request(Endpoint().availableStaffByAppointment(id), Method.GET, null, null)
+
+    return response?.code === 0 ? response?.data : response
+  } catch (e) {
+    return e
+  }
+}

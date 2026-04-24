@@ -6,6 +6,8 @@ export default function AdminNavigation() {
       headerBackTitle: "Back",
       headerShadowVisible: false,
       gestureEnabled: false,
+      headerTitleAlign: 'center',
+      animation: 'slide_from_right'
     }}>
       {/* Tabs */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

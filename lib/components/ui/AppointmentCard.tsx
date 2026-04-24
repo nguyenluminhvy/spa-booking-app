@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { TouchableOpacity, StyleSheet, View } from 'react-native';
+import {TouchableOpacity, StyleSheet, View, Alert} from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {Button, Text} from 'react-native-paper';
 import moment from 'moment';
@@ -70,26 +70,43 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
   const { confirmAppointment, cancelAppointment, completeAppointment, ratingAppointment } = useSpa()
   const { isAdminRole, isStaffRole } = useAuth()
   const { assignStaff } = useSpa()
-  const { staffs } = useAdmin()
+  const { availableStaffByAppointment, fetchAvailableStaffByAppointment } = useAdmin()
 
   const [showModal, setShowModal] = useState(false);
 
   const onConfirm = async () => {
-    await confirmAppointment(id)
-    onConfirmed?.()
+
+
+    Alert.alert(`Comfirm this appointment`, "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", style: "default", onPress: async () => {
+        await confirmAppointment(id)
+        onConfirmed?.()
+      }},
+    ]);
   }
 
   const onPressCancel = async () => {
-    if (onCancel) {
-      onCancel?.(id)
-    } else {
-      await cancelAppointment(id)
-    }
+    Alert.alert(`Cancel this appointment`, "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", style: "default", onPress: async () => {
+        if (onCancel) {
+          onCancel?.(id)
+        } else {
+          await cancelAppointment(id)
+        }
+      }},
+    ]);
   }
 
   const onComplete = async () => {
-    await completeAppointment(id)
-    onCompleted?.()
+    Alert.alert(`Complete this appointment`, "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", style: "default", onPress: async () => {
+        await completeAppointment(id)
+        onCompleted?.()
+      }},
+    ]);
   }
 
   const goToRating = async () => {
@@ -101,6 +118,11 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
         query: queryStringify
       }
     })
+  }
+
+  const onAssignStaff = async () => {
+    await fetchAvailableStaffByAppointment(id)
+    setShowModal(true)
   }
 
   return (
@@ -162,7 +184,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
                   )
                 }
                 <Button compact mode="text" style={{}} textColor={'rgba(234, 57, 67, 1)'} onPress={onPressCancel}>
-                  Cancel
+                  {isAdminRole ? 'Reject' : 'Cancel'}
                 </Button>
               </View>
             )
@@ -173,7 +195,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
               <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>
 
                 {
-                  isAdminRole &&  <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={()=> setShowModal(true)}>
+                  isAdminRole &&  <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onAssignStaff}>
                     {isStaffAssigned ? 'Change Practitioner' : 'Assign Practitioner'}
                   </Button>
                 }
@@ -200,7 +222,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
 
       <AssignStaffModal
         visible={showModal}
-        staffs={staffs}
+        staffs={availableStaffByAppointment}
         currentStaffId={staff?.id}
         onClose={() => setShowModal(false)}
         onSelect={(staffId) => {
