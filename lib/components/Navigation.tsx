@@ -21,6 +21,26 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
+        name="term"
+        options={{
+          headerShown: true,
+          title: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="policy"
+        options={{
+          headerShown: true,
+          title: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
         name="login"
         options={{
           headerShown: false,

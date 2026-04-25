@@ -7,11 +7,11 @@ import {Button, Text} from "react-native-paper";
 import {AppTextInput} from "@/lib/components/ui/AppTextInput";
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 import {validateEmail} from "@/lib/utils/validators";
-import {getFirebaseAdminErrorMessage} from "@/lib/utils/firebaseAdminErrors";
 import {signInFn} from "@/lib/services/api/auth";
 import {storeStringData} from "@/lib/utils/AsyncStorage";
 import {useAuth} from "@/lib/context/AuthContext";
 import {registerForPushNotificationsAsync, useNotifications} from "@/lib/context/NotificationContext";
+import {Ionicons} from "@expo/vector-icons";
 
 export default function Index() {
   const { fetchProfile, setLoading } = useAuth()
@@ -22,6 +22,8 @@ export default function Index() {
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [checked, setChecked] = useState(true);
 
   const isValidEmail = async (value: any): Promise<boolean> => {
     const message = validateEmail(value);
@@ -192,26 +194,42 @@ export default function Index() {
               )
             }
 
+
             <TouchableOpacity
-              onPress={() => {
-                router.push('/forgot-password')
-              }}
-              style={{
-                marginVertical: 8,
-                alignSelf: 'flex-end'
-              }}>
-              <Text
+              onPress={() => setChecked(!checked)}
+              style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, marginTop: 20, paddingRight: 20 }}
+            >
+              <View
                 style={{
-                  textAlign: "right",
-                  color: '#006EE9'
+                  width: 20,
+                  height: 20,
+                  borderWidth: 1,
+                  borderRadius: 4,
+                  borderColor: "#006EE9",
+                  backgroundColor: checked ? '#006EE9' : 'white',
+                  marginRight: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                Forgot password?
+                {
+                  checked && (
+                    <Ionicons name="checkmark-outline" size={18} color={checked ? 'white' : '#006EE9'} />
+                  )
+                }
+              </View>
+
+              <Text variant="labelLarge">
+                I agree to the <Text onPress={() => {
+                router?.push('/term')
+              }} variant="labelLarge" style={{ color: '#006EE9'}}>Terms Conditions</Text> and <Text onPress={() => {
+                router?.push('/policy')
+              }} variant="labelLarge" style={{ color: '#006EE9'}}>Privacy Policy</Text>
               </Text>
             </TouchableOpacity>
 
-
             <Button
+              disabled={!checked}
               mode="contained"
               buttonColor="#105CDB"
               style={{
@@ -227,6 +245,26 @@ export default function Index() {
             >
               Login
             </Button>
+
+
+            <TouchableOpacity
+              onPress={() => {
+                router.push('/forgot-password')
+              }}
+              style={{
+                marginTop: 20,
+                marginVertical: 8,
+                alignSelf: 'center'
+              }}>
+              <Text
+                style={{
+                  textAlign: "right",
+                  color: '#006EE9'
+                }}
+              >
+                Forgot password?
+              </Text>
+            </TouchableOpacity>
 
             <View style={{flexDirection: 'row', gap: 4, alignSelf: 'center', marginTop: 8}}>
               <Text>
