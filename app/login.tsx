@@ -266,7 +266,7 @@ export default function Index() {
               </Text>
             </TouchableOpacity>
 
-            <View style={{flexDirection: 'row', gap: 4, alignSelf: 'center', marginTop: 8}}>
+            <View style={{flexDirection: 'row', gap: 4, alignSelf: 'center'}}>
               <Text>
                 Don’t have an account?
               </Text>
