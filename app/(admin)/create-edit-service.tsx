@@ -1,8 +1,7 @@
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {Alert, StyleSheet, TouchableOpacity} from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { View } from '@/components/Themed';
-import {Stack, useLocalSearchParams} from "expo-router";
+import {router, Stack, useLocalSearchParams} from "expo-router";
 import {KeyboardAwareScrollView, KeyboardToolbar} from "react-native-keyboard-controller";
 import {TextInput, Text, Button} from "react-native-paper";
 import {useEffect, useMemo, useState} from "react";
@@ -11,7 +10,9 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Ionicons} from "@expo/vector-icons";
 import {Image} from "expo-image";
 import * as ImagePicker from 'expo-image-picker';
-import {createService, getServiceDetail, updateService} from "@/lib/services/api/services";
+import {getServiceDetail} from "@/lib/services/api/services";
+import {useAuth} from "@/lib/context/AuthContext";
+import {useSpa} from "@/lib/context/SpaContext";
 
 const pickImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -35,6 +36,8 @@ export default function CreateUpdateServiceScreen() {
   const insets = useSafeAreaInsets();
   const bottom = isIos ? insets.bottom : 20;
 
+  const { setLoading } = useAuth()
+  const { createService, updateService, fetchServices } = useSpa()
 
   const [service, setService] = useState({
     name: '',
@@ -60,24 +63,23 @@ export default function CreateUpdateServiceScreen() {
           setImage({
             uri: data.imageUrl,
           });
-        } else {
-          // setTask(prev => ({
-          //   ...prev,
-          //   category: TaskCategory.Personal,
-          //   status: TaskStatus.Todo,
-          //   priority: TaskPriority.Medium,
-          //   reminderOffset: 10,
-          // }))
         }
       }
     })();
   }, [serviceId]);
 
   const onSelectImage = async () => {
-    const source = await pickImage();
+    try {
+      setLoading(true)
+      const source = await pickImage();
 
-    if (source) {
-      setImage(source)
+      if (source) {
+        setImage(source)
+      }
+    } catch (e) {
+
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -96,10 +98,23 @@ export default function CreateUpdateServiceScreen() {
         type: 'image/jpeg',
       } as any);
 
-      const result = await createService(formData);
+      setLoading(true)
 
-      // return res.data;
+      const result: any = await createService(formData);
+
+      if (result?.id) {
+        // fetchServices()
+        router.push('/(admin)/create-service-success-modal')
+      } else if (result?.message) {
+        Alert.alert(`Notice`, result?.message, [
+          { text: "OK", style: "default", onPress: async () => {
+          }},
+        ]);
+      }
     } catch (e) {
+      console.log(e, 'e')
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -112,7 +127,6 @@ export default function CreateUpdateServiceScreen() {
       formData.append('price', String(service.price));
       formData.append('duration', String(service.duration));
 
-
       if (image.uri !== service.imageUrl) {
         formData.append('file', {
           uri: image.uri,
@@ -121,14 +135,24 @@ export default function CreateUpdateServiceScreen() {
         } as any);
       }
 
-
-      console.log(image.uri, 'image.uri');
-      console.log(service.imageUrl, 'image.imageUrl')
+      setLoading(true)
 
       const result = await updateService(service.id, formData);
 
-      // return res.data;
+      if (result?.id) {
+        // fetchServices()
+        router.push('/(admin)/update-service-success-modal')
+      } else if (result?.message) {
+        Alert.alert(`Notice`, result?.message, [
+          { text: "OK", style: "default", onPress: async () => {
+            }},
+        ]);
+      }
+
     } catch (e) {
+
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -311,8 +335,6 @@ export default function CreateUpdateServiceScreen() {
               }
             </TouchableOpacity>
           </View>
-
-
 
           <Button
             mode="contained"

@@ -21,9 +21,9 @@ export const getServiceDetail = async (serviceId: any) => {
   }
 }
 
-export const createService = async (formData: any) => {
+export const _createService = async (formData: any) => {
   try {
-    const response = await request(Endpoint().createService, Method.POST, formData, null, null)
+    const response = await request(Endpoint().createService, Method.POST, formData, null)
 
     return response?.code === 0 ? response?.data : response
   } catch (e) {
@@ -31,7 +31,7 @@ export const createService = async (formData: any) => {
   }
 }
 
-export const updateService = async (serviceId: any, formData: any) => {
+export const _updateService = async (serviceId: any, formData: any) => {
   try {
     const response = await request(Endpoint().updateService(serviceId), Method.PATCH, formData, null)
 

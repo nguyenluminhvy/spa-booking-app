@@ -12,7 +12,7 @@ import {
   _confirmAppointment,
   getAppointments
 } from "@/lib/services/api/appointments";
-import {getServices} from "@/lib/services/api/services";
+import {_createService, _updateService, getServices} from "@/lib/services/api/services";
 import {useAuth} from "@/lib/context/AuthContext";
 import {_createReview} from "@/lib/services/api/reviews";
 
@@ -20,6 +20,8 @@ type SpaContextType = {
   services: [] | null;
   appointments: [] | null;
   fetchAppointments: () => Promise<void>;
+  createService: (formData?: any) => Promise<void>;
+  updateService: (id: any, formData?: any) => Promise<void>;
   fetchServices: (query?: any) => Promise<void>;
   filterByToday: () => Promise<void>;
   filterByDone: () => Promise<void>;
@@ -37,6 +39,8 @@ const defaultContext: SpaContextType = {
   appointments: [],
   fetchAppointments: async () => {},
   fetchServices: async (query?: any) => {},
+  createService: async (formData?: any) => {},
+  updateService: async (id: any, formData?: any) => {},
   filterByToday: async () => {},
   filterByDone: async () => {},
   filterByStatus: async (status: any) => {},
@@ -65,6 +69,14 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
       setAppointments(response);
     }
     setLoading(false)
+  }
+
+  const createService = async (formData: any) => {
+    return await _createService(formData);
+  }
+
+  const updateService = async (id: any, formData: any) => {
+    return await _updateService(id, formData);
   }
 
   const fetchServices = async (query: any) => {
@@ -138,6 +150,8 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     appointments,
     services,
     fetchAppointments,
+    createService,
+    updateService,
     fetchServices,
     confirmAppointment,
     cancelAppointment,

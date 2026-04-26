@@ -15,6 +15,24 @@ export default function AdminNavigation() {
       <Stack.Screen name="assign-staff" />
       <Stack.Screen name="create-edit-service" />
       <Stack.Screen name="create-edit-staff" />
+      <Stack.Screen
+        name="create-service-success-modal"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+          headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' }
+        }}
+      />
+      <Stack.Screen
+        name="update-service-success-modal"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+          headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' }
+        }}
+      />
     </Stack>
   );
 }

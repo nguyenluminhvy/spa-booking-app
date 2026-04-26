@@ -194,10 +194,9 @@ export default function Index() {
               )
             }
 
-
             <TouchableOpacity
               onPress={() => setChecked(!checked)}
-              style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, marginTop: 20, paddingRight: 20 }}
+              style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, marginTop: 32, paddingRight: 20 }}
             >
               <View
                 style={{
@@ -222,7 +221,7 @@ export default function Index() {
               <Text variant="labelLarge">
                 I agree to the <Text onPress={() => {
                 router?.push('/term')
-              }} variant="labelLarge" style={{ color: '#006EE9'}}>Terms Conditions</Text> and <Text onPress={() => {
+              }} variant="labelLarge" style={{ color: '#006EE9'}}>Terms</Text> and <Text onPress={() => {
                 router?.push('/policy')
               }} variant="labelLarge" style={{ color: '#006EE9'}}>Privacy Policy</Text>
               </Text>
