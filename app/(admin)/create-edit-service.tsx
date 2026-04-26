@@ -37,21 +37,22 @@ export default function CreateUpdateServiceScreen() {
   const bottom = isIos ? insets.bottom : 20;
 
   const { setLoading } = useAuth()
-  const { createService, updateService, fetchServices } = useSpa()
+  const { createService, updateService } = useSpa()
 
   const [service, setService] = useState({
     name: '',
     price: '',
-    duration: 0,
+    duration: '',
     description: '',
   });
   const [image, setImage] = useState({});
 
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const isError = useMemo(() => {
-    return !!errorMessage
-  }, [errorMessage])
+  const [errorInputMessage, setErrorInputMessage] = useState({
+    name: '',
+    price: '',
+    duration: '',
+    description: '',
+  });
 
   useEffect(() => {
     (async () => {
@@ -83,8 +84,56 @@ export default function CreateUpdateServiceScreen() {
     }
   }
 
+  const handleChange = (field: string, value: string) => {
+    setService(prev => ({ ...prev, [field]: value }));
+    setErrorInputMessage(prev => ({
+      ...prev,
+      [field]: '',
+    }));
+  };
+
+  const checkError = () => {
+    const errors = {
+      name: '',
+      price: '',
+      duration: '',
+      description: '',
+    };
+
+    if (!service.name || service.name.trim().length < 8) {
+      errors.name = 'Service name must be at least 8 characters';
+    }
+
+    if (!service.description || service.description.trim().length < 20) {
+      errors.description = 'Description must be at least 20 characters';
+    }
+
+    if (!service.price) {
+      errors.price = 'Price is required';
+    } else if (isNaN(Number(service.price))) {
+      errors.price = 'Price must be a number';
+    } else if (Number(service.price) < 99999) {
+      errors.price = 'Price must be greater than 99,999';
+    }
+
+    if (!service.duration) {
+      errors.duration = 'Duration is required';
+    } else if (isNaN(Number(service.duration))) {
+      errors.duration = 'Duration must be a number';
+    } else if (Number(service.duration) <= 0) {
+      errors.duration = 'Duration must be greater than 0';
+    }
+
+    setErrorInputMessage(errors);
+
+    return !errors.name && !errors.price && !errors.duration && !errors.description;
+  };
+
   const onCreateService = async () => {
     try {
+      const isValid = checkError();
+      if (!isValid) return;
+
       const formData = new FormData();
 
       formData.append('name', service.name);
@@ -120,6 +169,9 @@ export default function CreateUpdateServiceScreen() {
 
   const onUpdateService = async () => {
     try {
+      const isValid = checkError();
+      if (!isValid) return;
+
       const formData = new FormData();
 
       formData.append('name', service.name);
@@ -184,13 +236,13 @@ export default function CreateUpdateServiceScreen() {
               gap: 8,
             }}
           >
-            <Text style={{ color: "#006EE9", fontWeight: "bold" }}>Name</Text>
+            <Text style={{ color: "#006EE9", fontWeight: "bold" }}>Name <Text style={{color: 'red'}}>*</Text></Text>
             <TextInput
               mode={"outlined"}
               value={service.name}
-              onChangeText={(text) => setService(prev => ({ ...prev, name: text }))}
-              outlineColor={isError ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
-              activeOutlineColor={isError ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+              onChangeText={(text) => handleChange('name', text)}
+              outlineColor={!!errorInputMessage?.name ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+              activeOutlineColor={!!errorInputMessage?.name ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
               style={{
                 backgroundColor: "white",
                 fontSize: 14,
@@ -203,12 +255,12 @@ export default function CreateUpdateServiceScreen() {
               placeholderTextColor={"rgba(0,0,0,0.35)"}
             />
             {
-              isError && (
+              !!errorInputMessage?.name && (
                 <Text
                   variant={'labelSmall'}
                   style={{ color: 'rgba(234, 57, 67, 1)'}}
                 >
-                  {errorMessage}
+                  {errorInputMessage.name}
                 </Text>
               )
             }
@@ -221,13 +273,13 @@ export default function CreateUpdateServiceScreen() {
                 flex: 1
               }}
             >
-              <Text style={{ color: "#006EE9", fontWeight: "bold" }}>Price</Text>
+              <Text style={{ color: "#006EE9", fontWeight: "bold" }}>Price(VND) <Text style={{color: 'red'}}>*</Text></Text>
               <TextInput
                 mode={"outlined"}
                 value={service.price}
-                onChangeText={(text) => setService(prev => ({ ...prev, price: text }))}
-                outlineColor={isError ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
-                activeOutlineColor={isError ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+                onChangeText={(text) => handleChange('price', text)}
+                outlineColor={!!errorInputMessage?.price ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+                activeOutlineColor={!!errorInputMessage?.price ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
                 style={{
                   backgroundColor: "white",
                   fontSize: 14,
@@ -236,9 +288,19 @@ export default function CreateUpdateServiceScreen() {
                   borderWidth: 0.5,
                   borderRadius: 12,
                 }}
-                placeholder={'Service price'}
+                placeholder={'Price'}
                 placeholderTextColor={"rgba(0,0,0,0.35)"}
               />
+              {
+                !!errorInputMessage?.price && (
+                  <Text
+                    variant={'labelSmall'}
+                    style={{ color: 'rgba(234, 57, 67, 1)'}}
+                  >
+                    {errorInputMessage?.price}
+                  </Text>
+                )
+              }
             </View>
             <View
               style={{
@@ -247,14 +309,14 @@ export default function CreateUpdateServiceScreen() {
 
               }}
             >
-              <Text style={{ color: "#006EE9", fontWeight: "bold" }}>Duration</Text>
+              <Text style={{ color: "#006EE9", fontWeight: "bold" }}>Duration <Text style={{color: 'red'}}>*</Text></Text>
               <TextInput
                 mode={"outlined"}
                 value={service?.duration?.toString()}
                 keyboardType="numeric"
-                onChangeText={(text) => setService(prev => ({ ...prev, duration: text }))}
-                outlineColor={isError ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
-                activeOutlineColor={isError ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+                onChangeText={(text) => handleChange('duration', text)}
+                outlineColor={!!errorInputMessage?.duration ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+                activeOutlineColor={!!errorInputMessage?.duration ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
                 style={{
                   backgroundColor: "white",
                   fontSize: 14,
@@ -266,6 +328,16 @@ export default function CreateUpdateServiceScreen() {
                 placeholder={'Duration'}
                 placeholderTextColor={"rgba(0,0,0,0.35)"}
               />
+              {
+                !!errorInputMessage?.duration && (
+                  <Text
+                    variant={'labelSmall'}
+                    style={{ color: 'rgba(234, 57, 67, 1)'}}
+                  >
+                    {errorInputMessage?.duration}
+                  </Text>
+                )
+              }
             </View>
           </View>
 
@@ -275,15 +347,15 @@ export default function CreateUpdateServiceScreen() {
             }}
           >
             <Text style={{ color: "#006EE9", fontWeight: "bold" }}>
-              Description
+              Description <Text style={{color: 'red'}}>*</Text>
             </Text>
             <TextInput
               mode={"outlined"}
               multiline
               value={service.description}
-              onChangeText={(text) => setService(prev => ({ ...prev, description: text }))}
-              outlineColor={"rgba(0,110,233,0.4)"}
-              activeOutlineColor={"rgba(0,110,233,0.4)"}
+              onChangeText={(text) => handleChange('description', text)}
+              outlineColor={!!errorInputMessage?.description ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
+              activeOutlineColor={!!errorInputMessage?.description ? "rgba(234, 57, 67, 1)" : "rgba(0,110,233,0.4)"}
               style={{
                 backgroundColor: "white",
                 fontSize: 14,
@@ -296,6 +368,16 @@ export default function CreateUpdateServiceScreen() {
                 borderRadius: 12,
               }}
             />
+            {
+              !!errorInputMessage?.description && (
+                <Text
+                  variant={'labelSmall'}
+                  style={{ color: 'rgba(234, 57, 67, 1)'}}
+                >
+                  {errorInputMessage?.description}
+                </Text>
+              )
+            }
           </View>
 
           <View
@@ -303,17 +385,17 @@ export default function CreateUpdateServiceScreen() {
               gap: 8,
             }}>
             <Text style={{ color: "#006EE9", fontWeight: "bold" }}>
-              Service Image
+              Service Image <Text style={{color: 'red'}}>*</Text>
             </Text>
             <TouchableOpacity
               style={{
                 height: 200,
                 borderRadius: 16,
                 borderWidth: 0.5,
-                borderColor: '#006EE9',
+                borderColor: image.uri ? 'transparent' : '#006EE9',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderStyle: 'dashed',
+                borderStyle: image.uri ? 'solid' : 'dashed',
               }}
               onPress={onSelectImage}
             >
@@ -337,6 +419,7 @@ export default function CreateUpdateServiceScreen() {
           </View>
 
           <Button
+            disabled={!image.uri}
             mode="contained"
             buttonColor="#105CDB"
             style={{
