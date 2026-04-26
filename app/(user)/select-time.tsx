@@ -3,20 +3,13 @@ import {Alert, StyleSheet, TouchableOpacity} from 'react-native';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { View } from '@/components/Themed';
 import {router, Stack, useLocalSearchParams, useRouter} from "expo-router";
-import {KeyboardAwareScrollView, KeyboardToolbar} from "react-native-keyboard-controller";
 import {TextInput, Text, Button} from "react-native-paper";
 import {useEffect, useMemo, useState} from "react";
 import {isIos} from "@/lib/utils/helper";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Ionicons} from "@expo/vector-icons";
-import {Image} from "expo-image";
-import * as ImagePicker from 'expo-image-picker';
-import {createService, getServiceDetail, updateService} from "@/lib/services/api/services";
 import TimeSlot from "@/lib/components/ui/TimeSlot";
 import moment from "moment";
 import {PickDateButton} from "@/lib/components/ui/PickDateButton";
-import {createAppointment} from "@/lib/services/api/appointments";
-import {useSpa} from "@/lib/context/SpaContext";
 
 const TIMES = [
   '09:00',
@@ -56,13 +49,11 @@ export default function SelectTimeScreen() {
   const { push, navigate } = useRouter()
 
   const { serviceId } = useLocalSearchParams();
-  const { fetchAppointments } = useSpa();
 
   const insets = useSafeAreaInsets();
   const bottom = isIos ? insets.bottom : 20;
 
   const [startDate, setStartDate] = useState<Date>(moment().toDate());
-
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const dateTime = moment(startDate)
@@ -73,49 +64,13 @@ export default function SelectTimeScreen() {
       millisecond: 0,
     });
 
-  const [service, setService] = useState({
-    name: '',
-    price: '',
-    duration: 0,
-    description: '',
-  });
-  const [image, setImage] = useState({});
-
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const isError = useMemo(() => {
     return !!errorMessage
   }, [errorMessage])
 
-  useEffect(() => {
-    (async () => {
-      if (serviceId) {
-        const data = await getServiceDetail(serviceId)
-
-        if (data) {
-          setService(data)
-          setImage({
-            uri: data.imageUrl,
-          });
-        } else {
-          // setTask(prev => ({
-          //   ...prev,
-          //   category: TaskCategory.Personal,
-          //   status: TaskStatus.Todo,
-          //   priority: TaskPriority.Medium,
-          //   reminderOffset: 10,
-          // }))
-        }
-      }
-    })();
-  }, [serviceId]);
-
   const goToConfirm = async () => {
-
-    console.log('type', typeof dateTime)
-    console.log('dateTime', dateTime)
-    console.log('toISOString()', dateTime.toISOString())
-    console.log('JSON.stringify(dateTime)', JSON.stringify(dateTime))
     push({
       pathname: '/(user)/confirm-booking',
       params: {

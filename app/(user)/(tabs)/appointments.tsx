@@ -8,9 +8,7 @@ import {Button, Text} from "react-native-paper";
 import {_cancelAppointment, getPastAppointment, getUpcomingAppointment} from "@/lib/services/api/appointments";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
-import {MessageListButton} from "@/lib/components/ui/MessageListButton";
-import {NotificationButton} from "@/lib/components/ui/NotificationButton";
-import {Stack} from "expo-router";
+import {useIsFocused} from "expo-router";
 
 const BUTTONS = [
   {
@@ -24,8 +22,8 @@ const BUTTONS = [
 ];
 
 export default function AppointmentsScreen() {
+  const isFocused = useIsFocused();
   const [appointments, setAppointments] = useState<any[]>([]);
-
   const [filterType, setFilterType] = useState('UPCOMING');
   const [refreshing, setRefreshing] = useState(false);
 
@@ -71,8 +69,10 @@ export default function AppointmentsScreen() {
   }, [filterType]);
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (isFocused) {
+      fetchData();
+    }
+  }, [isFocused]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -92,19 +92,6 @@ export default function AppointmentsScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerLeft: () => (
-            <View style={{ marginLeft: 16 }}>
-              <MessageListButton />
-            </View>
-          ),
-          headerRight: () => (
-            <NotificationButton />
-          ),
-        }}
-      />
 
       <View
         style={{

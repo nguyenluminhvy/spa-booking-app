@@ -1,4 +1,4 @@
-import {Alert, Modal, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Alert, StyleSheet, TouchableOpacity, View} from 'react-native';
 
 import {router, Stack, useLocalSearchParams} from "expo-router";
 import {TextInput, Text, Button} from "react-native-paper";
@@ -6,7 +6,6 @@ import React, {useEffect, useMemo, useState} from "react";
 import {Image} from "expo-image";
 import moment from "moment";
 import {InfoItem} from "@/lib/components/ui/AppointmentCard";
-import {useAuth} from "@/lib/context/AuthContext";
 import {useSpa} from "@/lib/context/SpaContext";
 import {Ionicons} from "@expo/vector-icons";
 import {getServiceDetail} from "@/lib/services/api/services";
@@ -78,11 +77,6 @@ export default function ConfirmBookingScreen() {
     })();
   }, [serviceId]);
 
-  const onSuccess = async () => {
-    setModalVisible(false)
-    router.back()
-  }
-
   const onConfirmBooking = async () => {
     try {
       const appointmentTime = selectTime
@@ -95,7 +89,6 @@ export default function ConfirmBookingScreen() {
       const response = await createAppointment(data);
 
       if (response?.code === 0) {
-        await fetchAppointments()
         router.push('/(user)/booking-success-modal')
       } else if (response?.code === -1) {
         return Alert.alert(`Notice`, "You already have an appointment during this time slot. Please choose a different time.", [
@@ -212,31 +205,6 @@ export default function ConfirmBookingScreen() {
           setShowPaymentModal(false);
         }}
       />
-
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-
-            <Ionicons name="checkmark-circle-outline" size={65} color="lightgreen" style={{paddingVertical: 16}} />
-            <Text style={styles.modalTitle}>Submitted!</Text>
-            <Text style={styles.modalMessage}>Thanks for sharing your feedback with us!!</Text>
-
-
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#006EE9',
-                height: 40,
-                width: 200,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-              }}
-              onPress={onSuccess}
-            >
-              <Text style={styles.cancel}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import {Alert, View} from "react-native";
 import { Text, Button, ButtonProps } from "react-native-paper";
 import React, {useEffect, useState} from "react";
 import DatePicker from "react-native-date-picker";
@@ -31,6 +31,20 @@ export function PickDateButton({
   }, [dateDefault])
 
   const onChange = (date: Date) => {
+    const now = moment();
+    const selected = moment(date);
+    const maxDate = now.clone().add(1, 'month');
+
+    if (selected.isAfter(maxDate, 'day')) {
+      Alert.alert(`Notice`, "You cannot schedule an appointment more than 30 days in advance.", [
+        { text: "OK", style: "default", onPress: () => {
+            setOpenPicker(false);
+          }},
+      ]);
+
+      return;
+    }
+
     setOpenPicker(false);
     setDate(date);
     onDateChange?.(date);
@@ -57,6 +71,8 @@ export function PickDateButton({
 
       <DatePicker
         modal
+        minimumDate={new Date()}
+        // maximumDate={moment().add(1, 'month').toDate()}
         open={openPicker}
         mode={calendarMode}
         date={date}
