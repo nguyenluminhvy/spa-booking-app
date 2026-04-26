@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useState} from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { Text } from "react-native-paper";
+import {ActivityIndicator, Text} from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from 'expo-image'
 import {formatPrice} from "@/lib/utils/helper";
@@ -8,13 +8,30 @@ import { View } from '@/components/Themed';
 
 
 export function ServiceItem({ item, onPress }: any) {
+  const [imageLoading, setImageLoading] = useState(true);
 
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View>
-        <Image
-          contentFit={'cover'}
-          source={item.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
+        <View style={{ height: 200, width: '100%', backgroundColor: 'rgba(0,110,233,0.05)', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+          <Image
+            onLoadStart={() => {
+              setImageLoading(true)
+            }}
+            onLoadEnd={() => {
+              setImageLoading(false)
+            }}
+            contentFit={'cover'}
+            source={item.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
+
+          <View style={{
+            ...StyleSheet.absoluteFill,
+            backgroundColor: 'transparent',
+            alignItems: 'center', justifyContent: 'center'
+          }}>
+            {imageLoading && <ActivityIndicator size={30} animating={true} color={'#105CDB'} />}
+          </View>
+        </View>
 
         <View style={{
           position: 'absolute',
