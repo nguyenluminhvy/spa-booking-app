@@ -15,6 +15,15 @@ export default function UserNavigation() {
       <Stack.Screen name="select-time" options={{ title: 'Select Time' }}/>
       <Stack.Screen name="confirm-booking" options={{ title: 'Confirm Booking' }}/>
       <Stack.Screen name="rating" options={{ title: 'Rating Service' }}/>
+      <Stack.Screen
+        name="booking-success-modal"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+          headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' }
+        }}
+      />
     </Stack>
   );
 }

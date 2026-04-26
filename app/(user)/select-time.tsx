@@ -111,37 +111,18 @@ export default function SelectTimeScreen() {
   }, [serviceId]);
 
   const goToConfirm = async () => {
+
+    console.log('type', typeof dateTime)
+    console.log('dateTime', dateTime)
+    console.log('toISOString()', dateTime.toISOString())
+    console.log('JSON.stringify(dateTime)', JSON.stringify(dateTime))
     push({
       pathname: '/(user)/confirm-booking',
       params: {
         serviceId: serviceId,
+        selectTime: dateTime.toISOString()
       }
     })
-  }
-
-  const onConfirmBooking = async () => {
-    try {
-      const appointmentTime = dateTime.toISOString()
-
-      const data = {
-        serviceId: Number(serviceId),
-        appointmentTime
-      };
-
-      const response = await createAppointment(data);
-
-      if (response?.code === 0) {
-        await fetchAppointments()
-        navigate('/(user)/(tabs)/appointments')
-      } else if (response?.code === -1) {
-        return Alert.alert(`Notice`, "You already have an appointment during this time slot. Please choose a different time.", [
-          { text: "OK", style: "default", onPress: async () => {
-            } },
-        ]);
-      }
-    } catch (e) {
-
-    }
   }
 
   return (
@@ -196,10 +177,9 @@ export default function SelectTimeScreen() {
             height: 52,
           }}
           disabled={!selectedTime}
-          // onPress={goToConfirm}
-          onPress={onConfirmBooking}
+          onPress={goToConfirm}
         >
-          {"Confirm Booking"}
+          {"Continue"}
         </Button>
       </View>
     </View>

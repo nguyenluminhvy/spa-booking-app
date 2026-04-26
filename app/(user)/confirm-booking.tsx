@@ -1,71 +1,69 @@
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {Alert, Modal, StyleSheet, TouchableOpacity, View} from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { View } from '@/components/Themed';
-import {Stack, useLocalSearchParams} from "expo-router";
-import {KeyboardAwareScrollView, KeyboardToolbar} from "react-native-keyboard-controller";
+import {router, Stack, useLocalSearchParams} from "expo-router";
 import {TextInput, Text, Button} from "react-native-paper";
-import {useEffect, useMemo, useState} from "react";
-import {isIos} from "@/lib/utils/helper";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Ionicons} from "@expo/vector-icons";
+import React, {useEffect, useMemo, useState} from "react";
 import {Image} from "expo-image";
-import * as ImagePicker from 'expo-image-picker';
-import {createService, getServiceDetail, updateService} from "@/lib/services/api/services";
-import TimeSlot from "@/lib/components/ui/TimeSlot";
 import moment from "moment";
-import {PickDateButton} from "@/lib/components/ui/PickDateButton";
+import {InfoItem} from "@/lib/components/ui/AppointmentCard";
+import {useAuth} from "@/lib/context/AuthContext";
+import {useSpa} from "@/lib/context/SpaContext";
+import {Ionicons} from "@expo/vector-icons";
+import {getServiceDetail} from "@/lib/services/api/services";
+import {createAppointment} from "@/lib/services/api/appointments";
+import {formatPrice} from "@/lib/utils/helper";
+import {IMAGES} from "@/lib/assets/images";
+import SelectPaymentModal from "@/lib/components/ui/SelectPaymentModal";
+import {SafeAreaView} from "react-native-safe-area-context";
 
-const TIMES = [
-  '09:00',
-  '10:00',
-  '11:00',
-  '12:00',
-  '13:00',
-  '14:00',
-  '15:00',
-  '16:00',
-  '17:00',
-  '18:00',
-  '19:00',
-  '20:00',
-];
+const PAYMENT_CONFIG = {
+  CASH: {
+    type: 'icon',
+    icon: 'wallet',
+    label: 'Cash',
+  },
+  VISA: {
+    type: 'image',
+    image: IMAGES.visa,
+    label: '**** **** **** 1234',
+  },
+  MASTER: {
+    type: 'image',
+    image: IMAGES.mastercard,
+    label: '**** **** **** 5678',
+  },
+};
+
+const PaymentItem = ({ payment }) => {
+
+  if (!payment) return null;
+
+  return (
+    <View style={styles.paymentContainer}>
+      {payment.type === 'icon' ? (
+        <Ionicons name={payment.icon} size={25} color={'#105CDB'} />
+      ) : (
+        <Image
+          style={styles.paymentImage}
+          source={payment.image}
+          contentFit="contain"
+        />
+      )}
+      <Text variant="labelLarge">{payment.label}</Text>
+    </View>
+
+  );
+
+};
 
 export default function ConfirmBookingScreen() {
-  const { serviceId } = useLocalSearchParams();
-  const isEditMode = serviceId !== "new";
+  const { serviceId, selectTime } = useLocalSearchParams();
+  const { fetchAppointments } = useSpa();
 
-  const insets = useSafeAreaInsets();
-  const bottom = isIos ? insets.bottom : 20;
-
-  const [startDate, setStartDate] = useState<Date>(moment().toDate());
-
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-
-  const dateTime = moment(startDate)
-    .set({
-      hour: Number(selectedTime?.split(':')[0]),
-      minute: Number(selectedTime?.split(':')[1]),
-      second: 0,
-      millisecond: 0,
-    });
-
-  console.log(moment(dateTime).format('YYYY-MM-DD HH:mm'));
-
-
-  const [service, setService] = useState({
-    name: '',
-    price: '',
-    duration: 0,
-    description: '',
-  });
-  const [image, setImage] = useState({});
-
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const isError = useMemo(() => {
-    return !!errorMessage
-  }, [errorMessage])
+  const [service, setService] = useState<any>({});
+  const [paymentCode, setPaymentCode] = useState<string>('CASH');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -74,47 +72,237 @@ export default function ConfirmBookingScreen() {
 
         if (data) {
           setService(data)
-          setImage({
-            uri: data.imageUrl,
-          });
-        } else {
-          // setTask(prev => ({
-          //   ...prev,
-          //   category: TaskCategory.Personal,
-          //   status: TaskStatus.Todo,
-          //   priority: TaskPriority.Medium,
-          //   reminderOffset: 10,
-          // }))
+
         }
       }
     })();
   }, [serviceId]);
 
+  const onSuccess = async () => {
+    setModalVisible(false)
+    router.back()
+  }
+
+  const onConfirmBooking = async () => {
+    try {
+      const appointmentTime = selectTime
+
+      const data = {
+        serviceId: Number(serviceId),
+        appointmentTime
+      };
+
+      const response = await createAppointment(data);
+
+      if (response?.code === 0) {
+        await fetchAppointments()
+        router.push('/(user)/booking-success-modal')
+      } else if (response?.code === -1) {
+        return Alert.alert(`Notice`, "You already have an appointment during this time slot. Please choose a different time.", [
+          { text: "OK", style: "default", onPress: async () => {
+            } },
+        ]);
+      }
+    } catch (e) {
+
+    }
+  }
+
+  const onChangePayment = async () => {
+    setShowPaymentModal(true)
+  }
+
   return (
-    <View style={{
-      flex: 1
-    }}>
+    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={{
+        flex: 1,
+        backgroundColor: 'white',
+        paddingHorizontal: 16,
+        gap: 20,
+        paddingTop: 20,
+      }}>
+        <View style={styles.item}>
+          <View>
+            <Image
+              contentFit={'cover'}
+              source={service?.imageUrl} style={{ height: 200, width: '100%', borderRadius: 16 }} />
+          </View>
 
-     <View>
+          <View style={styles.row}>
+            <InfoItem
+              icon="spa"
+              label="Service"
+              value={service?.name || '--'}
+            />
+            <InfoItem icon="calendar-check-outline" label="Booked On" value={moment(selectTime).format('DD-MM-YYYY | HH:mm')} />
+          </View>
 
-     </View>
-    </View>
+          <View style={styles.row}>
+            <InfoItem
+              icon="cash-check"
+              label="Amount"
+              value={service?.price ? `${formatPrice(service?.price)}` : '--'}
+            />
+          </View>
+        </View>
+
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Text variant="titleMedium">
+            {'Payment Method'}
+          </Text>
+
+          <TouchableOpacity onPress={() => {
+            onChangePayment()
+          }}>
+            <Text style={{
+              color: '#006EE9'
+            }}>Change</Text>
+          </TouchableOpacity>
+        </View>
+
+        <PaymentItem payment={PAYMENT_CONFIG[paymentCode]} />
+
+        <View style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+          marginBottom: 16,
+        }}>
+
+          <View style={{
+            marginBottom: 20,
+            paddingHorizontal: 40
+          }}>
+            <Text style={{ textAlign: 'center', fontSize: 13}}>
+              By Booking, you acknowledge and accept our <Text onPress={() => {
+              router.push('/term')
+            }}  style={{ color: '#006EE9'}}>Terms Conditions</Text> and <Text onPress={() => {
+              router.push('/policy')
+            }} style={{ color: '#006EE9'}}>Privacy Policy</Text>
+            </Text>
+          </View>
+
+          <Button
+            mode="contained"
+            buttonColor="#105CDB"
+            style={{
+              alignSelf: 'flex-end',
+              width: "100%",
+              borderRadius: 8,
+            }}
+            contentStyle={{
+              height: 52,
+            }}
+            onPress={onConfirmBooking}
+          >
+            Confirm
+          </Button>
+        </View>
+      </View>
+
+      <SelectPaymentModal
+        visible={showPaymentModal}
+        paymentCode={paymentCode}
+        onClose={() => setShowPaymentModal(false)}
+        onSelect={(code) => {
+          setPaymentCode(code)
+          setShowPaymentModal(false);
+        }}
+      />
+
+      <Modal visible={modalVisible} animationType="slide" transparent>
+        <View style={styles.overlay}>
+          <View style={styles.modalContainer}>
+
+            <Ionicons name="checkmark-circle-outline" size={65} color="lightgreen" style={{paddingVertical: 16}} />
+            <Text style={styles.modalTitle}>Submitted!</Text>
+            <Text style={styles.modalMessage}>Thanks for sharing your feedback with us!!</Text>
+
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#006EE9',
+                height: 40,
+                width: 200,
+                paddingHorizontal: 16,
+                borderRadius: 12,
+              }}
+              onPress={onSuccess}
+            >
+              <Text style={styles.cancel}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  itemContainer: {
+
+  },
+  item: {
+    backgroundColor: 'rgba(0,110,233,0.05)',
+    borderRadius: 16,
+    gap: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+
+  overlay: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
+    paddingHorizontal: 16
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+
+  modalContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#006EE9'
+  },
+  modalMessage: {
+    fontSize: 14,
+    paddingHorizontal: 40,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+
+  cancel: {
+    textAlign: 'center',
+    marginTop: 12,
+    color: 'white',
+  },
+
+  paymentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#bababa',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    gap: 8,
+    height: 56,
+  },
+  paymentImage: {
+    width: 36,
+    height: '100%',
   },
 });

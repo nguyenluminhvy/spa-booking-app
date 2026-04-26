@@ -9,5 +9,6 @@ export const IMAGES = {
   banner_2: require("./banner-2.png"),
   banner_3: require("./banner-3.png"),
   banner_4: require("./banner-4.png"),
-
+  mastercard: require("./Mastercard.png"),
+  visa: require("./Visa.png"),
 };
