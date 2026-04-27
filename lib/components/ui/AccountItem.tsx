@@ -149,19 +149,6 @@ export function AccountItem({
           />
         </View>
 
-        {/*<View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>*/}
-        {/*  {*/}
-        {/*    isActive ?*/}
-        {/*      <Button compact mode="text" style={{ borderWidth: 1, borderColor: 'rgba(234, 57, 67, 1)'}} textColor={'rgba(234, 57, 67, 1)'} onPress={onDeactivate}>*/}
-        {/*        Deactivate*/}
-        {/*      </Button>*/}
-        {/*      :*/}
-        {/*      <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onActivate}>*/}
-        {/*        Activate*/}
-        {/*      </Button>*/}
-        {/*  }*/}
-        {/*</View>*/}
-
         <TouchableOpacity style={{
           position: 'absolute',
           top: 4,

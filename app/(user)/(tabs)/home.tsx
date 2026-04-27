@@ -43,7 +43,11 @@ const ServiceItem = ({ item }: { item: Service }) => {
     })
   }
 
-  return <View style={styles.serviceItem}>
+  const viewServiceDetails = () => {
+    router.push(`/service/${item.id}`);
+  }
+
+  return <TouchableOpacity style={styles.serviceItem} activeOpacity={0.4} onPress={viewServiceDetails}>
     <Image
       source={item.imageUrl}
       contentFit="cover"
@@ -74,7 +78,7 @@ const ServiceItem = ({ item }: { item: Service }) => {
         </TouchableOpacity>
       </View>
     </View>
-  </View>
+  </TouchableOpacity>
 };
 
 export default function HomeScreen() {

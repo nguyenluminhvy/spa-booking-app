@@ -1,4 +1,6 @@
-import { Stack } from 'expo-router';
+import {router, Stack} from 'expo-router';
+import {Button, IconButton} from "react-native-paper";
+import {Ionicons} from "@expo/vector-icons";
 
 export default function UserNavigation() {
   return (
@@ -9,10 +11,17 @@ export default function UserNavigation() {
       headerTitleAlign: 'center',
       animation: 'slide_from_right'
     }}>
-      {/* Tabs */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-      <Stack.Screen name="select-time" options={{ title: 'Select Time' }}/>
+      <Stack.Screen
+        name="select-time"
+        options={{
+          title: 'Select Time',
+          headerLeft: () => <Button compact buttonColor={'white'} onPress={router.back}>
+            <Ionicons name={'chevron-back'} size={20} color={'black'} />
+          </Button>
+        }}
+      />
       <Stack.Screen name="confirm-booking" options={{ title: 'Confirm Booking' }}/>
       <Stack.Screen name="rating" options={{ title: 'Rating Service' }}/>
       <Stack.Screen

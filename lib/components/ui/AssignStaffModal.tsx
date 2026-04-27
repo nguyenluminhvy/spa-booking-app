@@ -5,7 +5,7 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
+  StyleSheet, Pressable,
 } from 'react-native';
 import {Ionicons} from "@expo/vector-icons";
 
@@ -22,6 +22,8 @@ const AssignStaffModal = ({ visible, currentStaffId, staffs, onClose, onSelect }
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.overlay}>
+        <Pressable onPress={onClose} style={StyleSheet.absoluteFill} />
+
         <View style={styles.container}>
           <Text style={styles.title}>Assign Practitioner</Text>
 
@@ -58,8 +60,8 @@ const AssignStaffModal = ({ visible, currentStaffId, staffs, onClose, onSelect }
             }}
           />
 
-          <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancel}>Cancel</Text>
+          <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+            <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -107,5 +109,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
     color: 'red',
+  },
+  cancelButton: {
+    marginTop: 15,
+    paddingVertical: 12,
+  },
+  cancelText: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FF3B30',
   },
 });

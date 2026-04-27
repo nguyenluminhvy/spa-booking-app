@@ -131,6 +131,15 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
+        name="service/[serviceId]"
+        options={{
+          headerTitle: '',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
         name="(admin)"
         options={{ headerShown: false }}
       />

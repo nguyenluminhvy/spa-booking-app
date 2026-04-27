@@ -5,7 +5,7 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
+  StyleSheet, Pressable,
 } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -88,6 +88,8 @@ const SelectPaymentModal = ({
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.overlay}>
+        <Pressable onPress={onClose} style={StyleSheet.absoluteFill} />
+
         <View style={styles.container}>
           <Text style={styles.title}>Payment Method</Text>
 
@@ -104,8 +106,8 @@ const SelectPaymentModal = ({
             showsVerticalScrollIndicator={false}
           />
 
-          <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancel}>Cancel</Text>
+          <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+            <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -169,9 +171,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  cancel: {
+  cancelButton: {
+    marginTop: 15,
+    paddingVertical: 12,
+  },
+  cancelText: {
     textAlign: 'center',
-    marginTop: 8,
-    color: 'red',
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FF3B30',
   },
 });
