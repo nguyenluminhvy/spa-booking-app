@@ -76,7 +76,7 @@ export const _resetPasswordStaff = async (staffId: any) => {
   try {
     const response = await request(Endpoint().resetPasswordStaff(staffId), Method.POST, null, null)
 
-    return response?.code === 0 ? response?.data : response
+    return response
   } catch (e) {
     return e
   }

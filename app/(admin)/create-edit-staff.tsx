@@ -1,4 +1,4 @@
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {Alert, StyleSheet, TouchableOpacity} from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { View } from '@/components/Themed';
@@ -13,6 +13,7 @@ import {Image} from "expo-image";
 import * as ImagePicker from 'expo-image-picker';
 import {createService, getServiceDetail, updateService} from "@/lib/services/api/services";
 import {useAdmin} from "@/lib/context/AdminContext";
+import {useAuth} from "@/lib/context/AuthContext";
 
 const pickImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -33,6 +34,7 @@ export default function CreateUpdateStaffScreen() {
   const { staffId } = useLocalSearchParams();
   const isEditMode = staffId !== "new";
 
+  const { setLoading } = useAuth()
   const { createStaff, getStaffInfo, updateStaff, resetPasswordStaff } = useAdmin()
 
   const insets = useSafeAreaInsets();
@@ -101,6 +103,7 @@ export default function CreateUpdateStaffScreen() {
 
   const onUpdateStaff = async () => {
     try {
+      setLoading(true)
       const params = {
         name: staff.name,
         email: staff.email,
@@ -110,23 +113,37 @@ export default function CreateUpdateStaffScreen() {
 
       const result = await updateStaff(staff.id, params);
 
-      console.log('result', result)
+      if (result?.id) {
+        Alert.alert('Update Successfully!')
+      } else if (result?.message) {
+        Alert.alert(result?.message)
+      }
 
-      // return res.data;
     } catch (e) {
+    } finally {
+      setLoading(false)
     }
   };
 
   const onResetPasswordStaff = async () => {
-    try {
+    Alert.alert(`Reset staff password`, "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", style: "default", onPress: async () => {
+        try {
+          setLoading(true)
+          const result = await resetPasswordStaff(staff.id);
 
-      const result = await resetPasswordStaff(staff.id);
+          if (result?.message) {
+            Alert.alert(result?.message)
+          }
 
-      // return res.data;
-    } catch (e) {
-    }
+        } catch (e) {
+        } finally {
+          setLoading(false)
+        }
+      }},
+    ]);
   };
-
 
   return (
     <>

@@ -1,11 +1,12 @@
 import React, {useCallback, useState} from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import {Alert, StyleSheet, Switch, TouchableOpacity, View} from "react-native";
 import {Button, Text} from "react-native-paper";
 import {router, useRouter} from "expo-router";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import moment from "moment";
 import {useAdmin} from "@/lib/context/AdminContext";
-import AssignStaffModal from "@/lib/components/ui/AssignStaffModal";
+import EditAccountModal from "@/lib/components/ui/EditAccountModal";
+import {isIos} from "@/lib/utils/helper";
 
 type Role = "USER" | "STAFF";
 type Status = "ACTIVE" | "INACTIVE";
@@ -17,6 +18,7 @@ type Props = {
   role: Role;
   status: Status;
   createdAt: string;
+  onUpdate: () => Promise<void>;
 };
 
 const ROLE_COLOR = {
@@ -65,9 +67,12 @@ export function AccountItem({
                               role,
                               status,
                               createdAt,
+                              onUpdate
                             }: Props) {
   const { push } = useRouter();
   const { deactivateUser, activateUser, users } = useAdmin();
+
+  const [showModal, setShowModal] = useState(false);
 
   const isActive = status === 'ACTIVE'
   const isStaff = role === 'STAFF'
@@ -84,16 +89,26 @@ export function AccountItem({
   const onActivate = () => {
     Alert.alert(`Activate user ${name}`, "Are you sure?", [
       { text: "Cancel", style: "cancel" },
-      { text: "OK", style: "default", onPress: () => activateUser(id) },
+      { text: "OK", style: "default", onPress: async () => {
+          await activateUser(id)
+          await onUpdate()
+      }},
     ]);
   };
 
   const onDeactivate = () => {
     Alert.alert(`Deactivate user ${name}`, "Are you sure?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Deactivate", style: "destructive", onPress: () => deactivateUser(id) },
+      { text: "Deactivate", style: "destructive", onPress: async () => {
+          await deactivateUser(id)
+          await onUpdate()
+      }},
     ]);
   };
+
+  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
+
+  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
   return (
     <TouchableOpacity
@@ -125,20 +140,50 @@ export function AccountItem({
           />
         </View>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>
-          {
-            isActive ?
-              <Button compact mode="text" style={{ borderWidth: 1, borderColor: 'rgba(234, 57, 67, 1)'}} textColor={'rgba(234, 57, 67, 1)'} onPress={onDeactivate}>
-                Deactivate
-              </Button>
-              :
-              <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onActivate}>
-                Activate
-              </Button>
-          }
-        </View>
+        {/*<View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8}}>*/}
+        {/*  {*/}
+        {/*    isActive ?*/}
+        {/*      <Button compact mode="text" style={{ borderWidth: 1, borderColor: 'rgba(234, 57, 67, 1)'}} textColor={'rgba(234, 57, 67, 1)'} onPress={onDeactivate}>*/}
+        {/*        Deactivate*/}
+        {/*      </Button>*/}
+        {/*      :*/}
+        {/*      <Button compact mode="text" buttonColor={'#006EE9'} textColor={'white'} onPress={onActivate}>*/}
+        {/*        Activate*/}
+        {/*      </Button>*/}
+        {/*  }*/}
+        {/*</View>*/}
+
+        <TouchableOpacity style={{
+          position: 'absolute',
+          top: 4,
+          right: 4,
+          padding: 4,
+        }}
+          onPress={() => setShowModal(true)}
+        >
+          <Ionicons name={'menu-outline'} size={20} color="#006EE9" />
+        </TouchableOpacity>
 
       </View>
+
+      <EditAccountModal
+        visible={showModal}
+        status={status}
+        role={role}
+        onClose={() => setShowModal(false)}
+        onSelect={(activeType) => {
+          if (activeType === "edit") {
+            onEdit()
+          }
+          if (activeType === "deactivate") {
+            onDeactivate()
+          }
+          if (activeType === "activate") {
+            onActivate()
+          }
+          setShowModal(false);
+        }}
+      />
     </TouchableOpacity>
   );
 }

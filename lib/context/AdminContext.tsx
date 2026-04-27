@@ -88,17 +88,11 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const activateUser = async (id: any) => {
     const response = await _activateUser(id)
 
-    await fetchUsers()
-    await fetchStaffs()
-
     return response
   }
 
   const deactivateUser = async (id: any) => {
     const response = await _deactivateUser(id)
-
-    await fetchUsers()
-    await fetchStaffs()
 
     return response
   }
@@ -114,7 +108,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const updateStaff = async (id: any, payload: any) => {
     const response = await _updateStaff(id, payload)
 
-    await fetchUsers()
+    // await fetchUsers()
 
     return response
   }

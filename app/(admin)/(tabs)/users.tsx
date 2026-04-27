@@ -1,6 +1,6 @@
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AnimatedFAB, Button, Text} from "react-native-paper";
-import React, {useEffect, useRef, useState, useTransition} from "react";
+import React, {useCallback, useEffect, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
@@ -8,7 +8,6 @@ import {AccountItem} from "@/lib/components/ui/AccountItem";
 import {useAdmin} from "@/lib/context/AdminContext";
 import {router, Stack} from "expo-router";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
-import {Ionicons} from "@expo/vector-icons";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 
 const BUTTONS = [
@@ -28,6 +27,7 @@ export default function UsersScreen() {
 
   const [filterType, setFilterType] = useState('ALL');
   const [filterParams, setFilterParams] = useState({});
+  const [refreshing, setRefreshing] = useState(false);
 
   const listRef = useRef<any>(null);
 
@@ -41,6 +41,14 @@ export default function UsersScreen() {
       animated: false,
     });
   }, [users]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      fetchUsers(filterParams)
+      setRefreshing(false);
+    }, 1000);
+  }, [filterParams]);
 
 
   return (
@@ -107,6 +115,12 @@ export default function UsersScreen() {
 
       <FlashList
         ref={listRef}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         ListEmptyComponent={<View style={{
           flex: 1,
           paddingTop: 100,
@@ -129,7 +143,9 @@ export default function UsersScreen() {
         contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
         keyExtractor={(item) => item.id.toString()}
         data={users}
-        renderItem={({ item }) => <AccountItem {...item} />}
+        renderItem={({ item }) => <AccountItem {...item} onUpdate={() => {
+          fetchUsers(filterParams)
+        }} />}
       />
 
       <AnimatedFAB
