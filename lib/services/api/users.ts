@@ -26,7 +26,7 @@ export const _deactivateUser = async (id: any) => {
   try {
     const response = await request(Endpoint().deactivateUser(id), Method.PATCH, null, null)
 
-    return response?.code === 0 ? response?.data : response
+    return response
   } catch (e) {
     return e
   }

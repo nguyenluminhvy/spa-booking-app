@@ -100,8 +100,17 @@ export function AccountItem({
     Alert.alert(`Deactivate user ${name}`, "Are you sure?", [
       { text: "Cancel", style: "cancel" },
       { text: "Deactivate", style: "destructive", onPress: async () => {
-          await deactivateUser(id)
-          await onUpdate()
+          const response = await deactivateUser(id)
+
+          if (response?.code === 0) {
+            await onUpdate()
+          } else if (response?.message) {
+            Alert.alert(`Notice`, response?.message, [
+              { text: "OK", style: "default", onPress: async () => {
+                } },
+            ]);
+          }
+
       }},
     ]);
   };
