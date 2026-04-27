@@ -180,7 +180,7 @@ export default function HomeScreen() {
             <Text style={styles.sectionTitle}>Services</Text>
 
             <TouchableOpacity onPress={() => {
-              router.navigate('/(user)/(tabs)/booking')
+              router.navigate('/service')
             }}>
               <Text style={styles.link}>See All</Text>
             </TouchableOpacity>

@@ -131,6 +131,15 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
+        name="service/index"
+        options={{
+          headerTitle: 'Services',
+          contentStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
         name="service/[serviceId]"
         options={{
           headerTitle: '',
