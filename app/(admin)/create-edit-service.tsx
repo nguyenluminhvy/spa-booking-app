@@ -3,7 +3,7 @@ import { View } from '@/components/Themed';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { KeyboardAwareScrollView, KeyboardToolbar } from "react-native-keyboard-controller";
 import { TextInput, Text, Button } from "react-native-paper";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { isIos } from "@/lib/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -55,6 +55,8 @@ export default function CreateUpdateServiceScreen() {
     description: '',
   });
 
+  const [checked, setChecked] = useState(true);
+
   useEffect(() => {
     (async () => {
       if (isEditMode) {
@@ -65,6 +67,7 @@ export default function CreateUpdateServiceScreen() {
           setImage({
             uri: data.imageUrl,
           });
+          setChecked(data?.status === 'ACTIVE')
         }
       }
     })();
@@ -133,7 +136,10 @@ export default function CreateUpdateServiceScreen() {
   const buildFormData = () => {
     const formData = new FormData();
 
+    const status = checked ? 'ACTIVE' : 'INACTIVE';
+
     formData.append('name', service.name);
+    formData.append('status', status);
     formData.append('description', service.description);
     formData.append('price', String(service.price));
     formData.append('duration', String(service.duration));
@@ -216,7 +222,6 @@ export default function CreateUpdateServiceScreen() {
             gap: 20,
           }}
         >
-          {/* ===== NAME ===== */}
           <View style={{ gap: 8 }}>
             <Text style={{ color: "#006EE9", fontWeight: "bold" }}>
               Name <Text style={{ color: 'red' }}>*</Text>
@@ -343,6 +348,35 @@ export default function CreateUpdateServiceScreen() {
               )}
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity
+            onPress={() => setChecked(!checked)}
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+          >
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                borderWidth: 1,
+                borderRadius: 4,
+                borderColor: "#006EE9",
+                backgroundColor: checked ? '#006EE9' : 'white',
+                marginRight: 8,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {
+                checked && (
+                  <Ionicons name="checkmark-outline" size={18} color={checked ? 'white' : '#006EE9'} />
+                )
+              }
+            </View>
+
+            <Text variant="labelLarge" style={{ color: '#006EE9'}}>
+              Active
+            </Text>
+          </TouchableOpacity>
 
           <Button
             disabled={!image.uri && !isEditMode}

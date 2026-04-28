@@ -3,20 +3,20 @@ import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 import { View } from '@/components/Themed';
 import {FlashList} from "@shopify/flash-list";
 import {AnimatedFAB, Button, Text} from "react-native-paper";
-import { Image } from 'expo-image'
 import {router, Stack} from "expo-router";
 import React, {useCallback, useEffect, useState} from "react";
 import {getServices} from "@/lib/services/api/services";
-import {formatPrice} from "@/lib/utils/helper";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
-import {Ionicons} from "@expo/vector-icons";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import {ServiceItem} from "@/lib/components/ui/ServiceItem";
+import EditServiceModal from "@/lib/components/ui/EditServiceModal";
 
 export default function ServicesScreen() {
 
   const [services, setServices] = useState([])
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedItem, setSelectedItem] = useState({});
+  const [showModal, setShowModal] = useState(false);
 
   const fetchServices = async () => {
     const data = await getServices();
@@ -49,6 +49,10 @@ export default function ServicesScreen() {
     })
   }
 
+  const viewServiceDetails = (id) => {
+    router.push(`/service/${id}`);
+  }
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -70,7 +74,10 @@ export default function ServicesScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: 80}}
         keyExtractor={(item) => item.id.toString()}
         data={services}
-        renderItem={({ item }) => <ServiceItem item={item} onPress={() => goToUpdate(item.id)} />}
+        renderItem={({ item }) => <ServiceItem item={item} onPress={() => {
+          setSelectedItem(item)
+          setShowModal(true)
+        }} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -96,6 +103,20 @@ export default function ServicesScreen() {
         animateFrom={"right"}
         iconMode={"static"}
         style={[styles.fabStyle]}
+      />
+
+      <EditServiceModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        onSelect={(activeType) => {
+          if (activeType === "edit") {
+            goToUpdate(selectedItem?.id)
+          }
+          if (activeType === "view") {
+            viewServiceDetails(selectedItem?.id)
+          }
+          setShowModal(false);
+        }}
       />
     </View>
   );

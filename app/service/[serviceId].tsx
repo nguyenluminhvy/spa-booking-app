@@ -12,15 +12,17 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import TabView from "@/lib/components/ui/TabView";
 import RatingOverview from "@/lib/components/ui/RatingOverview";
 import ServiceAboutView from "@/lib/components/ui/ServiceAboutView";
+import {useAuth} from "@/lib/context/AuthContext";
 
 const BIO_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet enim ac enim pretium ornare. Aenean sagittis libero vitae metus cursus tincidunt. Ut eget imperdiet lacus, nec pretium justo. Etiam ac nunc tellus. Pellentesque sed accumsan ex. Aliquam dictum imperdiet est, ut faucibus quam eleifend nec. Aliquam eleifend erat vel pulvinar dapibus. Morbi sodales mauris nec placerat rutrum. Sed quam quam, luctus vitae commodo nec,'
 
 export default function ServiceDetailScreen() {
   const { serviceId } = useLocalSearchParams();
 
+  const { isAdminRole, isStaffRole } = useAuth()
+
   const [service, setService] = useState<any>({});
   const [imageLoading, setImageLoading] = useState(true);
-
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
@@ -126,21 +128,26 @@ export default function ServiceDetailScreen() {
 
       </ScrollView>
 
-      <View style={{ paddingHorizontal: 20 }}>
-        <Button
-          mode="contained"
-          buttonColor="#105CDB"
-          style={{
-            width: "100%",
-            borderRadius: 8,
-            marginTop: 8,
-          }}
-          contentStyle={{ height: 52 }}
-          onPress={onBookNow}
-        >
-          {"Book Now"}
-        </Button>
-      </View>
+
+      {
+        !isAdminRole && !isStaffRole && (
+          <View style={{ paddingHorizontal: 20 }}>
+            <Button
+              mode="contained"
+              buttonColor="#105CDB"
+              style={{
+                width: "100%",
+                borderRadius: 8,
+                marginTop: 8,
+              }}
+              contentStyle={{ height: 52 }}
+              onPress={onBookNow}
+            >
+              {"Book Now"}
+            </Button>
+          </View>
+        )
+      }
 
     </SafeAreaView>
   );

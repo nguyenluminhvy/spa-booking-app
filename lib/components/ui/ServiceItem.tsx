@@ -5,10 +5,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from 'expo-image'
 import {formatPrice} from "@/lib/utils/helper";
 import { View } from '@/components/Themed';
+import {useAuth} from "@/lib/context/AuthContext";
 
+const STATUS_COLOR = {
+  ACTIVE: "#2ECC71",
+  INACTIVE: "#FF3B30",
+};
 
 export function ServiceItem({ item, onPress }: any) {
   const [imageLoading, setImageLoading] = useState(true);
+  const { isAdminRole } = useAuth()
 
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
@@ -44,6 +50,19 @@ export function ServiceItem({ item, onPress }: any) {
         }}>
           <Text style={{ color: '#105CDB'}}>{formatPrice(item.price)}</Text>
         </View>
+
+        {
+          isAdminRole && (
+            <View style={{
+              position: 'absolute',
+              right: 12,
+              top: 12,
+              backgroundColor: STATUS_COLOR[item?.status],
+              padding: 6,
+              borderRadius: 8
+            }}/>
+          )
+        }
       </View>
 
       <View style={{
