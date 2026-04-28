@@ -1,57 +1,103 @@
-import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
-
+import { RefreshControl, StyleSheet, TouchableOpacity } from 'react-native';
 import { View } from '@/components/Themed';
-import {FlashList} from "@shopify/flash-list";
-import {AnimatedFAB, Button, Text} from "react-native-paper";
-import {router, Stack} from "expo-router";
-import React, {useCallback, useEffect, useState} from "react";
-import {getServices} from "@/lib/services/api/services";
-import {NotificationButton} from "@/lib/components/ui/NotificationButton";
-import {MessageListButton} from "@/lib/components/ui/MessageListButton";
-import {ServiceItem} from "@/lib/components/ui/ServiceItem";
+import { FlashList } from "@shopify/flash-list";
+import { AnimatedFAB, MD3Colors, Text } from "react-native-paper";
+import { router, Stack } from "expo-router";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import { getServices } from "@/lib/services/api/services";
+import { NotificationButton } from "@/lib/components/ui/NotificationButton";
+import { MessageListButton } from "@/lib/components/ui/MessageListButton";
+import { ServiceItem } from "@/lib/components/ui/ServiceItem";
 import EditServiceModal from "@/lib/components/ui/EditServiceModal";
+import { AppTextInput } from "@/lib/components/ui/AppTextInput";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import _ from 'lodash';
 
 export default function ServicesScreen() {
+  const listRef = useRef<any>(null);
 
-  const [services, setServices] = useState([])
+  const [services, setServices] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({});
+  const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const fetchServices = async () => {
-    const data = await getServices();
+  const [searchText, setSearchText] = useState('');
+  const [isSortByNew, setIsSortByNew] = useState(true);
 
-    if (data?.length > 0) {
-      setServices(data);
+  const [queryParams, setQueryParams] = useState({
+    orderBy: "desc",
+  });
+
+  const fetchServices = async (query = queryParams) => {
+    try {
+      setQueryParams(query);
+      const data = await getServices(query);
+      setServices(data || []);
+    } catch (e) {
+      console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
-    ;(async () => {
-      await fetchServices()
-    })()
+    fetchServices();
   }, []);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      fetchServices()
-      setRefreshing(false);
-    }, 1000);
+    await fetchServices();
+    setRefreshing(false);
   }, []);
 
-  const goToUpdate = (id) => {
+  const debouncedSearch = useMemo(
+    () => _.debounce((text: string) => setSearchText(text), 300),
+    []
+  );
+
+  const handleSearch = (value: string) => {
+    debouncedSearch(value);
+  };
+
+  const toggleSortNew = () => {
+    const next = !isSortByNew;
+    setIsSortByNew(next);
+
+    const nextQuery = {
+      orderBy: next ? "desc" : "asc",
+    };
+
+    fetchServices(nextQuery);
+  };
+
+  const dataFilter = useMemo(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({
+        offset: 0,
+        animated: false,
+      });
+    }, 350)
+
+    if (!searchText) return services;
+
+    const keyword = searchText.toLowerCase();
+
+    return services.filter((s: any) =>
+      s?.name?.toLowerCase().includes(keyword) ||
+      s?.description?.toLowerCase().includes(keyword) ||
+      String(s?.price).includes(keyword) ||
+      String(s?.duration).includes(keyword)
+    );
+  }, [searchText, services]);
+
+  const goToUpdate = (id: string) => {
     router.push({
       pathname: '/create-edit-service',
-      params: {
-        serviceId: id
-      }
-    })
-  }
+      params: { serviceId: id },
+    });
+  };
 
-  const viewServiceDetails = (id) => {
+  const viewServiceDetails = (id: string) => {
     router.push(`/service/${id}`);
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -63,26 +109,45 @@ export default function ServicesScreen() {
               <MessageListButton />
             </View>
           ),
-          headerRight: () => (
-            <NotificationButton />
-          ),
+          headerRight: () => <NotificationButton />,
         }}
       />
 
+      <View style={styles.searchContainer}>
+        <AppTextInput
+          showSearchIcon
+          placeholder="Search..."
+          onChangeText={handleSearch}
+          RightComponent={
+            <TouchableOpacity onPress={toggleSortNew} style={styles.sortBtn}>
+              <Text style={styles.sortText}>New</Text>
+              <MaterialCommunityIcons
+                name={isSortByNew ? "arrow-down-thin" : "arrow-up-thin"}
+                size={20}
+                color={MD3Colors.neutralVariant60}
+              />
+            </TouchableOpacity>
+          }
+        />
+      </View>
+
       <FlashList
+        ref={listRef}
+        data={dataFilter}
+        keyExtractor={(item: any) => item.id.toString()}
+        contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16, paddingBottom: 80}}
-        keyExtractor={(item) => item.id.toString()}
-        data={services}
-        renderItem={({ item }) => <ServiceItem item={item} onPress={() => {
-          setSelectedItem(item)
-          setShowModal(true)
-        }} />}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
+        renderItem={({ item }) => (
+          <ServiceItem
+            item={item}
+            onPress={() => {
+              setSelectedItem(item);
+              setShowModal(true);
+            }}
           />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
 
@@ -108,13 +173,12 @@ export default function ServicesScreen() {
       <EditServiceModal
         visible={showModal}
         onClose={() => setShowModal(false)}
-        onSelect={(activeType) => {
-          if (activeType === "edit") {
-            goToUpdate(selectedItem?.id)
-          }
-          if (activeType === "view") {
-            viewServiceDetails(selectedItem?.id)
-          }
+        onSelect={(type) => {
+          if (!selectedItem) return;
+
+          if (type === "edit") goToUpdate(selectedItem.id);
+          if (type === "view") viewServiceDetails(selectedItem.id);
+
           setShowModal(false);
         }}
       />
@@ -123,40 +187,25 @@ export default function ServicesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1 },
+  searchContainer: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  sortBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 4,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  itemContainer: {
-    paddingBottom: 0,
-    // borderRadius: 40,
-    // borderWidth: 1,
-    marginBottom: 16,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-
-    shadowColor: 'rgba(6, 7, 38, 0.17)',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
+  sortText: {
+    fontSize: 14,
+    color: MD3Colors.neutralVariant50,
   },
   fabStyle: {
+    position: "absolute",
     bottom: 16,
     right: 16,
-    position: "absolute",
     backgroundColor: "#006EE9",
   },
 });
