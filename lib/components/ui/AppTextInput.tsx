@@ -1,7 +1,7 @@
 import React, {
   forwardRef,
   useCallback,
-  useEffect,
+  useEffect, useImperativeHandle,
   useRef,
   useState,
 } from 'react'
@@ -60,6 +60,7 @@ export const AppTextInput = forwardRef<RNTextInput, IInputProps>(
   ) => {
     const colors: any = useTheme().colors
 
+    const localInputRef = useRef<RNTextInput>(null);
     const focusAnim = useRef(new Animated.Value(0)).current
     const errorAnim = useRef(new Animated.Value(0)).current
 
@@ -94,6 +95,8 @@ export const AppTextInput = forwardRef<RNTextInput, IInputProps>(
         isError ? 0 : 250
       )
     }, [errorAnim, isError])
+
+    useImperativeHandle(ref, () => localInputRef.current as RNTextInput);
 
     const onFocus = useCallback(() => {
       setIsFocused(true)
@@ -135,7 +138,7 @@ export const AppTextInput = forwardRef<RNTextInput, IInputProps>(
             </View>
           )}
           <RNTextInput
-            ref={ref}
+            ref={localInputRef}
             editable
             style={[styles.input, inputStyle]}
             underlineColorAndroid={'transparent'}
