@@ -2,21 +2,27 @@ import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 
 import { View } from '@/components/Themed';
 import {FlashList} from "@shopify/flash-list";
-import {AnimatedFAB, Button, Text} from "react-native-paper";
+import {AnimatedFAB, Button, MD3Colors, Text} from "react-native-paper";
 import { Image } from 'expo-image'
 import {router, Stack} from "expo-router";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {formatPrice} from "@/lib/utils/helper";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {ServiceItem} from "@/lib/components/ui/ServiceItem";
+import _ from "lodash";
+import {AppTextInput} from "@/lib/components/ui/AppTextInput";
 
 export default function BookingScreen() {
   const { fetchServices, services } = useSpa()
-  const [refreshing, setRefreshing] = useState(false);
 
+  const searchInputRef = useRef<any>(null);
+  const listRef = useRef<any>(null);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     ;(async () => {
@@ -41,6 +47,35 @@ export default function BookingScreen() {
     })
   }
 
+  const debouncedSearch = useMemo(
+    () => _.debounce((text: string) => setSearchText(text), 300),
+    []
+  );
+
+  const handleSearch = (value: string) => {
+    debouncedSearch(value);
+  };
+
+  const dataFilter = useMemo(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({
+        offset: 0,
+        animated: false,
+      });
+    }, 200)
+
+    if (!searchText) return services;
+
+    const keyword = searchText.toLowerCase();
+
+    return services?.filter((s: any) =>
+      s?.name?.toLowerCase().includes(keyword) ||
+      s?.description?.toLowerCase().includes(keyword) ||
+      String(s?.price).includes(keyword) ||
+      String(s?.duration).includes(keyword)
+    );
+  }, [searchText, services]);
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -57,11 +92,30 @@ export default function BookingScreen() {
         }}
       />
 
+      <View style={styles.searchContainer}>
+        <AppTextInput
+          ref={searchInputRef}
+          showSearchIcon
+          placeholder="Search..."
+          onChangeText={handleSearch}
+          RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
+            handleSearch('')
+            searchInputRef.current?.clear();
+          }}>
+            <MaterialCommunityIcons
+              name={"close-circle"}
+              size={20}
+              color={MD3Colors.neutralVariant60}
+            />
+          </TouchableOpacity>}
+        />
+      </View>
+
       <FlashList
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 16, paddingBottom: 80}}
         keyExtractor={(item) => item.id.toString()}
-        data={services}
+        data={dataFilter}
         renderItem={({ item }) => <ServiceItem item={item} onPress={() => goToSelectTime(item)} />}
         refreshControl={
           <RefreshControl
@@ -110,5 +164,10 @@ const styles = StyleSheet.create({
     right: 16,
     position: "absolute",
     backgroundColor: "#006EE9",
+  },
+  searchContainer: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
