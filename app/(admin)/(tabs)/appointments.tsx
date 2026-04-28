@@ -1,19 +1,21 @@
 import {RefreshControl, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 
 import { View, Text } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
 import {FlashList} from "@shopify/flash-list";
 import AppointmentCard from "@/lib/components/ui/AppointmentCard";
 import {useAdmin} from "@/lib/context/AdminContext";
-import {Button} from "react-native-paper";
+import {Button, MD3Colors} from "react-native-paper";
 import {_assignStaff} from "@/lib/services/api/appointments";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {router, Stack} from "expo-router";
-import {Ionicons} from "@expo/vector-icons";
+import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
+import _ from "lodash";
+import {AppTextInput} from "@/lib/components/ui/AppTextInput";
 
 const BUTTONS = [
   {
@@ -42,10 +44,16 @@ export default function AppointmentsScreen() {
   const { appointments, fetchAppointments, filterByStatus } = useSpa()
   const { fetchStaffs } = useAdmin()
 
+
+  const searchInputRef = useRef<any>(null);
+  const listRef = useRef<any>(null);
+
+  const [searchText, setSearchText] = useState('');
+
   const [filterType, setFilterType] = useState('');
 
   const [refreshing, setRefreshing] = useState(false);
-  const listRef = useRef<any>(null);
+
 
   useEffect(() => {
     fetchAppointments()
@@ -76,6 +84,36 @@ export default function AppointmentsScreen() {
     // })
   }
 
+  const debouncedSearch = useMemo(
+    () => _.debounce((text: string) => setSearchText(text), 300),
+    []
+  );
+
+  const handleSearch = (value: string) => {
+    debouncedSearch(value);
+  };
+
+  const dataFilter = useMemo(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({
+        offset: 0,
+        animated: false,
+      });
+    }, 200)
+
+    if (!searchText) return appointments;
+
+    const keyword = searchText.toLowerCase();
+
+    return appointments?.filter((s: any) =>
+      s?.staff?.name?.toLowerCase().includes(keyword) ||
+      s?.user?.name?.toLowerCase().includes(keyword) ||
+      s?.service?.name?.toLowerCase().includes(keyword) ||
+      String(s?.service?.price).includes(keyword) ||
+      String(s?.id).includes(keyword)
+    );
+  }, [searchText, appointments]);
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -91,6 +129,25 @@ export default function AppointmentsScreen() {
           ),
         }}
       />
+
+      <View style={styles.searchContainer}>
+        <AppTextInput
+          ref={searchInputRef}
+          showSearchIcon
+          placeholder="Search..."
+          onChangeText={handleSearch}
+          RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
+            handleSearch('')
+            searchInputRef.current?.clear();
+          }}>
+            <MaterialCommunityIcons
+              name={"close-circle"}
+              size={20}
+              color={MD3Colors.neutralVariant60}
+            />
+          </TouchableOpacity>}
+        />
+      </View>
 
       <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -132,7 +189,7 @@ export default function AppointmentsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 16, paddingBottom: 80}}
         keyExtractor={(item) => item.id.toString()}
-        data={appointments}
+        data={dataFilter}
         renderItem={({ item }) => (
           <AppointmentCard
             data={item}
@@ -176,5 +233,10 @@ export default function AppointmentsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  searchContainer: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

@@ -1,6 +1,6 @@
 import {RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {AnimatedFAB, Button, Text} from "react-native-paper";
-import React, {useCallback, useEffect, useRef, useState, useTransition} from "react";
+import {AnimatedFAB, Button, MD3Colors, Text} from "react-native-paper";
+import React, {useCallback, useEffect, useMemo, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
@@ -9,6 +9,9 @@ import {useAdmin} from "@/lib/context/AdminContext";
 import {router, Stack} from "expo-router";
 import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
+import _ from "lodash";
+import {AppTextInput} from "@/lib/components/ui/AppTextInput";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 const BUTTONS = [
   {
@@ -25,11 +28,13 @@ export default function UsersScreen() {
   const { fetchUsers, users } = useAdmin()
   const [, startTransition] = useTransition();
 
+  const searchInputRef = useRef<any>(null);
+  const listRef = useRef<any>(null);
+
+  const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState('ALL');
   const [filterParams, setFilterParams] = useState({});
   const [refreshing, setRefreshing] = useState(false);
-
-  const listRef = useRef<any>(null);
 
   useEffect(() => {
     fetchUsers()
@@ -50,6 +55,32 @@ export default function UsersScreen() {
     }, 1000);
   }, [filterParams]);
 
+  const debouncedSearch = useMemo(
+    () => _.debounce((text: string) => setSearchText(text), 300),
+    []
+  );
+
+  const handleSearch = (value: string) => {
+    debouncedSearch(value);
+  };
+
+  const dataFilter = useMemo(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({
+        offset: 0,
+        animated: false,
+      });
+    }, 200)
+
+    if (!searchText) return users;
+
+    const keyword = searchText.toLowerCase();
+
+    return users?.filter((u: any) =>
+      u?.name?.toLowerCase().includes(keyword) ||
+      u?.email?.toLowerCase().includes(keyword)
+    );
+  }, [searchText, users]);
 
   return (
     <View style={styles.container}>
@@ -66,6 +97,25 @@ export default function UsersScreen() {
           ),
         }}
       />
+
+      <View style={styles.searchContainer}>
+        <AppTextInput
+          ref={searchInputRef}
+          showSearchIcon
+          placeholder="Search..."
+          onChangeText={handleSearch}
+          RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
+            handleSearch('')
+            searchInputRef.current?.clear();
+          }}>
+            <MaterialCommunityIcons
+              name={"close-circle"}
+              size={20}
+              color={MD3Colors.neutralVariant60}
+            />
+          </TouchableOpacity>}
+        />
+      </View>
 
       <View
         style={{
@@ -142,7 +192,7 @@ export default function UsersScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
         keyExtractor={(item) => item.id.toString()}
-        data={users}
+        data={dataFilter}
         renderItem={({ item }) => <AccountItem {...item} onUpdate={() => {
           fetchUsers(filterParams)
         }} />}
@@ -176,5 +226,7 @@ const styles = StyleSheet.create({
     right: 16,
     position: "absolute",
     backgroundColor: "#006EE9",
+  },
+  searchContainer: {
   },
 });
