@@ -95,6 +95,7 @@ export default function AppointmentsScreen() {
     <View style={styles.container}>
 
       <FilterTab tabs={TABS} onChange={(type) => {
+        setFilterType(type);
         if (type === 'UPCOMING') {
           fetchUpcomingAppointments()
         }
