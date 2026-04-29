@@ -13,6 +13,9 @@ import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
+import {TopServicesCard} from "@/lib/components/ui/TopServicesCard";
+import {TopUserCard} from "@/lib/components/ui/TopUserCard";
+import {TopStaffCard} from "@/lib/components/ui/TopStaffCard";
 
 const BUTTONS = [
   {
@@ -103,7 +106,7 @@ const KpiCard = ({ icon, title, value, trend, isUp, colors }) => {
   );
 };
 
-const EmptyChart = () => {
+export const EmptyChart = () => {
   return (
     <View style={{
       flex: 1,
@@ -138,6 +141,9 @@ export default function DashboardScreen() {
     newUsers: 0,
     completed: 0,
     cancelled: 0,
+    topServices: [],
+    topUserBooking: [],
+    topStaff: [],
   });
 
   const [revenue, setRevenue] = useState({
@@ -342,9 +348,6 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-
-
-
         <View style={styles.cardChart}>
           <Text style={styles.titleChart}>Revenue</Text>
           {
@@ -417,6 +420,12 @@ export default function DashboardScreen() {
             absolute
           />
         </View>
+
+        <TopServicesCard data={overview?.topServices} />
+
+        <TopUserCard data={overview?.topUserBooking}/>
+
+        <TopStaffCard data={overview?.topStaff}/>
 
       </ScrollView>
     </View>
