@@ -9,16 +9,17 @@ import {_cancelAppointment, getPastAppointment, getUpcomingAppointment} from "@/
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
 import {useIsFocused} from "expo-router";
+import FilterTab from "@/lib/components/ui/FilterTab";
 
-const BUTTONS = [
+const TABS = [
   {
-    label: "Upcoming",
+    title: 'Upcoming',
     type: 'UPCOMING',
   },
   {
-    label: "Past",
+    title: 'Past',
     type: 'PAST',
-  }
+  },
 ];
 
 export default function AppointmentsScreen() {
@@ -93,42 +94,14 @@ export default function AppointmentsScreen() {
   return (
     <View style={styles.container}>
 
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 8,
-          paddingBottom: 8,
-          paddingHorizontal: 16,
-          marginTop: 16
-        }}
-      >
-        {BUTTONS.map((button, index) => {
-          const isActive = button.type === filterType;
-
-          return (
-            <Button
-              key={index}
-              // icon="camera"
-              mode="elevated"
-              buttonColor={isActive ? "#006EE9" : "#F4F9FF"}
-              textColor={isActive ? "white" : "black"}
-              // labelStyle={{ fontWeight: isActive ? "bold" : "light" }}
-              onPress={() => {
-                setFilterType(button.type);
-                if (button.type === 'UPCOMING') {
-                  fetchUpcomingAppointments()
-                }
-                if (button.type === 'PAST') {
-                  fetchPastAppointments()
-                }
-              }}
-            >
-              {button.label}
-            </Button>
-          );
-        })}
-      </View>
-
+      <FilterTab tabs={TABS} onChange={(type) => {
+        if (type === 'UPCOMING') {
+          fetchUpcomingAppointments()
+        }
+        if (type === 'PAST') {
+          fetchPastAppointments()
+        }
+      }}/>
 
       <FlashList
         showsVerticalScrollIndicator={false}

@@ -1,6 +1,6 @@
 import {Alert, FlatList, StyleSheet, View} from 'react-native';
 import {AnimatedFAB, Button, Text} from "react-native-paper";
-import {useEffect, useRef, useState, useTransition} from "react";
+import React, {useEffect, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
@@ -9,6 +9,7 @@ import {useAuth} from "@/lib/context/AuthContext";
 import {useChatList} from "@/lib/hooks/useChatList";
 import ChatItem from "@/lib/components/ui/ChatItem";
 import {useNotifications} from "@/lib/context/NotificationContext";
+import FilterTab from "@/lib/components/ui/FilterTab";
 
 const BUTTONS = [
   {
@@ -17,6 +18,17 @@ const BUTTONS = [
   },
   {
     label: "Waiting",
+    type: 'WAITING',
+  },
+];
+
+const TABS = [
+  {
+    title: 'Active',
+    type: 'ACTIVE',
+  },
+  {
+    title: 'Waiting',
     type: 'WAITING',
   },
 ];
@@ -48,32 +60,10 @@ export default function ChatListScreen() {
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 8,
-          paddingBottom: 8,
-          marginTop: 16
-        }}
-      >
-        {BUTTONS.map((button, index) => {
-          const isActive = button.type === filterType;
 
-          return (
-            <Button
-              key={index}
-              mode="elevated"
-              buttonColor={isActive ? "#006EE9" : "#F4F9FF"}
-              textColor={isActive ? "white" : "black"}
-              onPress={() => {
-                setFilterType(button.type);
-              }}
-            >
-              {button.label}
-            </Button>
-          );
-        })}
-      </View>
+      <FilterTab tabs={TABS} onChange={(type) => {
+        setFilterType(type);
+      }}/>
 
       <FlashList
         ListEmptyComponent={<View style={{
@@ -95,7 +85,7 @@ export default function ChatListScreen() {
           </Text>
         </View>}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
+        contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80, paddingHorizontal: 16 }}
         keyExtractor={(item) => item.id.toString()}
         data={conversations}
         renderItem={({ item }) => <ChatItem
@@ -119,7 +109,6 @@ export default function ChatListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   fabStyle: {
     bottom: 16,
