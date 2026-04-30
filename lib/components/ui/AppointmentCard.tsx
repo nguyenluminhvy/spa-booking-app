@@ -19,6 +19,10 @@ type Appointment = {
   status?: string;
   price?: number;
   review?: any
+  originalPrice: any,
+  finalPrice: any,
+  discount: any,
+  voucherCode: any,
 };
 
 type Props = {
@@ -60,7 +64,7 @@ export const InfoItem = ({
 );
 
 const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onConfirmed, onCompleted, onRated }: Props) => {
-  const { id, appointmentTime, staff, status, price, service, user, review } = data;
+  const { id, appointmentTime, staff, status, price, service, user, review, finalPrice } = data;
 
   const isPending = status === 'PENDING';
   const isConfirmed = status === 'CONFIRMED';
@@ -170,7 +174,7 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
           <InfoItem
             icon="cash-check"
             label="Total Amount"
-            value={service?.price ? `${formatPrice(service?.price)}` : '--'}
+            value={finalPrice ? `${formatPrice(finalPrice)}` : '--'}
           />
 
           {
