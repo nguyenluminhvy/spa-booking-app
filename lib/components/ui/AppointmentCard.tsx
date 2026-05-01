@@ -64,7 +64,7 @@ export const InfoItem = ({
 );
 
 const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onConfirmed, onCompleted, onRated }: Props) => {
-  const { id, appointmentTime, staff, status, price, service, user, review, finalPrice } = data;
+  const { id, appointmentTime, staff, status, price, service, user, review, finalPrice, voucherCode } = data;
 
   const isPending = status === 'PENDING';
   const isConfirmed = status === 'CONFIRMED';
@@ -171,11 +171,19 @@ const AppointmentCard = ({ data, disabled, onPress, onCancel, onSelectStaff, onC
             />
           </View>
 
-          <InfoItem
-            icon="cash-check"
-            label="Total Amount"
-            value={finalPrice ? `${formatPrice(finalPrice)}` : '--'}
-          />
+          <View style={styles.row}>
+            <InfoItem
+              icon="cash-check"
+              label="Total Amount"
+              value={finalPrice ? `${formatPrice(finalPrice)}` : '--'}
+            />
+            <InfoItem
+              icon="ticket-percent"
+              label="Coupon"
+              value={voucherCode}
+            />
+          </View>
+
 
           {
             isPending && (

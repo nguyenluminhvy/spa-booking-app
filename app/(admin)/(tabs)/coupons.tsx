@@ -74,10 +74,8 @@ export default function CouponsScreen() {
     const keyword = searchText.toLowerCase();
 
     return coupons?.filter((s: any) =>
-      s?.code?.toLowerCase().includes(keyword)
-      // s?.description?.toLowerCase().includes(keyword) ||
-      // String(s?.price).includes(keyword) ||
-      // String(s?.duration).includes(keyword)
+      s?.code?.toLowerCase().includes(keyword) ||
+      String(s?.value).includes(keyword)
     );
   }, [searchText, coupons]);
 

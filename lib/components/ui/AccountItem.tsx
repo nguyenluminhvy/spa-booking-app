@@ -149,6 +149,12 @@ export function AccountItem({
           />
         </View>
 
+        <InfoItem
+          icon="history"
+          label="Created At"
+          value={moment(createdAt).format('MM-DD-YYYY')}
+        />
+
         <TouchableOpacity style={{
           position: 'absolute',
           top: 4,

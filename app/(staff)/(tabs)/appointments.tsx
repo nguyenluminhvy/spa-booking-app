@@ -99,6 +99,7 @@ export default function AppointmentsScreen() {
       s?.staff?.name?.toLowerCase().includes(keyword) ||
       s?.user?.name?.toLowerCase().includes(keyword) ||
       s?.service?.name?.toLowerCase().includes(keyword) ||
+      s?.voucherCode?.toLowerCase().includes(keyword) ||
       String(s?.service?.price).includes(keyword) ||
       String(s?.id).includes(keyword)
     );
