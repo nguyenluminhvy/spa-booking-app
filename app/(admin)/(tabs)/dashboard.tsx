@@ -1,7 +1,7 @@
 import {RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions} from 'react-native';
 
 import { Text } from '@/components/Themed';
-import {Button, SegmentedButtons} from "react-native-paper";
+import {Button, Chip} from "react-native-paper";
 import {Stack, useRouter} from "expo-router";
 import React, {useCallback, useEffect, useState} from "react";
 import {useAuth} from "@/lib/context/AuthContext";
@@ -16,6 +16,11 @@ import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import {TopServicesCard} from "@/lib/components/ui/TopServicesCard";
 import {TopUserCard} from "@/lib/components/ui/TopUserCard";
 import {TopStaffCard} from "@/lib/components/ui/TopStaffCard";
+import {
+  DashboardAdvancedFilterModal,
+  DashboardAdvancedFilterValue
+} from "@/lib/components/ui/DashboardAdvancedFilterModal";
+import moment from "moment/moment";
 
 const BUTTONS = [
   {
@@ -188,19 +193,38 @@ export default function DashboardScreen() {
   ]);
 
 
-  const [filterType, setFilterType] = useState('all');
+  const [filterType, setFilterType] = useState<any>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [advancedFilterValue, setAdvancedFilterValue] = useState<DashboardAdvancedFilterValue>({
+    type: 'all'
+  });
 
-  const fetchData = useCallback(async (range: any) => {
+  const fetchData = useCallback(async (range: any, customRange?: any) => {
     setFilterType(range)
     try {
       setLoading(true);
 
       const [overviewResponse, revenue, bookings, statusResponse] = await Promise.all([
-        _getOverview({ range: range }),
-        _getRevenue({ range: range }),
-        _getBookings({ range: range }),
-        _getStatus({ range: range }),
+        _getOverview({
+          range: range,
+          startDate: customRange?.start,
+          endDate: customRange?.end,
+        }),
+        _getRevenue({
+          range: range,
+          startDate: customRange?.start,
+          endDate: customRange?.end,
+        }),
+        _getBookings({
+          range: range,
+          startDate: customRange?.start,
+          endDate: customRange?.end,
+        }),
+        _getStatus({
+          range: range,
+          startDate: customRange?.start,
+          endDate: customRange?.end,
+        }),
       ]);
 
       if (overviewResponse?.code === 0) {
@@ -228,16 +252,17 @@ export default function DashboardScreen() {
   }, []);
 
   useEffect(() => {
-    fetchData('all')
-  }, [])
+    setFilterType(advancedFilterValue.type);
+    fetchData(advancedFilterValue.type, advancedFilterValue.range);
+  }, [advancedFilterValue]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      fetchData(filterType)
+      fetchData(filterType, advancedFilterValue?.range)
       setRefreshing(false);
     }, 1000);
-  }, [filterType]);
+  }, [filterType, advancedFilterValue]);
 
   return (
     <View style={styles.container}>
@@ -268,36 +293,60 @@ export default function DashboardScreen() {
         }}
       />
 
-      <Text style={{fontSize: 18, fontWeight: 'bold'}}>Overview</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Overview</Text>
 
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 8,
-          paddingBottom: 8,
-          marginTop: 16
-        }}
-      >
-        {BUTTONS?.map((button, index) => {
-          const isActive = button.type === filterType;
-
-          return (
-            <Button
-              key={index}
-              // icon="camera"
-              mode="elevated"
-              buttonColor={isActive ? "#006EE9" : "#F4F9FF"}
-              textColor={isActive ? "white" : "black"}
-              // labelStyle={{ fontWeight: isActive ? "bold" : "light" }}
-              onPress={() => {
-                fetchData(button.type);
-              }}
-            >
-              {button.label}
-            </Button>
-          );
-        })}
+        <DashboardAdvancedFilterModal value={advancedFilterValue} onChange={(data) => {
+          console.log(data, 'data AdvancedFilterModal');
+          setAdvancedFilterValue(data)
+        }}/>
       </View>
+
+        {
+          advancedFilterValue.range && (
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingTop: 16}}>
+              <Chip selectedColor={'white'} style={{
+                backgroundColor: '#006EE9'
+              }} onClose={() => {
+                setAdvancedFilterValue(prev => ({ ...prev, range: undefined }));
+              }}>{`from ${moment(advancedFilterValue.range.start).format("MMM-DD-YYYY")} to ${moment(advancedFilterValue.range.end).format("MMM-DD-YYYY")}`}</Chip>
+            </View>
+          )
+        }
+
+      {
+        !advancedFilterValue.range && (
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              paddingBottom: 8,
+              marginTop: 16
+            }}
+          >
+            {BUTTONS?.map((button, index) => {
+              const isActive = button.type === filterType;
+
+              return (
+                <Button
+                  key={index}
+                  // icon="camera"
+                  mode="elevated"
+                  buttonColor={isActive ? "#006EE9" : "#F4F9FF"}
+                  textColor={isActive ? "white" : "black"}
+                  // labelStyle={{ fontWeight: isActive ? "bold" : "light" }}
+                  onPress={() => {
+                    fetchData(button.type);
+                    setAdvancedFilterValue(prev => ({ ...prev, type: button.type }));
+                  }}
+                >
+                  {button.label}
+                </Button>
+              );
+            })}
+          </View>
+        )
+      }
 
       <ScrollView
         style={{}}
@@ -310,9 +359,7 @@ export default function DashboardScreen() {
         }
       >
 
-
         <View style={{ marginTop: 16 }}>
-
           <KpiCard
             title="Revenue"
             value={formatPrice(overview.revenue)}
@@ -355,7 +402,7 @@ export default function DashboardScreen() {
             <KpiCard
               title="Done"
               value={overview.completed}
-              trend="+10%"
+              trend="+10%"f
               colors={['#8CC152', '#A0D468']}
             />
 
