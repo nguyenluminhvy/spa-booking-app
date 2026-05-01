@@ -32,6 +32,8 @@ export default function UsersScreen() {
   const listRef = useRef<any>(null);
 
   const [searchText, setSearchText] = useState('');
+  const [totalItem, setTotalItem] = useState(null);
+
   const [filterType, setFilterType] = useState('ALL');
   const [filterParams, setFilterParams] = useState({});
   const [refreshing, setRefreshing] = useState(false);
@@ -72,14 +74,21 @@ export default function UsersScreen() {
       });
     }, 200)
 
-    if (!searchText) return users;
+    if (!searchText) {
+      setTotalItem(users?.length)
+      return users
+    };
 
     const keyword = searchText.toLowerCase();
 
-    return users?.filter((u: any) =>
+    const dataRtn = users?.filter((u: any) =>
       u?.name?.toLowerCase().includes(keyword) ||
       u?.email?.toLowerCase().includes(keyword)
     );
+
+    setTotalItem(dataRtn?.length)
+
+    return dataRtn
   }, [searchText, users]);
 
   return (
@@ -137,6 +146,7 @@ export default function UsersScreen() {
               textColor={isActive ? "white" : "black"}
               // labelStyle={{ fontWeight: isActive ? "bold" : "light" }}
               onPress={() => {
+                setTotalItem(null)
                 setFilterType(button.type);
                 if (button.type === 'STAFF') {
                   startTransition(() => {
@@ -157,7 +167,7 @@ export default function UsersScreen() {
                 }
               }}
             >
-              {button.label}
+              {`${button.label} ${(isActive && totalItem !== null) ? `(${totalItem})`: ''  }`}
             </Button>
           );
         })}

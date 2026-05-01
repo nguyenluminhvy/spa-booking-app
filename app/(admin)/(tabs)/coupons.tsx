@@ -21,8 +21,6 @@ export default function CouponsScreen() {
   const { coupons, fetchCoupons, activateCoupon, deactivateCoupon, setQueryCoupon, queryCoupon } = useSpa()
   const { setLoading } = useAuth()
 
-  console.log(coupons, 'coupons')
-
   const [refreshing, setRefreshing] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -182,6 +180,10 @@ export default function CouponsScreen() {
           )
         }
       </View>
+
+      <Text style={{ textAlign: 'right', marginRight: 16, paddingBottom: 4}}>
+        Total: {dataFilter?.length}
+      </Text>
 
       <FlashList
         ref={listRef}

@@ -26,6 +26,7 @@ export default function AppointmentsScreen() {
   const isFocused = useIsFocused();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [filterType, setFilterType] = useState('UPCOMING');
+
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchUpcomingAppointments = useCallback(async () => {
@@ -94,7 +95,7 @@ export default function AppointmentsScreen() {
   return (
     <View style={styles.container}>
 
-      <FilterTab tabs={TABS} onChange={(type) => {
+      <FilterTab count={appointments?.length} tabs={TABS} onChange={(type) => {
         setFilterType(type);
         if (type === 'UPCOMING') {
           fetchUpcomingAppointments()

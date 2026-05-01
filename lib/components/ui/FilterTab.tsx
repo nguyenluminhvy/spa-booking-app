@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const FilterTab = ({ tabs, activeIndex = 0, onChange }) => {
+const FilterTab = ({ tabs, activeIndex = 0, count, onChange }) => {
   const [activeTab, setActiveTab] = useState(activeIndex);
+
+  const totalItem = count
 
   useEffect(() => {
     setActiveTab(activeIndex);
@@ -23,7 +25,7 @@ const FilterTab = ({ tabs, activeIndex = 0, onChange }) => {
               }}
             >
               <Text style={[styles.tabText, isActive && styles.activeTabText]}>
-                {tab.title}
+                {`${tab.title} ${(isActive && totalItem !== null) ? `(${totalItem})`: ''  }`}
               </Text>
             </TouchableOpacity>
           );

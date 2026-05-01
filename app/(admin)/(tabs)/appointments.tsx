@@ -44,11 +44,11 @@ export default function AppointmentsScreen() {
   const { appointments, fetchAppointments, filterByStatus } = useSpa()
   const { fetchStaffs } = useAdmin()
 
-
   const searchInputRef = useRef<any>(null);
   const listRef = useRef<any>(null);
 
   const [searchText, setSearchText] = useState('');
+  const [totalItem, setTotalItem] = useState(null);
 
   const [filterType, setFilterType] = useState('');
 
@@ -101,17 +101,23 @@ export default function AppointmentsScreen() {
       });
     }, 200)
 
-    if (!searchText) return appointments;
+    if (!searchText) {
+      setTotalItem(appointments?.length)
+      return appointments
+    };
 
     const keyword = searchText.toLowerCase();
 
-    return appointments?.filter((s: any) =>
+    const dataRtn = appointments?.filter((s: any) =>
       s?.staff?.name?.toLowerCase().includes(keyword) ||
       s?.user?.name?.toLowerCase().includes(keyword) ||
       s?.service?.name?.toLowerCase().includes(keyword) ||
       String(s?.service?.price).includes(keyword) ||
       String(s?.id).includes(keyword)
     );
+
+    setTotalItem(dataRtn?.length)
+    return dataRtn
   }, [searchText, appointments]);
 
   return (
@@ -172,11 +178,12 @@ export default function AppointmentsScreen() {
                    textColor={isActive ? "white" : "black"}
                    // labelStyle={{ fontWeight: isActive ? "bold" : "light" }}
                    onPress={async () => {
+                     setTotalItem(null)
                      setFilterType(button.type);
                      await filterByStatus(button.type);
                    }}
                  >
-                   {button.label}
+                   {`${button.label} ${(isActive && totalItem !== null) ? `(${totalItem})`: ''  }`}
                  </Button>
                );
              })}

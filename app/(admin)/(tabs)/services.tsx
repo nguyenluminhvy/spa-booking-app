@@ -12,6 +12,8 @@ import EditServiceModal from "@/lib/components/ui/EditServiceModal";
 import { AppTextInput } from "@/lib/components/ui/AppTextInput";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import _ from 'lodash';
+import {Image} from "expo-image";
+import {IMAGES} from "@/lib/assets/images";
 
 export default function ServicesScreen() {
   const listRef = useRef<any>(null);
@@ -131,6 +133,10 @@ export default function ServicesScreen() {
         />
       </View>
 
+      <Text style={{ textAlign: 'right', marginRight: 16, paddingVertical: 4}}>
+        Total: {dataFilter?.length}
+      </Text>
+
       <FlashList
         ref={listRef}
         data={dataFilter}
@@ -146,6 +152,24 @@ export default function ServicesScreen() {
             }}
           />
         )}
+        ListEmptyComponent={<View style={{
+          flex: 1,
+          paddingTop: 100,
+          alignItems: 'center',
+          gap: 8
+        }}>
+          <Image
+            style={{
+              width: "100%",
+              height: 50,
+            }}
+            source={IMAGES.nodata}
+            contentFit="contain"
+          />
+          <Text variant={'labelMedium'}>
+            No data
+          </Text>
+        </View>}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
