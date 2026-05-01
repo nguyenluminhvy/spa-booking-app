@@ -1,6 +1,6 @@
-import {RefreshControl, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions} from 'react-native';
+import {RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions} from 'react-native';
 
-import { Text, View } from '@/components/Themed';
+import { Text } from '@/components/Themed';
 import {Button, SegmentedButtons} from "react-native-paper";
 import {Stack, useRouter} from "expo-router";
 import React, {useCallback, useEffect, useState} from "react";
@@ -91,7 +91,7 @@ const chartConfig = {
   },
 };
 
-const KpiCard = ({ icon, title, value, trend, isUp, colors }) => {
+const KpiCard = ({ icon, title, value, trend, isUp, colors, BottomComponent }: any) => {
   return (
     <LinearGradient
       colors={colors}
@@ -102,6 +102,8 @@ const KpiCard = ({ icon, title, value, trend, isUp, colors }) => {
       <Text style={styles.title}>{title}</Text>
 
       <Text style={styles.value}>{value}</Text>
+
+      {BottomComponent}
     </LinearGradient>
   );
 };
@@ -315,6 +317,24 @@ export default function DashboardScreen() {
             title="Revenue"
             value={formatPrice(overview.revenue)}
             colors={['#967ADC', '#AC92EC']}
+            BottomComponent={
+              <View>
+                <Text style={styles.title}>Coupons</Text>
+
+                <View style={{ marginTop: 4, flexDirection: 'row', gap: 4 }}>
+                  <View>
+                    <Text style={{ color: 'white'}}>Usage Count:</Text>
+                    <Text style={{ color: 'white'}}>Usage Rate:</Text>
+                    <Text style={{ color: 'white'}}>Total Discount:</Text>
+                  </View>
+                  <View>
+                    <Text style={{ color: 'white', fontWeight: 'bold'}}>{overview?.voucher?.usageCount}</Text>
+                    <Text style={{ color: 'white', fontWeight: 'bold'}}>{overview?.voucher?.usageRate} %</Text>
+                    <Text style={{ color: 'white', fontWeight: 'bold'}}>{formatPrice(overview?.voucher?.totalDiscount)}</Text>
+                  </View>
+                </View>
+              </View>
+            }
           />
 
           <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -407,7 +427,7 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.cardChart}>
-          <Text style={styles.titleChart}>Status</Text>
+          <Text style={styles.titleChart}>Appointment Status</Text>
 
           <PieChart
             data={statusData}

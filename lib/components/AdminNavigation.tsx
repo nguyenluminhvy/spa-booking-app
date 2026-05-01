@@ -14,6 +14,7 @@ export default function AdminNavigation() {
 
       <Stack.Screen name="assign-staff" />
       <Stack.Screen name="create-edit-service" />
+      <Stack.Screen name="create-edit-coupon" />
       <Stack.Screen name="create-edit-staff" />
       <Stack.Screen
         name="create-staff-success-modal"
@@ -35,6 +36,15 @@ export default function AdminNavigation() {
       />
       <Stack.Screen
         name="update-service-success-modal"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+          headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' }
+        }}
+      />
+      <Stack.Screen
+        name="create-update-coupon-success-modal"
         options={{
           presentation: 'transparentModal',
           animation: 'fade',

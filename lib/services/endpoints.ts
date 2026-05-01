@@ -76,5 +76,17 @@ export default () => {
     updateLastMessage: `${baseUrl}/chat/update-last-message`,
     claimConversation: `${baseUrl}/chat/claim-conversation`,
 
+    //coupon
+    getCoupons: `${baseUrl}/voucher`,
+    validateCoupon: `${baseUrl}/voucher/validate`,
+    createCoupon: `${baseUrl}/voucher/create`,
+    getCouponDetails: (id: string) =>
+      `${baseUrl}/voucher/${id}`,
+    updateCoupon: (id: string) =>
+      `${baseUrl}/voucher/${id}`,
+    activateCoupon: (id: string) =>
+      `${baseUrl}/voucher/${id}/activate`,
+    deactivateCoupon: (id: string) =>
+      `${baseUrl}/voucher/${id}/deactivate`,
   }
 }

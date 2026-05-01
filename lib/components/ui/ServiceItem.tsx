@@ -12,6 +12,17 @@ const STATUS_COLOR = {
   INACTIVE: "#FF3B30",
 };
 
+const StatusBadge = ({ status }: { status: string }) => {
+  const color =
+    status === 'ACTIVE' ? '#105CDB' : '#bdc3c7';
+
+  return (
+    <View style={[styles.badge, { backgroundColor: color }]}>
+      <Text style={styles.badgeText}>{status}</Text>
+    </View>
+  );
+};
+
 export function ServiceItem({ item, onPress }: any) {
   const [imageLoading, setImageLoading] = useState(true);
   const { isAdminRole } = useAuth()
@@ -57,10 +68,10 @@ export function ServiceItem({ item, onPress }: any) {
               position: 'absolute',
               right: 12,
               top: 12,
-              backgroundColor: STATUS_COLOR[item?.status],
-              padding: 6,
               borderRadius: 8
-            }}/>
+            }}>
+              <StatusBadge status={item?.status}/>
+            </View>
           )
         }
       </View>
@@ -108,5 +119,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
+  },
+
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+
+  badgeText: {
+    color: '#fff',
+    fontSize: 12,
   },
 });

@@ -9,6 +9,7 @@ export interface PickDateButtonProps extends ButtonProps {
   dateDefault: Date | null;
   calendarMode?: 'date' | 'time' | 'datetime'
   format?: string
+  check30Days?: boolean
 }
 
 export function PickDateButton({
@@ -19,7 +20,8 @@ export function PickDateButton({
                                  onDateChange,
                                  calendarMode = "date",
                                  format = "MMM-DD-YYYY",
-                                 disabled = false
+                                 disabled = false,
+                                 check30Days = false
                                }: Partial<PickDateButtonProps>) {
   const [date, setDate] = useState(dateDefault || new Date());
   const [openPicker, setOpenPicker] = useState(false);
@@ -35,7 +37,7 @@ export function PickDateButton({
     const selected = moment(date);
     const maxDate = now.clone().add(1, 'month');
 
-    if (selected.isAfter(maxDate, 'day')) {
+    if (check30Days && selected.isAfter(maxDate, 'day')) {
       Alert.alert(`Notice`, "You cannot schedule an appointment more than 30 days in advance.", [
         { text: "OK", style: "default", onPress: () => {
             setOpenPicker(false);
@@ -71,7 +73,7 @@ export function PickDateButton({
 
       <DatePicker
         modal
-        minimumDate={new Date()}
+        minimumDate={check30Days ? new Date() : undefined}
         // maximumDate={moment().add(1, 'month').toDate()}
         open={openPicker}
         mode={calendarMode}

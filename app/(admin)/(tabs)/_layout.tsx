@@ -32,6 +32,7 @@ export default function TabLayout() {
           else if (route.name === 'users') iconName = 'people-outline';
           else if (route.name === 'more') iconName = 'menu-outline';
           else if (route.name === 'profile') iconName = 'person';
+          else if (route.name === 'coupons') iconName = 'ticket-outline';
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -57,6 +58,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen name="users" options={{ title: 'Users', headerTitle: 'Users Management' }} />
+      <Tabs.Screen name="coupons" options={{ title: 'Coupons', headerTitle: 'Coupons Management' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>
   );
