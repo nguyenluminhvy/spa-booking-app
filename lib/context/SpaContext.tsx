@@ -28,13 +28,13 @@ type SpaContextType = {
   services: [] | null;
   appointments: [] | null;
   coupons: [] | null;
-  fetchAppointments: () => Promise<void>;
+  fetchAppointments: (query?: any) => Promise<void>;
   createService: (formData?: any) => Promise<void>;
   updateService: (id: any, formData?: any) => Promise<void>;
   fetchServices: (query?: any) => Promise<void>;
   filterByToday: () => Promise<void>;
   filterByDone: () => Promise<void>;
-  filterByStatus: (status: any) => Promise<void>;
+  filterByStatus: (status: any, range?:any) => Promise<void>;
   initAppointments: () => Promise<void>;
   confirmAppointment: (id: any) => Promise<void>;
   cancelAppointment: (id: any) => Promise<void>;
@@ -55,13 +55,13 @@ const defaultContext: SpaContextType = {
   services: [],
   appointments: [],
   coupons: [],
-  fetchAppointments: async () => {},
+  fetchAppointments: async (query?: any) => {},
   fetchServices: async (query?: any) => {},
   createService: async (formData?: any) => {},
   updateService: async (id: any, formData?: any) => {},
   filterByToday: async () => {},
   filterByDone: async () => {},
-  filterByStatus: async (status: any) => {},
+  filterByStatus: async (status: any, range?:any) => {},
   initAppointments: async () => {},
   confirmAppointment: async (id: any) => {},
   cancelAppointment: async (id: any) => {},
@@ -114,10 +114,37 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const fetchServices = async (query: any) => {
-    const data = await getServices(query);
+    try {
+      setLoading(true)
 
-    if (data?.length > 0) {
-      setServices(data);
+      const params = {
+        sort: 'createdAt',
+        order: 'desc'
+      }
+
+      if (query?.sort === 'rating') {
+        params.sort = 'rating'
+      }
+      if (query?.sort === 'review') {
+        params.sort = 'review'
+      }
+      if (query?.sort === 'priceHigh') {
+        params.sort = 'price'
+      }
+      if (query?.sort === 'priceLow') {
+        params.sort = 'price'
+        params.order = 'asc'
+      }
+
+      const data = await getServices({...query, ...params});
+
+      if (data?.length > 0) {
+        setServices(data);
+      }
+    } catch (e) {
+
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -169,8 +196,8 @@ export const SpaProvider = ({ children }: { children: ReactNode }) => {
     }, 0)
   }
 
-  const filterByStatus = async (status: any) => {
-    const filterParams = { status: status }
+  const filterByStatus = async (status: any, range: any) => {
+    const filterParams = { status: status, ...range }
     setTimeout(() => {
       fetchAppointments(filterParams)
     }, 0)

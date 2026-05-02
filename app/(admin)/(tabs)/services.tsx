@@ -1,7 +1,7 @@
 import { RefreshControl, StyleSheet, TouchableOpacity } from 'react-native';
 import { View } from '@/components/Themed';
 import { FlashList } from "@shopify/flash-list";
-import { AnimatedFAB, MD3Colors, Text } from "react-native-paper";
+import {AnimatedFAB, Chip, MD3Colors, Text} from "react-native-paper";
 import { router, Stack } from "expo-router";
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import { getServices } from "@/lib/services/api/services";
@@ -14,6 +14,12 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import _ from 'lodash';
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
+import {
+  getSortLabel,
+  ServiceAdvancedFilterModal,
+  ServiceAdvancedFilterValue
+} from "@/lib/components/ui/ServiceAdvancedFilterModal";
+import {formatPrice} from "@/lib/utils/helper";
 
 export default function ServicesScreen() {
   const listRef = useRef<any>(null);
@@ -23,6 +29,7 @@ export default function ServicesScreen() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  const [advancedFilterValue, setAdvancedFilterValue] = useState<ServiceAdvancedFilterValue>({});
   const [searchText, setSearchText] = useState('');
   const [isSortByNew, setIsSortByNew] = useState(true);
 
@@ -33,7 +40,27 @@ export default function ServicesScreen() {
   const fetchServices = async (query = queryParams) => {
     try {
       setQueryParams(query);
-      const data = await getServices(query);
+
+      const params = {
+        sort: 'createdAt',
+        order: 'desc'
+      }
+
+      if (query?.sort === 'rating') {
+        params.sort = 'rating'
+      }
+      if (query?.sort === 'review') {
+        params.sort = 'review'
+      }
+      if (query?.sort === 'priceHigh') {
+        params.sort = 'price'
+      }
+      if (query?.sort === 'priceLow') {
+        params.sort = 'price'
+        params.order = 'asc'
+      }
+
+      const data = await getServices({...query, ...params});
       setServices(data || []);
     } catch (e) {
       console.log(e);
@@ -41,14 +68,16 @@ export default function ServicesScreen() {
   };
 
   useEffect(() => {
-    fetchServices();
-  }, []);
+    ;(async () => {
+      await fetchServices(advancedFilterValue)
+    })()
+  }, [advancedFilterValue]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchServices();
+    await fetchServices(advancedFilterValue);
     setRefreshing(false);
-  }, []);
+  }, [advancedFilterValue]);
 
   const debouncedSearch = useMemo(
     () => _.debounce((text: string) => setSearchText(text), 300),
@@ -120,20 +149,78 @@ export default function ServicesScreen() {
           showSearchIcon
           placeholder="Search..."
           onChangeText={handleSearch}
-          RightComponent={
-            <TouchableOpacity onPress={toggleSortNew} style={styles.sortBtn}>
-              <Text style={styles.sortText}>New</Text>
-              <MaterialCommunityIcons
-                name={isSortByNew ? "arrow-down-thin" : "arrow-up-thin"}
-                size={20}
-                color={MD3Colors.neutralVariant60}
-              />
-            </TouchableOpacity>
-          }
+          // RightComponent={
+          //   <TouchableOpacity onPress={toggleSortNew} style={styles.sortBtn}>
+          //     <Text style={styles.sortText}>New</Text>
+          //     <MaterialCommunityIcons
+          //       name={isSortByNew ? "arrow-down-thin" : "arrow-up-thin"}
+          //       size={20}
+          //       color={MD3Colors.neutralVariant60}
+          //     />
+          //   </TouchableOpacity>
+          // }
+          RightComponent={<ServiceAdvancedFilterModal value={advancedFilterValue} onChange={(data) => {
+            console.log(data, 'data AdvancedFilterModal');
+            setAdvancedFilterValue(data)
+          }}/>}
         />
       </View>
 
-      <Text style={{ textAlign: 'right', marginRight: 16, paddingVertical: 4}}>
+      <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingTop: 8, paddingHorizontal: 16, paddingBottom: 8}}>
+        {
+          advancedFilterValue.status && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9'
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, status: undefined }));
+            }}>{`Status: ${advancedFilterValue.status}`}</Chip>
+          )
+        }
+        {
+          advancedFilterValue.maxPrice && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9'
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, maxPrice: undefined }));
+            }}>{`${formatPrice(100000)} - ${formatPrice(advancedFilterValue.maxPrice)}`}</Chip>
+          )
+        }
+        {
+          advancedFilterValue.maxRating && (
+            <TouchableOpacity
+              activeOpacity={1}
+              style={{flexDirection: 'row', height: 34, backgroundColor: '#006EE9', alignItems: 'center', justifyContent: 'center', borderRadius: 8, paddingHorizontal: 12, gap: 2}}
+              onPress={() => setAdvancedFilterValue(prev => ({ ...prev, maxRating: undefined }))}
+            >
+              <Text style={{color: 'white', fontWeight: '500'}}>
+                {0}
+              </Text>
+              <MaterialCommunityIcons name={'star'} size={20} color={'#FFC107'} />
+
+              <MaterialCommunityIcons name={'arrow-right-thin'} size={20} color={'white'} />
+
+              <Text style={{color: 'white', fontWeight: '500'}}>
+                {advancedFilterValue.maxRating}
+              </Text>
+              <MaterialCommunityIcons name={'star'} size={20} color={'#FFC107'} />
+
+            </TouchableOpacity>
+          )
+        }
+        {
+          advancedFilterValue.sort && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9',
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, sort: undefined }));
+            }}>
+              {`${getSortLabel(advancedFilterValue.sort)}`}
+            </Chip>
+          )
+        }
+      </View>
+
+      <Text style={{ textAlign: 'right', marginRight: 16, paddingBottom: 8}}>
         Total: {dataFilter?.length}
       </Text>
 

@@ -6,7 +6,7 @@ import {useSpa} from "@/lib/context/SpaContext";
 import {FlashList} from "@shopify/flash-list";
 import AppointmentCard from "@/lib/components/ui/AppointmentCard";
 import {useAdmin} from "@/lib/context/AdminContext";
-import {Button, MD3Colors} from "react-native-paper";
+import {Button, Chip, MD3Colors} from "react-native-paper";
 import {_assignStaff} from "@/lib/services/api/appointments";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
@@ -16,6 +16,11 @@ import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import _ from "lodash";
 import {AppTextInput} from "@/lib/components/ui/AppTextInput";
+import {
+  AppointmentAdvancedFilterModal,
+  AppointmentAdvancedFilterValue
+} from "@/lib/components/ui/AppointmentAdvancedFilterModal";
+import moment from "moment/moment";
 
 const BUTTONS = [
   {
@@ -42,11 +47,11 @@ const BUTTONS = [
 
 export default function AppointmentsScreen() {
   const { appointments, fetchAppointments, filterByStatus } = useSpa()
-  const { fetchStaffs } = useAdmin()
 
   const searchInputRef = useRef<any>(null);
   const listRef = useRef<any>(null);
 
+  const [advancedFilterValue, setAdvancedFilterValue] = useState<AppointmentAdvancedFilterValue>({});
   const [searchText, setSearchText] = useState('');
   const [totalItem, setTotalItem] = useState(null);
 
@@ -54,10 +59,15 @@ export default function AppointmentsScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const filterDateRange = useMemo(() => {
+    return {
+      startDate: advancedFilterValue?.range?.start,
+      endDate: advancedFilterValue?.range?.end,
+    }
+  }, [advancedFilterValue])
 
   useEffect(() => {
     fetchAppointments()
-    fetchStaffs()
   }, [])
 
   useEffect(() => {
@@ -70,10 +80,10 @@ export default function AppointmentsScreen() {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      filterByStatus(filterType)
+      filterByStatus(filterType, filterDateRange)
       setRefreshing(false);
     }, 1000);
-  }, [filterType]);
+  }, [filterType, filterDateRange]);
 
   const goToSelectTime = (item) => {
     // router.push({
@@ -143,18 +153,44 @@ export default function AppointmentsScreen() {
           showSearchIcon
           placeholder="Search..."
           onChangeText={handleSearch}
-          RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
-            handleSearch('')
-            searchInputRef.current?.clear();
-          }}>
-            <MaterialCommunityIcons
-              name={"close-circle"}
-              size={20}
-              color={MD3Colors.neutralVariant60}
-            />
-          </TouchableOpacity>}
+          // RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
+          //   handleSearch('')
+          //   searchInputRef.current?.clear();
+          // }}>
+          //   <MaterialCommunityIcons
+          //     name={"close-circle"}
+          //     size={20}
+          //     color={MD3Colors.neutralVariant60}
+          //   />
+          // </TouchableOpacity>}
+          RightComponent={<AppointmentAdvancedFilterModal value={advancedFilterValue} onChange={(data) => {
+            console.log(data, 'data AdvancedFilterModal');
+            setAdvancedFilterValue(data)
+
+            filterByStatus(filterType, {
+              startDate: data?.range?.start,
+              endDate: data?.range?.end,
+            })
+          }}/>}
         />
       </View>
+
+      {
+        advancedFilterValue.range && (
+          <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingTop: 4, paddingHorizontal: 16}}>
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9'
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, range: undefined }));
+
+              filterByStatus(filterType, {
+                startDate: undefined,
+                endDate: undefined,
+              })
+            }}>{`from ${moment(advancedFilterValue.range.start).format("MMM-DD-YYYY")} to ${moment(advancedFilterValue.range.end).format("MMM-DD-YYYY")}`}</Chip>
+          </View>
+        )
+      }
 
       <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -181,7 +217,7 @@ export default function AppointmentsScreen() {
                    onPress={async () => {
                      setTotalItem(null)
                      setFilterType(button.type);
-                     await filterByStatus(button.type);
+                     await filterByStatus(button.type, filterDateRange);
                    }}
                  >
                    {`${button.label} ${(isActive && totalItem !== null) ? `(${totalItem})`: ''  }`}
@@ -201,11 +237,11 @@ export default function AppointmentsScreen() {
         renderItem={({ item }) => (
           <AppointmentCard
             data={item}
-            onConfirmed={() => filterByStatus(filterType)}
-            onCompleted={() => filterByStatus(filterType)}
+            onConfirmed={() => filterByStatus(filterType, filterDateRange)}
+            onCompleted={() => filterByStatus(filterType, filterDateRange)}
             onSelectStaff={async (id, staffId) => {
               await _assignStaff(id, {staffId})
-              await filterByStatus(filterType)
+              await filterByStatus(filterType, filterDateRange)
           }}/>
         )
         }

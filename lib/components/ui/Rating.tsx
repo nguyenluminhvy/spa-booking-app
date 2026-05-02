@@ -3,7 +3,7 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = {
-  rating: number; // 0 -> 5
+  rating: number | undefined; // 0 -> 5
   size?: number;
   color?: string;
   readonly?: boolean;

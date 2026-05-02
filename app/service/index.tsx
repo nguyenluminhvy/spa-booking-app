@@ -2,8 +2,8 @@ import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native';
 
 import { View } from '@/components/Themed';
 import {FlashList} from "@shopify/flash-list";
-import {Button, MD3Colors, Text} from "react-native-paper";
-import {router, Stack} from "expo-router";
+import {Button, Chip, MD3Colors, Text} from "react-native-paper";
+import {router, Stack, useIsFocused} from "expo-router";
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useSpa} from "@/lib/context/SpaContext";
 import {ServiceItem} from "@/lib/components/ui/ServiceItem";
@@ -12,28 +12,44 @@ import _ from "lodash";
 import {AppTextInput} from "@/lib/components/ui/AppTextInput";
 import {Image} from "expo-image";
 import {IMAGES} from "@/lib/assets/images";
+import {
+  getSortLabel,
+  ServiceAdvancedFilterModal,
+  ServiceAdvancedFilterValue
+} from "@/lib/components/ui/ServiceAdvancedFilterModal";
+import {formatPrice} from "@/lib/utils/helper";
 
 export default function ServicesScreen() {
+  const isFocused = useIsFocused()
+
   const { fetchServices, services } = useSpa()
+
   const [refreshing, setRefreshing] = useState(false);
   const [searchText, setSearchText] = useState('');
 
   const searchInputRef = useRef<any>(null);
   const listRef = useRef<any>(null);
+  const [advancedFilterValue, setAdvancedFilterValue] = useState<ServiceAdvancedFilterValue>({});
 
   useEffect(() => {
     ;(async () => {
-      await fetchServices()
+      await fetchServices(advancedFilterValue)
     })()
-  }, []);
+  }, [advancedFilterValue]);
+
+  useEffect(() => {
+    if (isFocused) {
+      setAdvancedFilterValue({})
+    }
+  }, [isFocused]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      fetchServices()
+      fetchServices(advancedFilterValue)
       setRefreshing(false);
     }, 1000);
-  }, []);
+  }, [advancedFilterValue]);
 
   const viewServiceDetails = (item) => {
     router.push(`/service/${item.id}`);
@@ -52,9 +68,9 @@ export default function ServicesScreen() {
     setTimeout(() => {
       listRef.current?.scrollToOffset({
         offset: 0,
-        animated: false,
+        animated: true,
       });
-    }, 200)
+    }, 100)
 
     if (!searchText) return services;
 
@@ -85,17 +101,66 @@ export default function ServicesScreen() {
           showSearchIcon
           placeholder="Search..."
           onChangeText={handleSearch}
-          RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
-            handleSearch('')
-            searchInputRef.current?.clear();
-          }}>
-            <MaterialCommunityIcons
-              name={"close-circle"}
-              size={20}
-              color={MD3Colors.neutralVariant60}
-            />
-          </TouchableOpacity>}
+          // RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
+          //   handleSearch('')
+          //   searchInputRef.current?.clear();
+          // }}>
+          //   <MaterialCommunityIcons
+          //     name={"close-circle"}
+          //     size={20}
+          //     color={MD3Colors.neutralVariant60}
+          //   />
+          // </TouchableOpacity>}
+          RightComponent={<ServiceAdvancedFilterModal value={advancedFilterValue} onChange={(data) => {
+            console.log(data, 'data AdvancedFilterModal');
+            setAdvancedFilterValue(data)
+          }}/>}
         />
+      </View>
+
+      <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingTop: 8, paddingHorizontal: 16, paddingBottom: 8}}>
+        {
+          advancedFilterValue.maxPrice && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9'
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, maxPrice: undefined }));
+            }}>{`${formatPrice(100000)} - ${formatPrice(advancedFilterValue.maxPrice)}`}</Chip>
+          )
+        }
+        {
+          advancedFilterValue.maxRating && (
+            <TouchableOpacity
+              activeOpacity={1}
+              style={{flexDirection: 'row', height: 34, backgroundColor: '#006EE9', alignItems: 'center', justifyContent: 'center', borderRadius: 8, paddingHorizontal: 12, gap: 2}}
+              onPress={() => setAdvancedFilterValue(prev => ({ ...prev, maxRating: undefined }))}
+            >
+              <Text style={{color: 'white', fontWeight: '500'}}>
+                {0}
+              </Text>
+              <MaterialCommunityIcons name={'star'} size={20} color={'#FFC107'} />
+
+              <MaterialCommunityIcons name={'arrow-right-thin'} size={20} color={'white'} />
+
+              <Text style={{color: 'white', fontWeight: '500'}}>
+                {advancedFilterValue.maxRating}
+              </Text>
+              <MaterialCommunityIcons name={'star'} size={20} color={'#FFC107'} />
+
+            </TouchableOpacity>
+          )
+        }
+        {
+          advancedFilterValue.sort && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9',
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, sort: undefined }));
+            }}>
+              {`${getSortLabel(advancedFilterValue.sort)}`}
+            </Chip>
+          )
+        }
       </View>
 
       <FlashList

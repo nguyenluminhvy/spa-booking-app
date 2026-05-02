@@ -1,5 +1,5 @@
 import {RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {AnimatedFAB, Button, MD3Colors, Text} from "react-native-paper";
+import {AnimatedFAB, Button, Chip, MD3Colors, Text} from "react-native-paper";
 import React, {useCallback, useEffect, useMemo, useRef, useState, useTransition} from "react";
 import {IMAGES} from "@/lib/assets/images";
 import {FlashList} from "@shopify/flash-list";
@@ -11,12 +11,17 @@ import {NotificationButton} from "@/lib/components/ui/NotificationButton";
 import {MessageListButton} from "@/lib/components/ui/MessageListButton";
 import _ from "lodash";
 import {AppTextInput} from "@/lib/components/ui/AppTextInput";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {UserAdvancedFilterModal, UserAdvancedFilterValue} from "@/lib/components/ui/UserAdvancedFilterModal";
+import moment from "moment";
 
 const BUTTONS = [
   {
     label: "All",
     type: 'ALL',
+  },
+  {
+    label: "User",
+    type: 'USER',
   },
   {
     label: "Staff",
@@ -31,6 +36,7 @@ export default function UsersScreen() {
   const searchInputRef = useRef<any>(null);
   const listRef = useRef<any>(null);
 
+  const [advancedFilterValue, setAdvancedFilterValue] = useState<UserAdvancedFilterValue>({});
   const [searchText, setSearchText] = useState('');
   const [totalItem, setTotalItem] = useState(null);
 
@@ -38,9 +44,26 @@ export default function UsersScreen() {
   const [filterParams, setFilterParams] = useState({});
   const [refreshing, setRefreshing] = useState(false);
 
+
+  const fetchData = async (query?: any) => {
+    const filterRange = {
+      startDate: advancedFilterValue?.range?.start,
+      endDate: advancedFilterValue?.range?.end
+    }
+
+    const params = {
+      ...filterParams,
+      ...advancedFilterValue,
+      ...filterRange,
+      ...query
+    }
+
+    fetchUsers(params)
+  }
+
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    fetchData(advancedFilterValue)
+  }, [advancedFilterValue])
 
   useEffect(() => {
     listRef.current?.scrollToOffset({
@@ -52,10 +75,10 @@ export default function UsersScreen() {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      fetchUsers(filterParams)
+      fetchData(advancedFilterValue)
       setRefreshing(false);
     }, 1000);
-  }, [filterParams]);
+  }, [advancedFilterValue]);
 
   const debouncedSearch = useMemo(
     () => _.debounce((text: string) => setSearchText(text), 300),
@@ -113,17 +136,42 @@ export default function UsersScreen() {
           showSearchIcon
           placeholder="Search..."
           onChangeText={handleSearch}
-          RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
-            handleSearch('')
-            searchInputRef.current?.clear();
-          }}>
-            <MaterialCommunityIcons
-              name={"close-circle"}
-              size={20}
-              color={MD3Colors.neutralVariant60}
-            />
-          </TouchableOpacity>}
+          // RightComponent={searchText?.length > 0 && <TouchableOpacity style={{ paddingRight: 8}} onPress={() => {
+          //   handleSearch('')
+          //   searchInputRef.current?.clear();
+          // }}>
+          //   <MaterialCommunityIcons
+          //     name={"close-circle"}
+          //     size={20}
+          //     color={MD3Colors.neutralVariant60}
+          //   />
+          // </TouchableOpacity>}
+          RightComponent={<UserAdvancedFilterModal value={advancedFilterValue} onChange={(data) => {
+            console.log(data, 'data AdvancedFilterModal');
+            setAdvancedFilterValue(data)
+          }}/>}
         />
+      </View>
+
+      <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingTop: 4, paddingHorizontal: 0}}>
+        {
+          advancedFilterValue.status && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9'
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, status: undefined }));
+            }}>{`Status: ${advancedFilterValue.status}`}</Chip>
+          )
+        }
+        {
+          advancedFilterValue.range && (
+            <Chip selectedColor={'white'} style={{
+              backgroundColor: '#006EE9'
+            }} onClose={() => {
+              setAdvancedFilterValue(prev => ({ ...prev, range: undefined }));
+            }}>{`from ${moment(advancedFilterValue.range.start).format("MMM-DD-YYYY")} to ${moment(advancedFilterValue.range.end).format("MMM-DD-YYYY")}`}</Chip>
+          )
+        }
       </View>
 
       <View
@@ -153,15 +201,29 @@ export default function UsersScreen() {
                     setFilterParams({
                       role: 'STAFF'
                     })
-                    fetchUsers({
+                    fetchData({
                       role: 'STAFF'
+                    })
+                  });
+
+                } else if (button.type === 'USER') {
+                  startTransition(() => {
+                    setFilterParams({
+                      role: 'USER'
+                    })
+                    fetchData({
+                      role: 'USER'
                     })
                   });
 
                 } else {
                   startTransition(() => {
-                    setFilterParams({})
-                    fetchUsers({})
+                    setFilterParams({
+                      role: undefined
+                    })
+                    fetchData({
+                      role: undefined
+                    })
                   });
 
                 }
