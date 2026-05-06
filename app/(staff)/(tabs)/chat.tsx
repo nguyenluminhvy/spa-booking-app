@@ -80,7 +80,7 @@ export default function ChatListScreen() {
         }}
       />
 
-      <FilterTab tabs={TABS} onChange={(type) => {
+      <FilterTab count={conversations?.length || 0} tabs={TABS} onChange={(type) => {
         setFilterType(type);
       }}/>
 

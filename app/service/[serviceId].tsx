@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {ScrollView, StyleSheet} from 'react-native';
 
 import { View } from '@/components/Themed';
 import {router, useLocalSearchParams} from "expo-router";
@@ -13,8 +13,6 @@ import TabView from "@/lib/components/ui/TabView";
 import RatingOverview from "@/lib/components/ui/RatingOverview";
 import ServiceAboutView from "@/lib/components/ui/ServiceAboutView";
 import {useAuth} from "@/lib/context/AuthContext";
-
-const BIO_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet enim ac enim pretium ornare. Aenean sagittis libero vitae metus cursus tincidunt. Ut eget imperdiet lacus, nec pretium justo. Etiam ac nunc tellus. Pellentesque sed accumsan ex. Aliquam dictum imperdiet est, ut faucibus quam eleifend nec. Aliquam eleifend erat vel pulvinar dapibus. Morbi sodales mauris nec placerat rutrum. Sed quam quam, luctus vitae commodo nec,'
 
 export default function ServiceDetailScreen() {
   const { serviceId } = useLocalSearchParams();
@@ -121,13 +119,11 @@ export default function ServiceDetailScreen() {
             <Text variant={'labelMedium'} style={{ color: ''}}>{service?.rating?.average}</Text>
           </View>
         </View>
+
         <Text numberOfLines={3} variant={'bodyLarge'} style={{ paddingHorizontal: 20, paddingBottom: 20, color: 'rgba(0,0,0,0.5)'}}>{service.description}</Text>
 
-
         <TabView tabs={tabs} activeIndex={activeTab} onChange={setActiveTab}/>
-
       </ScrollView>
-
 
       {
         !isAdminRole && !isStaffRole && (

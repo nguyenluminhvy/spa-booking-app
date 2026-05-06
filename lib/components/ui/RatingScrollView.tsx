@@ -7,6 +7,47 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_WIDTH = SCREEN_WIDTH * 0.85;
 const ITEM_GAP = 12;
 
+const Tags = ({data}) => {
+  if (!data?.length) return null;
+
+  return <View style={{
+    flex: 1,
+    justifyContent: 'flex-end',
+  }}>
+    <View style={{
+      height: 32,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      overflow: 'hidden',
+      gap: 8,
+    }}>
+      {
+        data?.map((text, index) => (
+          <View
+            key={index}
+            style={{
+              // height: 32,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 999,
+              backgroundColor: "white",
+            }}>
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#006EE9",
+                textAlign: 'center'
+              }}
+            >
+              {text}
+            </Text>
+          </View>
+        ))
+      }
+    </View>
+  </View>
+}
+
 const RatingScrollView = ({data}) => {
 
   return (
@@ -55,13 +96,15 @@ const RatingScrollView = ({data}) => {
               marginTop: 12
             }}>
               <Text
-                numberOfLines={6}
+                numberOfLines={3}
                 style={{
                   color: 'white',
                 }}>
-                {item?.comment}
+                {item?.comment} {item?.comment}
               </Text>
             </View>
+
+           <Tags data={item?.tags}/>
 
           </View>
         ))}

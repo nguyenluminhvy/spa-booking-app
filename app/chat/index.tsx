@@ -11,17 +11,6 @@ import ChatItem from "@/lib/components/ui/ChatItem";
 import {useNotifications} from "@/lib/context/NotificationContext";
 import FilterTab from "@/lib/components/ui/FilterTab";
 
-const BUTTONS = [
-  {
-    label: "Active",
-    type: 'ACTIVE',
-  },
-  {
-    label: "Waiting",
-    type: 'WAITING',
-  },
-];
-
 const TABS = [
   {
     title: 'Active',
@@ -61,7 +50,7 @@ export default function ChatListScreen() {
   return (
     <View style={styles.container}>
 
-      <FilterTab tabs={TABS} onChange={(type) => {
+      <FilterTab count={conversations?.length || 0} tabs={TABS} onChange={(type) => {
         setFilterType(type);
       }}/>
 
