@@ -77,76 +77,78 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 export const VoucherItem = ({ item, onEdit, onToggle }: Props) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.notchLeft} />
-      <View style={styles.notchRight} />
-
-      <View style={styles.content}>
-        <View style={[styles.rowBetween, {padding: 16}]}>
-          <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center'}}>
-            <MaterialCommunityIcons name={'ticket-confirmation'} size={22} color={'#006EE9'}/>
-            <Text style={styles.code}>{item.code}</Text>
-          </View>
-          {
-            item?.isExpired && <StatusBadge status={'Expired'} />
-          }
-          {
-            item?.runtimeState === 'UPCOMING' && <StatusBadge status={'Upcoming'} />
-          }
-        </View>
-
-        <View style={{paddingVertical: 8, paddingLeft: 24, gap: 8}}>
-          <View style={{ flexDirection: 'row'}}>
-            <InfoItem
-              style={{flex: 2}}
-              icon="sale"
-              label="Value"
-              value={`${item.type === 'PERCENT'
-                ? `${item.value}% OFF`
-                : `${item.value.toLocaleString()}đ OFF`} ${item.maxDiscount
-                ? ` (max ${item.maxDiscount.toLocaleString()}đ)`
-                : ''}`}
-            />
-
-            <InfoItem
-              style={{flex: 1}}
-              icon="progress-check"
-              label="Used"
-              value={`${item.usedCount} / ${item.usageLimit || '∞'}`}
-            />
+    <View style={{ position: 'relative', overflow: 'hidden'}}>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <View style={[styles.rowBetween, {padding: 16}]}>
+            <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center'}}>
+              <MaterialCommunityIcons name={'ticket-confirmation'} size={22} color={'#006EE9'}/>
+              <Text style={styles.code}>{item.code}</Text>
+            </View>
+            {
+              item?.isExpired && <StatusBadge status={'Expired'} />
+            }
+            {
+              item?.runtimeState === 'UPCOMING' && <StatusBadge status={'Upcoming'} />
+            }
           </View>
 
+          <View style={{paddingVertical: 8, paddingLeft: 24, gap: 8}}>
+            <View style={{ flexDirection: 'row'}}>
+              <InfoItem
+                style={{flex: 2}}
+                icon="sale"
+                label="Value"
+                value={`${item.type === 'PERCENT'
+                  ? `${item.value}% OFF`
+                  : `${item.value.toLocaleString()}đ OFF`} ${item.maxDiscount
+                  ? ` (max ${item.maxDiscount.toLocaleString()}đ)`
+                  : ''}`}
+              />
 
-          <View style={{ flexDirection: 'row'}}>
-            <InfoItem
-              style={{flex: 2}}
-              icon="calendar-range-outline"
-              label="Period"
-              // value={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
-              value={`${moment(item.startDate).format('DD/MM')} - ${moment(item.endDate).format('DD/MM')}`}
-            />
+              <InfoItem
+                style={{flex: 1}}
+                icon="progress-check"
+                label="Used"
+                value={`${item.usedCount} / ${item.usageLimit || '∞'}`}
+              />
+            </View>
 
-            <InfoItem
-              icon="broadcast"
-              label="Status"
-              value={item?.status}
-              color={STATUS_COLOR[item?.status]}
-            />
+
+            <View style={{ flexDirection: 'row'}}>
+              <InfoItem
+                style={{flex: 2}}
+                icon="calendar-range-outline"
+                label="Period"
+                // value={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
+                value={`${moment(item.startDate).format('DD/MM')} - ${moment(item.endDate).format('DD/MM')}`}
+              />
+
+              <InfoItem
+                icon="broadcast"
+                label="Status"
+                value={item?.status}
+                color={STATUS_COLOR[item?.status]}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.btn} onPress={onEdit}>
-            <Text style={styles.btnText}>Edit</Text>
-          </TouchableOpacity>
+          <View style={styles.actions}>
+            <TouchableOpacity style={styles.btn} onPress={onEdit}>
+              <Text style={styles.btnText}>Edit</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.btnOutline} onPress={onToggle}>
-            <Text style={styles.btnOutlineText}>
-              {item.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.btnOutline} onPress={onToggle}>
+              <Text style={styles.btnOutlineText}>
+                {item.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
+
+      <View style={styles.notchLeft} />
+      <View style={styles.notchRight} />
     </View>
   );
 };
@@ -162,7 +164,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     overflow: 'hidden',
     position: 'relative',
-    elevation: 3,
   },
 
   content: {
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     backgroundColor: '#fff',
-    borderRadius: 50,
+    borderRadius: 99,
   },
 
   notchRight: {
