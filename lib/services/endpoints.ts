@@ -1,7 +1,7 @@
 
 export default () => {
-  // const baseUrl = "http://localhost:3000"
-  const baseUrl = "https://risk-fetch-ice.ngrok-free.dev"
+  const baseUrl = "http://localhost:3000"
+  // const baseUrl = "https://spa-booking-api-93az.onrender.com"
   return {
     baseUrl,
 

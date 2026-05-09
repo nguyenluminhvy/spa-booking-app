@@ -3,6 +3,7 @@ import {getStringData} from "@/lib/utils/AsyncStorage";
 
 export const api = axios.create({
   baseURL: "http://localhost:3000",
+  // baseURL: "https://spa-booking-api-93az.onrender.com",
 });
 
 api.interceptors.request.use(async (config) => {
